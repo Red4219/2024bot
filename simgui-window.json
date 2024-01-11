@@ -1,0 +1,98 @@
+{
+  "Docking": {
+    "Data": [
+      "DockNode  ID=0x00000002 Pos=447,129 Size=581,748 Selected=0x48913727"
+    ]
+  },
+  "MainWindow": {
+    "GLOBAL": {
+      "fps": "120",
+      "height": "914",
+      "maximized": "0",
+      "style": "0",
+      "userScale": "2",
+      "width": "1544",
+      "xpos": "65",
+      "ypos": "103"
+    }
+  },
+  "Window": {
+    "###/FMSInfo": {
+      "Collapsed": "0",
+      "Pos": "60,60",
+      "Size": "169,167"
+    },
+    "###/Shuffleboard/Autonomous/SendableChooser[0]": {
+      "Collapsed": "0",
+      "Pos": "326,24",
+      "Size": "254,54"
+    },
+    "###/SmartDashboard/cam1 Sim Field": {
+      "Collapsed": "0",
+      "Pos": "685,318",
+      "Size": "548,342"
+    },
+    "###/SmartDashboard/field": {
+      "Collapsed": "0",
+      "Pos": "259,60",
+      "Size": "984,671"
+    },
+    "###FMS": {
+      "Collapsed": "0",
+      "Pos": "4,538",
+      "Size": "283,146"
+    },
+    "###Joysticks": {
+      "Collapsed": "0",
+      "Pos": "217,159",
+      "Size": "796,155"
+    },
+    "###Keyboard 0 Settings": {
+      "Collapsed": "0",
+      "DockId": "0x00000002,0",
+      "Pos": "447,129",
+      "Size": "581,748"
+    },
+    "###NetworkTables": {
+      "Collapsed": "0",
+      "Pos": "282,296",
+      "Size": "750,421"
+    },
+    "###NetworkTables Info": {
+      "Collapsed": "0",
+      "DockId": "0x00000002,1",
+      "Pos": "447,129",
+      "Size": "581,748"
+    },
+    "###Other Devices": {
+      "Collapsed": "0",
+      "Pos": "1026,20",
+      "Size": "250,695"
+    },
+    "###RoboRIO": {
+      "Collapsed": "0",
+      "Pos": "63,58",
+      "Size": "119,146"
+    },
+    "###System Joysticks": {
+      "Collapsed": "0",
+      "Pos": "40,280",
+      "Size": "192,218"
+    },
+    "###Timing": {
+      "Collapsed": "0",
+      "Pos": "5,150",
+      "Size": "141,150"
+    },
+    "Debug##Default": {
+      "Collapsed": "0",
+      "Pos": "60,60",
+      "Size": "400,400"
+    },
+    "Robot State": {
+      "Collapsed": "0",
+      "Pos": "5,20",
+      "Size": "92,99"
+    }
+  }
+}
