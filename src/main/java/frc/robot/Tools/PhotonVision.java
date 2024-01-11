@@ -39,7 +39,7 @@ public class PhotonVision {
 	//private PhotonCamera _camera = null;
 	
 	// simulation variables
-	private SimVisionSystem _simVisionSystem;
+	//private SimVisionSystem _simVisionSystem;
 	private VisionSystemSim _visionSystemSim;
 	private Pose3d _sim_farTargetPose;
 	private double _sim_targetWidth;
@@ -48,6 +48,7 @@ public class PhotonVision {
 	private PhotonPoseEstimator _photonPoseEstimator;
 
 	Pose3d camPose = new Pose3d();
+	private Pose2d _lastPhotonPoseEstimatorPose = new Pose2d();
 	
 	public PhotonVision() {
 
@@ -110,7 +111,7 @@ public class PhotonVision {
 			// Change this for testing
 			if(Constants.getMode() == Mode.SIM && !PhotonVisionConstants.PhysicalCamera) {
 				// Update PhotonVision based on our new robot position.
-				_simVisionSystem.processFrame(prevEstimatedRobotPose);
+				//_simVisionSystem.processFrame(prevEstimatedRobotPose);
 				_visionSystemSim.update(prevEstimatedRobotPose);
 			}
 
@@ -234,19 +235,22 @@ public class PhotonVision {
 				&& prevEstimatedRobotPose != null
 				&& !PhotonVisionConstants.PhysicalCamera) {
 				// Update PhotonVision based on our new robot position.
-				_simVisionSystem.processFrame(prevEstimatedRobotPose);
+				//_simVisionSystem.processFrame(prevEstimatedRobotPose);
 				_visionSystemSim.update(prevEstimatedRobotPose);
 			}
 
 			if(prevEstimatedRobotPose != null) {
 				_photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-			} 
+			} else {
+				System.out.println("PhotonVision::getPhotonPose() - prevEstimatedRobotPose is null");
+			}
 
 			Optional<EstimatedRobotPose> estimatedRobotPose = _photonPoseEstimator.update();
 
 			List<Pose3d> allTagPoses = new ArrayList<>();
 
 			if (estimatedRobotPose.isPresent()) {
+				_lastPhotonPoseEstimatorPose = estimatedRobotPose.get().estimatedPose.toPose2d();
 
 				try {
 
@@ -270,6 +274,10 @@ public class PhotonVision {
 				Logger.recordOutput(
 							"AprilTagVision/TargetsUsed",
 							allTagPoses.toArray(new Pose3d[allTagPoses.size()]));
+
+				Logger.recordOutput(
+							"PhotonVisionEstimator/Robot",
+							_lastPhotonPoseEstimatorPose);
 				return Optional.empty();
 			}
 
@@ -281,7 +289,7 @@ public class PhotonVision {
 
 	// setup the tags and set the origin to how to show the tags
 	public void setupAprilTagFieldLayoutSim() {
-		_simVisionSystem.clearVisionTargets();
+		//_simVisionSystem.clearVisionTargets();
 		_visionSystemSim.clearVisionTargets();
 
 		if(DriverStation.getAlliance().isPresent()) {
@@ -297,7 +305,7 @@ public class PhotonVision {
 		if(_aprilTagFieldLayout != null) {
 			_visionSystemSim.addAprilTags(_aprilTagFieldLayout);
 
-			_simVisionSystem.addSimVisionTarget(new SimVisionTarget(
+			/*_simVisionSystem.addSimVisionTarget(new SimVisionTarget(
 				_aprilTagFieldLayout.getTagPose(1).get(),
 				_sim_targetWidth,
 				_sim_targetHeight, 
@@ -351,7 +359,7 @@ public class PhotonVision {
 				_sim_targetWidth,
 				_sim_targetHeight, 
 				8)
-			);
+			);*/
 		}
 	}
 
@@ -361,30 +369,20 @@ public class PhotonVision {
     	// Configure these to match your PhotonVision Camera,
     	// pipeline, and LED setup.
 
-		_simVisionSystem =
+		/*_simVisionSystem =
             new SimVisionSystem(
                 PhotonVisionConstants.CameraName,
                 PhotonVisionConstants.sim_camDiagFOV,
-                /*new Transform3d(
-                    new Translation3d(0,
-						0,
-					 	PhotonVisionConstants.sim_camHeightOffGround
-					),
-					new Rotation3d(
-						0,
-						PhotonVisionConstants.sim_camPitch,
-						0
-					)
-				),*/
+                
 				Constants.PhotonVisionConstants.cameraToRobot,
                 PhotonVisionConstants.sim_maxLEDRange,
                 PhotonVisionConstants.sim_camResolutionWidth,
                 PhotonVisionConstants.sim_camResolutionHeight,
                 PhotonVisionConstants.sim_minTargetArea
-			);
+			);*/
 
 		_visionSystemSim = new VisionSystemSim("main");
-		SimCameraProperties cameraProp = new SimCameraProperties();
+		/*SimCameraProperties cameraProp = new SimCameraProperties();
 		// A 640 x 480 camera with a 100 degree diagonal FOV.
 		cameraProp.setCalibration(640, 480, Rotation2d.fromDegrees(100));
 		// Approximate detection noise with average and standard deviation error in pixels.
@@ -393,10 +391,11 @@ public class PhotonVision {
 		cameraProp.setFPS(20);
 		// The average and standard deviation in milliseconds of image data latency.
 		cameraProp.setAvgLatencyMs(35);
-		cameraProp.setLatencyStdDevMs(5);
+		cameraProp.setLatencyStdDevMs(5);*/
+		
 		//PhotonCameraSim cameraSim = new PhotonCameraSim(_camera, cameraProp);
 		//_visionSystemSim.addCamera(cameraSim, Constants.PhotonVisionConstants.cameraToRobot);
-		//_visionSystemSim.addCamera(new PhotonCameraSim(_camera), Constants.PhotonVisionConstants.cameraToRobot);
+		_visionSystemSim.addCamera(new PhotonCameraSim(_camera), Constants.PhotonVisionConstants.cameraToRobot);
 			
 		
 		// See
@@ -419,8 +418,8 @@ public class PhotonVision {
                     new Translation3d(tgtXPos, tgtYPos, 0.5),
                     new Rotation3d(0.0, 0.0, 0.0));
 		
-		_simVisionSystem.addSimVisionTarget(
-			new SimVisionTarget(_sim_farTargetPose, _sim_targetWidth, _sim_targetHeight, -1));
+		/*_simVisionSystem.addSimVisionTarget(
+			new SimVisionTarget(_sim_farTargetPose, _sim_targetWidth, _sim_targetHeight, -1));*/
 		
 		
 		setupAprilTagFieldLayoutSim();

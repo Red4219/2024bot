@@ -606,7 +606,7 @@ public class DriveSubsystem extends SubsystemBase {
 			Logger.recordOutput("PhotonVisionEstimator/Robot", photonPose2d);
 		}
 
-		if(_photonVision != null) {
+		/*if(_photonVision != null) {
 
 			// Check if we are not moving, update the odometry with the estimated field position
 			if(_inMotion == false) {
@@ -621,7 +621,7 @@ public class DriveSubsystem extends SubsystemBase {
 					);
 				}
 			} 
-		}
+		}*/
 
 		field.setRobotPose(odometry.getPoseMeters());
 
