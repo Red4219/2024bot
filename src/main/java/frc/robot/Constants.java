@@ -382,34 +382,7 @@ public final class Constants {
 		public static double visionMeasurementStdDevsTheta = Units.degreesToRadians(10);
 	}
 
-	/*public static class LimelightConstants {
-
-		// declare ID's of pipelines here
-		public static final int kCubePipeline = 0;
-		public static final int kReflectivePipeline = 1;
-		public static final int kApriltagPipeline = 2;
-		
-
-		// Servo Constants
-		public static final int kServoPort = 2;
-		// sets the offset of the sevo so the limelight is facing forward (double 0 - 1)
-		public static final double kServoFrontPose = .76;
-		public static final double kServoBackpose = 0;
-
-		// piss values for limelight
-		public static final PIDGains kLLTargetGains = new PIDGains(0.008, 0, 0);
-
-		public static final PIDGains kLLPuppyTurnGains = new PIDGains(0.02, 0, 0); //.008
-		public static final PIDGains kLLPuppyDriveGains = new PIDGains(0.008, 0, 0);
-		public static final double kPuppyTurnMotionSmoothing = 0.3;
-		public static final double kPuppyDriveMotionSmoothing = 0.4;
-
-		public static final PIDGains kLLAlignStrafeGains = new PIDGains(.04, 0.0015, 0.001);
-		public static final PIDGains kLLAlignDriveGains = new PIDGains(.025, 0.0015, 0.0005);
-		public static final double kAlignDriveMotionSmoothing = 0;
-		public static final double kAlignStrafeMotionSmoothing = 0;
-
-	}*/
+	
 
 	public static final String kRioCANBusName = "rio";
 
