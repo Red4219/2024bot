@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 //import com.pathplanner.lib.server.PathPlannerServer;
 import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -60,6 +61,8 @@ public class Robot extends LoggedRobot {
 		/*for (int port = 5800; port <= 5805; port++) {
 			PortForwarder.add(port, "limelight.local", port);
 		}*/
+
+		Pathfinding.setPathfinder(new LocalADStarAK());
 
 		switch (Constants.getMode()) {
 			case REAL:

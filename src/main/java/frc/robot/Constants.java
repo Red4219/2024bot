@@ -9,24 +9,16 @@ import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import com.pathplanner.lib.util.PIDConstants;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants.kArmPoses;
-import frc.robot.Constants.ClimberConstants.kClimberPoses;
 import frc.robot.Tools.AutonomousDetail;
 import frc.robot.Tools.Parts.PIDGains;
-import frc.robot.commands.ArmPoseCommand;
-import frc.robot.commands.ArmSwitchCommand;
-import frc.robot.commands.ClimberPoseCommand;
-import frc.robot.commands.Autonomous.IntakeDownSequence;
-import frc.robot.commands.Autonomous.ScoreSequence;
-import frc.robot.commands.Limelight.LLAlignCommand;
-import frc.robot.commands.Limelight.LLTargetCubeCommand;
-import frc.robot.commands.Autonomous.IntakeCommand;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 
@@ -106,7 +98,7 @@ public final class Constants {
 		// this sets turning speed (keep this low)
 		public static final double kMaxRPM = 10;
 
-		public static final int kPigeonPort = 20;
+		//public static final int kPigeonPort = 20;
 
 		public static final double kBumperToBumperWidth = Units.inchesToMeters(31);
 
@@ -120,8 +112,8 @@ public final class Constants {
 				new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)); // RR
 
 		public static final boolean kGyroReversed = true;
-		public static final boolean kFeildCentric = true;
-		public static final boolean kGyroTuring = false;
+		//public static final boolean kFieldCentric = true;
+		//public static final boolean kGyroTuring = false;
 
 		public static final PIDGains kGyroTurningGains = new PIDGains(.025, 0, 0);
 		public static final double kMaxTurningVelocityDegrees = 20;
@@ -139,18 +131,24 @@ public final class Constants {
 
 			// PID constants for path planner (these control drive direction not reaching
 			// target wheel speeds)
-			public static final PIDGains kPPDriveGains = new PIDGains(8.5, 0, 0);
-			public static final PIDGains kPPTurnGains = new PIDGains(3.5, 0, 0);
+			//public static final PIDGains kPPDriveGains = new PIDGains(8.5, 0, 0);
+			//public static final PIDGains kPPTurnGains = new PIDGains(3.5, 0, 0);
+
+			public static final PIDConstants kPPDriveConstants = new PIDConstants(8.5, 0, 0);
+			public static final PIDConstants kPPTurnConstants = new PIDConstants(3.5, 0, 0);
 
 			public static final double kPPMaxVelocity = 4.00;
 			public static final double kPPMaxAcceleration = 2.50;
+
+			public static final double kMaxModuleSpeed = 4.5; // Max module speed, in m/s
+			public static final double kDriveBaseRadius = 0.4; // Drive base radius in meters. Distance from robot center to furthest module.
 		}
 
-		public static final double kScoreSequenceDropTime = 3; // in seconds
+		//public static final double kScoreSequenceDropTime = 3; // in seconds
 
 		public static final PIDGains kTurnCommandGains = new PIDGains(.004, 0.0003, 0);
-		public static final double kTurnCommandMaxVelocity = 1;
-		public static final double kTurnCommandMaxAcceleration = 1;
+		//public static final double kTurnCommandMaxVelocity = 1;
+		//public static final double kTurnCommandMaxAcceleration = 1;
 		public static final double kTurnCommandToleranceDeg = 0.5;
 		public static final double kTurnCommandRateToleranceDegPerS = 0;
 
@@ -202,12 +200,12 @@ public final class Constants {
 		 * The radius of each arms rotation in inches (from center of rotation to next
 		 * arms center of rotation)
 		 */
-		public static final int kMajorArmLength = 38;
-		public static final int kMinorArmLength = 23;
+		//public static final int kMajorArmLength = 38;
+		//public static final int kMinorArmLength = 23;
 
 		// current limits of the arms
 		public static final int kMajorArmCurrentLimit = 5;
-		public static final int kMinorArmCurrentLimit = 8;
+		//public static final int kMinorArmCurrentLimit = 8;
 
 		// speed limits for the arms
 		public static final double kMajorPIDOutputLimit = 1;
@@ -384,7 +382,7 @@ public final class Constants {
 		public static double visionMeasurementStdDevsTheta = Units.degreesToRadians(10);
 	}
 
-	public static class LimelightConstants {
+	/*public static class LimelightConstants {
 
 		// declare ID's of pipelines here
 		public static final int kCubePipeline = 0;
@@ -411,7 +409,7 @@ public final class Constants {
 		public static final double kAlignDriveMotionSmoothing = 0;
 		public static final double kAlignStrafeMotionSmoothing = 0;
 
-	}
+	}*/
 
 	public static final String kRioCANBusName = "rio";
 
