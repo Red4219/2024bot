@@ -144,28 +144,6 @@ public final class Constants {
 
 			public static final double kPPMaxVelocity = 4.00;
 			public static final double kPPMaxAcceleration = 2.50;
-
-			public static final HashMap<String, Command> kPPEventMap = new HashMap<>() {
-				{
-					/*put("Tuck", new ArmPoseCommand(kArmPoses.TUCKED));
-					put("KickFront", new ArmPoseCommand(kArmPoses.KICK_FRONT));
-					put("KickBack", new ArmPoseCommand(kArmPoses.KICK_BACK));
-					put("ScoreHigh", new ScoreSequence(kArmPoses.HIGH_SCORE));
-					put("ArmHighCube", new ArmPoseCommand(kArmPoses.HIGH_INTAKE));
-					put("ScoreCubeHigh", new ScoreSequence(kArmPoses.HIGH_INTAKE));
-					put("ScoreMid", new ScoreSequence(kArmPoses.MID_SCORE));
-					put("ScoreLow", new ScoreSequence(kArmPoses.LOW_SCORE));
-					put("IntakeDown", new IntakeDownSequence());
-					put("ToggleSide", new ArmSwitchCommand());
-					put("Suck", new IntakeCommand(true, 100));
-					put("Drop", new IntakeCommand(false, 350));
-					put("TargetCube", new LLTargetCubeCommand(2000));
-					put("TargetTape", new LLAlignCommand(false));
-					put("TargetTag", new LLAlignCommand(true));*/
-					put("ClimberUp", new ClimberPoseCommand(kClimberPoses.HIGH));
-					put("ClimberDown", new ClimberPoseCommand(kClimberPoses.TUCKED));
-				}
-			};
 		}
 
 		public static final double kScoreSequenceDropTime = 3; // in seconds

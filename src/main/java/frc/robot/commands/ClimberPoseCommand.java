@@ -14,10 +14,6 @@ import frc.robot.subsystems.ClimberSubsystem;
 public class ClimberPoseCommand extends Command {
 	private static ClimberSubsystem climberSubsystem;
 	private kClimberPoses climberPose;
-	
-
-	
-	
 
 	public ClimberPoseCommand(kClimberPoses climberPose) {
 		climberSubsystem = RobotContainer.climberSubsystem;

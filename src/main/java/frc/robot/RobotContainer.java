@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -101,61 +103,21 @@ public class RobotContainer {
 		// Configure the trigger bindings
 		configureBindings();
 
+		//return AutoBuilder.followPathWithEvents(path);
+		//
+
+		NamedCommands.registerCommand("ClimberUp", new ClimberPoseCommand(kClimberPoses.HIGH));
+		NamedCommands.registerCommand("ClimberDown", new ClimberPoseCommand(kClimberPoses.TUCKED));
+		
+		
 		autoChooser.addOption("Test Auto 1", AutoBuilder.buildAuto("Test Auto 1"));
 		autoChooser.addOption("auto-phil", AutoBuilder.buildAuto("auto-phil"));
+
+		//autoChooser = AutoBuilder.buildAutoChooser();
 
 		// region Def Auto
 		Shuffleboard.getTab("Autonomous").add(autoChooser);
 		//Shuffleboard.getTab("Autonomous").add(autoBuilder.buildAutoChooser());
-
-		// autoBuilder.populatePathMap(); // TODO: fix auto builder
-		/*autoBuilder.addPath("Event Test");
-		autoBuilder.addPath("1 Human Player");
-		autoBuilder.addPath("1 Wall");
-		autoBuilder.addPath("1 Charge Mobility");
-		autoBuilder.addPath("1 Charge");
-		autoBuilder.addPath("1+1 Human Player");
-		autoBuilder.addPath("1+2 Human Player");
-		autoBuilder.addPath("1+1.5 Human Player");
-		autoBuilder.addPath("Square");
-		autoBuilder.addPath("Cube Target Test");
-		autoBuilder.addPath("1.5 Charge Mobility");
-		autoBuilder.addPath("Test Path 1");*/
-
-		//autoChooser.setDefaultOption("ScoreHigh", new IntakeCommand(true, 100)
-		//		.andThen(new ScoreSequence(kArmPoses.HIGH_SCORE).andThen(new ArmPoseCommand(kArmPoses.TUCKED))));
-
-		/*autoChooser.addOption("Event Test", autoBuilder.getPathCommand("Event Test"));
-		autoChooser.addOption("Square", autoBuilder.getPathCommand("Square"));
-		autoChooser.addOption("Target Cube Test", autoBuilder.getPathCommand("Cube Target Test"));
-
-		autoChooser.addOption("1 Human Player", autoBuilder.getPathCommand("1 Human Player"));
-		autoChooser.addOption("1 Wall", autoBuilder.getPathCommand("1 Wall"));
-		autoChooser.addOption("1+1 Human Player", autoBuilder.getPathCommand("1+1 Human Player"));
-		autoChooser.addOption("1+2 Human Player", autoBuilder.getPathCommand("1+2 Human Player"));
-		autoChooser.addOption("1+1.5 Human Player", autoBuilder.getPathCommand("1+1.5 Human Player"));
-
-		autoChooser.addOption("1.5 Charge Mobility",
-				autoBuilder.getPathCommand("1.5 Charge Mobility").andThen(new BalanceCommand()));
-		autoChooser.addOption("1 Charge Mobility",
-				autoBuilder.getPathCommand("1 Charge Mobility").andThen(new BalanceCommand()));
-		autoChooser.addOption("1 Charge",
-				autoBuilder.getPathCommand("1 Charge").andThen(new BalanceCommand()));*/
-
-		//List<PathPlannerPath> asdf = autoBuilder.getPathCommand("Test Path 1");
-		//autoChooser.addOption("Test Path 1", autoBuilder.getPathCommand("Test Path 1").get(0).);
-
-		
-		/*for(Map.Entry<String, AutonomousDetail> auto : Constants.AutonomousRoutines.entrySet()) {
-			Command c = autoBuilder.getPathCommand(auto.getValue().name).andThen(new BalanceCommand());
-			c.setName(auto.getValue().name);
-			autoChooser.addOption(auto.getValue().name, c);
-		};*/
-
-		//Command c = autoBuilder.getPathCommand("Test Path 1").andThen(new BalanceCommand());
-		//c.setName("Test Path 1");
-		//autoChooser.addOption("Test Path 1", c);
-		// endregion
 	}
 
 	/**

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -28,8 +29,10 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.Constants.AutoConstants.PathPLannerConstants;
+import frc.robot.Constants.ClimberConstants.kClimberPoses;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotContainer;
+import frc.robot.commands.ClimberPoseCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 /** Add your docs here. */
@@ -61,6 +64,8 @@ public class PathBuilder {
 				PathPLannerConstants.kPPEventMap,
 				true,
 				driveSubsystem);*/
+
+				
 
 				AutoBuilder.configureHolonomic(
                 	driveSubsystem::getPoseEstimatorPose2d, // Robot pose supplier

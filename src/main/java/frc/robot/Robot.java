@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 //import com.pathplanner.lib.server.PathPlannerServer;
 import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.wpilibj.DriverStation;
