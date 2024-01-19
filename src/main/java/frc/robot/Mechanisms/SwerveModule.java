@@ -15,10 +15,10 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -43,7 +43,7 @@ public class SwerveModule {
 	CANCoderSimCollection simCollection;
 	private final RelativeEncoder driveEncoder;
 
-	private final SparkMaxPIDController drivePID;
+	private final SparkPIDController drivePID;
 	private final ProfiledPIDController m_turningPIDController;
 
 	public final double angleZero;

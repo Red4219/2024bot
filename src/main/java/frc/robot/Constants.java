@@ -157,6 +157,8 @@ public final class Constants {
 		public static final double kMaxBalancingVelocity = 1000;
 		public static final double kMaxBalancingAcceleration = 5000;
 
+		public static final double kAimTargetTolerance = 0.5;
+
 	}
 
 	/**
@@ -288,21 +290,29 @@ public final class Constants {
 
 	public static class IntakeConstants {
 
-		public static final int kRightIntakeWheelPort = 8;
-		public static final int kLeftIntakeWheelPort = 9;
+		//
+		public static final int kSmartCurrentLimit = 5;
+		public static final double kIntakeSpeed = 1.0;
+		public static final double kOuttakeSpeed = -1.0;
+		public static final double kIntakeOutputCurrentThreshold = 6.0;
+		public static final int kIntakeWheelPort = 9;
+		//
 
-		public static final int kPnemnaticHubPort = 50;
+		//public static final int kRightIntakeWheelPort = 8;
+		//public static final int kLeftIntakeWheelPort = 9;
 
-		public static final int kCenterDumpSolenoidPort = 0;
-		public static final int kCenterSealerSolenoidPort = 1;
+		//public static final int kPnemnaticHubPort = 50;
+
+		//public static final int kCenterDumpSolenoidPort = 0;
+		//public static final int kCenterSealerSolenoidPort = 1;
 
 		// NEO Sucker motor CAN ID's
-		public static final int kCenterSuckerPort = 18;
+		//public static final int kCenterSuckerPort = 18;
 
-		public static final int kCenterSuckerCurrentLimit = 6;
+		//public static final int kCenterSuckerCurrentLimit = 6;
 
-		public static final double kCenterSuckerSetpoint = 0.65;
-		public static final int kHasConeThreshold = 3530;
+		//public static final double kCenterSuckerSetpoint = 0.65;
+		//public static final int kHasConeThreshold = 3530;
 
 		public static enum kIntakeStates {
 			IDLE,
@@ -446,4 +456,18 @@ public final class Constants {
 			.2
 		)
 	);
+
+	public static class ShooterConstants {
+		public static final int kSmartCurrentLimit = 5;
+		public static final double kSpeed = 1.0;
+
+		public static final int kPrimaryPort = 23;
+		public static final int kSecondaryPort = 24;
+
+		public static enum kShooterStates {
+			IDLE,
+			SHOOT,
+			DISABLED
+		}
+	}
 }

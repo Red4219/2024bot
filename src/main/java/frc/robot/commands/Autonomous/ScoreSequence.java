@@ -27,8 +27,8 @@ public class ScoreSequence extends SequentialCommandGroup {
 
 		// Add your commands in the addCommands() call, e.g.
 		// addCommands(new FooCommand(), new BarCommand());
-		addCommands(
-				new ArmPoseCommand(armPose),
-				new IntakeCommand(false, 750));
+		//addCommands(
+				//new ArmPoseCommand(armPose),
+				//new IntakeCommand(false, 750));
 	}
 }

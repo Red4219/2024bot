@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -30,15 +31,20 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.Constants.ClimberConstants.kClimberPoses;
+import frc.robot.Constants.IntakeConstants.kIntakeStates;
+import frc.robot.Constants.ShooterConstants.kShooterStates;
 import frc.robot.Tools.AutonomousDetail;
 import frc.robot.Tools.JoystickUtils;
+import frc.robot.Tools.PhotonVision;
 import frc.robot.Tools.Parts.PathBuilder;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AimCommand;
 import frc.robot.commands.ArmPoseCommand;
 import frc.robot.commands.ArmSwitchCommand;
 import frc.robot.commands.ClimberPoseCommand;
 import frc.robot.commands.FloorIntakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TurnCommand;
 import frc.robot.commands.Autonomous.BalanceCommand;
 import frc.robot.commands.Autonomous.ScoreSequence;
@@ -48,6 +54,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -64,9 +71,12 @@ public class RobotContainer {
 	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	//public static final DriveSubsystem driveSubsystem = new DriveSubsystem(true);
 	public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
+	public PhotonVision _photonVision = driveSubsystem.getPhotonVision();
 	public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
 	//public static final ArmSubsystem armSubsystem = new ArmSubsystem();
-	//public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+	public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+	public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+	
 
 	public final static PathBuilder autoBuilder = new PathBuilder();
 
@@ -106,16 +116,23 @@ public class RobotContainer {
 
 		NamedCommands.registerCommand("ClimberUp", new ClimberPoseCommand(kClimberPoses.HIGH));
 		NamedCommands.registerCommand("ClimberDown", new ClimberPoseCommand(kClimberPoses.TUCKED));
+		NamedCommands.registerCommand("Aim", new AimCommand(_photonVision));
+		NamedCommands.registerCommand("TimedShootHalfSeconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.of(500)));
+		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(intakeSubsystem, kIntakeStates.INTAKE, OptionalLong.of(2000)));
+		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(intakeSubsystem, kIntakeStates.INTAKE, OptionalLong.of(1000)));
 		
 		
-		autoChooser.addOption("Test Auto 1", AutoBuilder.buildAuto("Test Auto 1"));
+		try {
+		autoChooser.addOption("5 Auto Left", AutoBuilder.buildAuto("5 Auto Left"));
 		autoChooser.addOption("auto-phil", AutoBuilder.buildAuto("auto-phil"));
+		} catch (Exception e) {
+			System.out.println("RobotContainer()::RobotContainer() - error: " + e.getMessage());
+		}
 
 		//autoChooser = AutoBuilder.buildAutoChooser();
 
 		// region Def Auto
 		Shuffleboard.getTab("Autonomous").add(autoChooser);
-		//Shuffleboard.getTab("Autonomous").add(autoBuilder.buildAutoChooser());
 	}
 
 	/**
@@ -132,11 +149,24 @@ public class RobotContainer {
 	private void configureBindings() {
 
 		//test
-		driverController.button(1).whileTrue(new RunCommand(() -> driveSubsystem.goToPose()));
-		//driverController.button(2).whileTrue(new RunCommand(() -> driveSubsystem.resetOdometry(new Pose2d(5.0, 5.0, new Rotation2d(180.0)))));
+		//driverController.button(1).whileTrue(new RunCommand(() -> driveSubsystem.goToPose()));
 
 		driverController.button(3).onTrue(new ClimberPoseCommand(kClimberPoses.HIGH));
 		driverController.button(4).onTrue(new ClimberPoseCommand(kClimberPoses.TUCKED));
+
+		/*driverController.button(1).onTrue(
+				intakeSubsystem.intakeCommand())
+				.onFalse(intakeSubsystem.idleCommand());*/
+
+		/*driverController.button(1).onTrue(
+				shooterSubsystem.timedShootCommand(3000))
+				.onFalse(shooterSubsystem.idleCommand());*/
+
+		driverController.button(1).onTrue(
+				shooterSubsystem.shootCommand())
+				.onFalse(shooterSubsystem.idleCommand());
+
+
 
 
 		// region Arm Commands

@@ -223,6 +223,52 @@ public class PhotonVision {
 		}
 	}
 
+	public boolean hasTarget() {
+		if(_camera.getLatestResult().hasTargets()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public double aimAtTarget(int targetNumber) {
+
+		PhotonPipelineResult result = _camera.getLatestResult();
+		List<PhotonTrackedTarget> targets = result.getTargets();
+
+		for(PhotonTrackedTarget target: targets) {
+			if(target.getFiducialId() == targetNumber) {
+				return target.getYaw();
+			}
+		}
+
+		return 0.0;
+	}
+
+	public boolean canSeeTarget(int targetNumber) {
+
+		//PhotonTrackedTarget targetToAimAt = null;
+		PhotonPipelineResult result = _camera.getLatestResult();
+
+		if(result.hasTargets() == false) {
+			System.out.println("Don't see any targets");
+			return false;
+		}
+
+		// if we get here, we can see some targets, just might not be the correct one
+
+		List<PhotonTrackedTarget> targets = result.getTargets();
+
+		for(PhotonTrackedTarget target: targets) {
+			if(target.getFiducialId() == targetNumber) {
+				System.out.println("target: " + target.getFiducialId());
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public Optional<EstimatedRobotPose> getPhotonPose(Pose2d prevEstimatedRobotPose) {
 
 		if(_photonPoseEstimator != null) {

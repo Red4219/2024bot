@@ -276,6 +276,10 @@ public class DriveSubsystem extends SubsystemBase {
 		autoTab.addString("Alliance", this::getAlliance);
 	}
 
+	public PhotonVision getPhotonVision() {
+		return _photonVision;
+	}
+
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run

@@ -4,40 +4,71 @@
 
 package frc.robot.Mechanisms;
 
-import edu.wpi.first.wpilibj.Servo;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVPhysicsSim;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import frc.robot.Constants;
+import frc.robot.Constants.Mode;;
 
 /** Add your docs here. */
 public class IntakeWheels {
 
-	private Servo rightServo, leftServo;
+	private CANSparkMax _intakeSparkMax;
 
-	public IntakeWheels(int rightPort, int leftPort) {
-		rightServo = new Servo(rightPort);
-		leftServo = new Servo(leftPort);
+	public IntakeWheels(int port) {
+		_intakeSparkMax = new CANSparkMax(port,MotorType.kBrushless);
+
+		if(Constants.getMode() == Mode.SIM) {
+			REVPhysicsSim.getInstance().addSparkMax(_intakeSparkMax, 2.6f, 5676);
+		}
+
+		_intakeSparkMax.clearFaults();
+		_intakeSparkMax.restoreFactoryDefaults();
+		_intakeSparkMax.setIdleMode(IdleMode.kBrake);
+		_intakeSparkMax.setSmartCurrentLimit(Constants.IntakeConstants.kSmartCurrentLimit);
 	}
 
-	// region setters
-
-	/** sets both intake wheels to be drivin inward for intaking a piece */
 	public void Intake() {
-		rightServo.set(-1);
-		leftServo.set(1);
+		//System.out.println("IntakeWheels::Intake() called");
+
+		if(Constants.getMode() == Mode.SIM) {
+			_intakeSparkMax.setVoltage(1.0);
+		} else {
+			_intakeSparkMax.set(Constants.IntakeConstants.kIntakeSpeed);
+		}
 	}
 
-	/** sets both intake wheels to be drivin outward for releasing a piece */
 	public void OutTake() {
-		rightServo.set(1);
-		leftServo.set(-1);
+		//System.out.println("IntakeWheels::OutTake() called");
+		
+		if(Constants.getMode() == Mode.SIM) {
+			_intakeSparkMax.setVoltage(1.0);
+		} else {
+			_intakeSparkMax.set(Constants.IntakeConstants.kOuttakeSpeed);
+		}
 	}
 
-	/** stops both wheels to reduce power draw and noise */
 	public void disable() {
-		rightServo.setDisabled();
-		leftServo.setDisabled();
-	}
-	// endregion
+		//System.out.println("IntakeWheels::disable() called");
 
-	// region getters 
-	
-	// endregion
+		if(Constants.getMode() == Mode.SIM) {
+			_intakeSparkMax.setVoltage(0.0);
+		} else {
+			_intakeSparkMax.stopMotor();
+		}
+	}
+
+	public double getOutputCurrent() {
+		return _intakeSparkMax.getOutputCurrent();
+	}
+
+	public boolean hasNote() {
+		if(getOutputCurrent() > Constants.IntakeConstants.kIntakeOutputCurrentThreshold) {
+			return true;
+		}
+
+		return false;
+	}
 }
