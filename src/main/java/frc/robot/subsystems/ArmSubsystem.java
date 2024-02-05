@@ -2,12 +2,26 @@ package frc.robot.subsystems;
 
 import java.util.HashMap;
 
+import org.littletonrobotics.junction.Logger;
+
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
+import com.revrobotics.REVPhysicsSim;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkPIDController.AccelStrategy;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.kArmPoses;
+import frc.robot.Constants.Mode;
 import frc.robot.Mechanisms.ArmSegment;
 
 public class ArmSubsystem extends SubsystemBase {
@@ -21,16 +35,24 @@ public class ArmSubsystem extends SubsystemBase {
 
 	/** controls the side of the robot the arm is on */
 	private boolean isFront;
-	private boolean enableArms;
-
-	// create arms
-	private ArmSegment majorArm;
-	private ArmSegment minorArm;
+	private boolean enableArm;
 
 	// endregion
 
-	public ArmSubsystem() {
+	// new
+	private CANSparkMax rightMotor, leftMotor;
+	public SparkPIDController rightPIDController;
+	private PIDController pidController;
+	private RelativeEncoder rightEncoder, leftEncoder;
 
+	private double position;
+	private boolean atSetPoint = false;
+	private double pidOutput;
+	private double targetPosition = 0.0;
+	//
+
+	public ArmSubsystem() {
+		/* 
 		// this will cause the code to fail to run if the hashmap is not full
 		for (kArmPoses pose : kArmPoses.values()) {
 			try {
@@ -74,77 +96,123 @@ public class ArmSubsystem extends SubsystemBase {
 
 		// the default state of the arms
 		isFront = true;
-		enableArms = true;
+		enableArms = true;*/
 
-		setSequencedArmState(kArmPoses.TUCKED);
+		// new
+		rightMotor = new CANSparkMax(frc.robot.Constants.ArmConstants.kRightArmPort, MotorType.kBrushless);
+		leftMotor = new CANSparkMax(frc.robot.Constants.ArmConstants.kLeftArmPort, MotorType.kBrushless);
+
+		if(Constants.getMode() == Mode.SIM) {
+			REVPhysicsSim.getInstance().addSparkMax(rightMotor, 2.6f, 5676);
+			REVPhysicsSim.getInstance().addSparkMax(leftMotor, 2.6f, 5676);
+		}
+
+		rightMotor.restoreFactoryDefaults();
+		leftMotor.restoreFactoryDefaults();
+
+		rightMotor.setIdleMode(IdleMode.kBrake);
+		leftMotor.setIdleMode(IdleMode.kBrake);
+
+		// Have the left follow the right inverted
+		leftMotor.follow(leftMotor, true);
+
+		rightEncoder = rightMotor.getEncoder();
+		leftEncoder = leftMotor.getEncoder();
+
+		rightPIDController = rightMotor.getPIDController();
+
+		rightPIDController.setOutputRange(-Constants.ArmConstants.kArmCurrentLimit, Constants.ArmConstants.kArmCurrentLimit);
+
+		this.rightPIDController.setP(Constants.ArmConstants.kArmGains.kP);
+		this.rightPIDController.setI(Constants.ArmConstants.kArmGains.kI);
+		this.rightPIDController.setD(Constants.ArmConstants.kArmGains.kD);
+
+		// tells the pid controller on the arms to use trapezoidal constraints 
+		rightPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+		rightPIDController.setSmartMotionAllowedClosedLoopError(0, 0);
+
+		pidController = new PIDController(Constants.ArmConstants.kArmGains.kP, Constants.ArmConstants.kArmGains.kI, Constants.ArmConstants.kArmGains.kD);
+		pidController.setTolerance(Constants.ArmConstants.kTolerance, 10);
+
+		// end new
+
+		//setSequencedArmState(kArmPoses.TUCKED);
 	}
 
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
 
-		SmartDashboard.putString("ArmState", targetArmState.toString());
+		//SmartDashboard.putString("ArmState", targetArmState.toString());
 
-		SmartDashboard.putNumber("major target", majorArm.getTargetTheta());
-		SmartDashboard.putNumber("minor target", minorArm.getTargetTheta());
+		//SmartDashboard.putNumber("major target", majorArm.getTargetTheta());
+		//SmartDashboard.putNumber("minor target", minorArm.getTargetTheta());
 
-		SmartDashboard.putNumber("major real theta: ", majorArm.getRealTheta());
-		SmartDashboard.putNumber("minor real theta: ", minorArm.getRealTheta());
+		//SmartDashboard.putNumber("major real theta: ", majorArm.getRealTheta());
+		//SmartDashboard.putNumber("minor real theta: ", minorArm.getRealTheta());
 
-		SmartDashboard.putNumber("major left real theta", majorArm.getLeftRealTheta());
-		SmartDashboard.putNumber("major right real theta", majorArm.getRightRealTheta());
+		//SmartDashboard.putNumber("major left real theta", majorArm.getLeftRealTheta());
+		//SmartDashboard.putNumber("major right real theta", majorArm.getRightRealTheta());
 
-		SmartDashboard.putNumber("major left real theta", majorArm.getLeftRealTheta());
-		SmartDashboard.putNumber("major right real theta", majorArm.getRightRealTheta());
+		//SmartDashboard.putNumber("major left real theta", majorArm.getLeftRealTheta());
+		//SmartDashboard.putNumber("major right real theta", majorArm.getRightRealTheta());
 
-		SmartDashboard.putNumber("major power draw: ", majorArm.getPowerDraw());
-		SmartDashboard.putNumber("minor power draw: ", minorArm.getPowerDraw());
+		//SmartDashboard.putNumber("major power draw: ", majorArm.getPowerDraw());
+		//SmartDashboard.putNumber("minor power draw: ", minorArm.getPowerDraw());
 
-		SmartDashboard.putBoolean("At target: ", getAtTarget(8));
-		SmartDashboard.putBoolean("At target major", majorArm.getAtTarget(5));
-		SmartDashboard.putBoolean("At target minor", minorArm.getAtTarget(5));
+		//SmartDashboard.putBoolean("At target: ", getAtTarget(8));
+		//SmartDashboard.putBoolean("At target major", majorArm.getAtTarget(5));
+		//SmartDashboard.putBoolean("At target minor", minorArm.getAtTarget(5));
 
-		SmartDashboard.putNumber("LeftMajorOutput", majorArm.getLeftMotorOutput());
-		SmartDashboard.putNumber("RightMajorOutput", majorArm.getRightMotorOutput());
+		//SmartDashboard.putNumber("LeftMajorOutput", majorArm.getLeftMotorOutput());
+		//SmartDashboard.putNumber("RightMajorOutput", majorArm.getRightMotorOutput());
 
-		updateSequencing();
+		//position = rightEncoder.getPosition();
+
+		Logger.recordOutput("Arm/position", rightEncoder.getPosition());
+		Logger.recordOutput("Arm/target", targetPosition);
+
+		setReference();
+
+
+		//updateSequencing();
 	}
 
 	// region Commands
 
-	public Command UnsequencedArmPoseCommand(final kArmPoses state) {
+	/*public Command UnsequencedArmPoseCommand(final kArmPoses state) {
 		return runOnce(() -> {
 			setUnsequencedArmState(state);
 		});
-	}
+	}*/
 
-	public Command SequencedArmPoseCommand(final kArmPoses state) {
+	/*public Command SequencedArmPoseCommand(final kArmPoses state) {
 		return runOnce(() -> {
 			setSequencedArmState(state);
 		});
-	}
+	}*/
 
 	/** Toggles the dominant side of the robot */
-	public void ToggleSide() {
+	/*public void ToggleSide() {
 		isFront = !isFront;
 		majorArm.setSign((isFront) ? 1 : -1);
 		minorArm.setSign((isFront) ? 1 : -1);
 		majorArm.setReference();
 		minorArm.setReference();
-	}
+	}*/
 
-	public Command toggleArmMotors() {
+	/*public Command toggleArmMotors() {
 		return runOnce(() -> {
 			enableArms = false;
 			minorArm.toggleMotors();
 			majorArm.toggleMotors();
 		});
-	}
+	}*/
 
 	public Command zeroArms() {
 		return runOnce(() -> {
-			minorArm.resetZeros();
-			majorArm.resetZeros();
+			//minorArm.resetZeros();
+			//majorArm.resetZeros();
 		});
 	}
 
@@ -158,21 +226,21 @@ public class ArmSubsystem extends SubsystemBase {
 	 * @param state can be (LOW_SCORE, MID_SCORE, HIGH_SCORE,
 	 *              LOW_INTAKE, MID_INTAKE, HIGH_INTAKE)
 	 */
-	public void setUnsequencedArmState(kArmPoses state) {
+	/*public void setUnsequencedArmState(kArmPoses state) {
 		setTargetArmState(state);
 		majorArm.setReference();
 		minorArm.setReference();
-	}
+	}*/
 
 	public void setSequencedArmState(kArmPoses state) {
 
 		setTargetArmState(state);
 
-		if (state == kArmPoses.TUCKED) {
+		/*if (state == kArmPoses.TUCKED) {
 			minorArm.setReference();
 		} else {
 			majorArm.setReference();
-		}
+		}*/
 	}
 
 	/**
@@ -180,19 +248,78 @@ public class ArmSubsystem extends SubsystemBase {
 	 */
 	public void setTargetArmState(kArmPoses state) {
 		targetArmState = state;
-		enableArms = true;
+		enableArm = true;
 
 		// get minor speed from map
 		// gets the angle values from the hashmap
-		majorArm.setTargetTheta(armStates.get(targetArmState)[0]);
-		minorArm.setTargetTheta(armStates.get(targetArmState)[1]);
+		//majorArm.setTargetTheta(armStates.get(targetArmState)[0]);
+		//minorArm.setTargetTheta(armStates.get(targetArmState)[1]);
+		//this.moveToPosition(armStates.get(targetArmState)[0]);
+		targetPosition = armStates.get(targetArmState)[0];
+		atSetPoint = false;
 	}
 
 	public void updateSequencing() {
-		if ((majorArm.getAtTarget(30) || minorArm.getAtTarget(30)) && enableArms) {
+		/*if ((majorArm.getAtTarget(30) || minorArm.getAtTarget(30)) && enableArms) {
 			majorArm.setReference();
 			minorArm.setReference();
+		}*/
+	}
+
+	public void moveToPosition(double position) {
+		System.out.println("ArmSubSystem::moveToPosition() - position: " + position);
+	}
+
+	public void setReference() {
+		if(atSetPoint == false) {
+			if(Constants.getMode() == Mode.REAL) {
+				//System.out.println("it is being called, targetPosition: " + targetPosition);
+				REVLibError error = rightPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
+
+				if(error != REVLibError.kOk) {
+					System.out.println("ClimberSubsystem::setReference() - Error - could not set the PID controller");
+				}
+
+				// Are we close to the target position?
+				if(Math.abs(rightEncoder.getPosition() - targetPosition) <= Constants.ClimberConstants.kTolerance) {
+					// Yes we are
+					atSetPoint = true;
+					System.out.println("setting atSetPint to true");
+				}
+			} else if(Constants.getMode() == Mode.SIM) {
+				// We are not at the set point and are in SIM
+
+				pidOutput = pidController.calculate(rightEncoder.getPosition(), targetPosition);
+
+				if(pidOutput > 12) {
+					pidOutput = 12;
+				} else if(pidOutput < -12) {
+					pidOutput = -12;
+				}
+
+				if(pidController.atSetpoint()) {
+					System.out.println("we are at the setpoint, position: " + rightEncoder.getPosition());
+					atSetPoint = true;
+					if(Constants.getMode() == Mode.SIM) {
+						rightMotor.setVoltage(0.0);
+					} 
+				} else {
+					// we have not reached the set point yet
+					rightMotor.setVoltage(pidOutput);
+					System.out.println("adjusting position: " + rightEncoder.getPosition());
+				}
+			}
+		} else {
+			//System.out.println("we are at the setpoint, position: " + rightEncoder.getPosition());
+
+			if(Constants.getMode() == Mode.SIM) {
+				rightMotor.setVoltage(0.0);
+			}
 		}
+	}
+
+	public double getPosition() {
+		return position;
 	}
 
 	// endregion
@@ -214,17 +341,25 @@ public class ArmSubsystem extends SubsystemBase {
 		return isFront;
 	}
 
-	public boolean getAtTarget(double deadBand) {
+	public boolean isAtSetPoint() {
+		return atSetPoint;
+	}
 
-		if (majorArm.getAtTarget(deadBand) && minorArm.getAtTarget(deadBand)) {
+	/*public boolean getAtTarget(double deadBand) {
+
+		if(getPosition() == armStates.get(targetArmState)[0]) {
+			//System.out.println("they match");
 			return true;
-		}
-		return false;
-	}
+		} 
 
-	public double[] getTargetTheta() {
-		return new double[] { majorArm.getTargetTheta(), minorArm.getTargetTheta() };
-	}
+		//System.out.println("they do not match position: " + getPosition() + " target: " + armStates.get(targetArmState)[0]);
+		
+		return false;
+	}*/
+
+	/*public double[] getTargetTheta() {
+		return new double[] { majorArm.getTargetTheta() };
+	}*/
 
 	// endregion
 

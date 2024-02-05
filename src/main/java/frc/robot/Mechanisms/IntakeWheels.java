@@ -18,7 +18,7 @@ public class IntakeWheels {
 	private CANSparkMax _intakeSparkMax;
 
 	public IntakeWheels(int port) {
-		_intakeSparkMax = new CANSparkMax(port,MotorType.kBrushless);
+		_intakeSparkMax = new CANSparkMax(port, MotorType.kBrushless);
 
 		if(Constants.getMode() == Mode.SIM) {
 			REVPhysicsSim.getInstance().addSparkMax(_intakeSparkMax, 2.6f, 5676);

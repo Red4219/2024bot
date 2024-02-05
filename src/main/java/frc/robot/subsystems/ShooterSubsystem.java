@@ -85,6 +85,14 @@ public class ShooterSubsystem extends SubsystemBase {
 		return new InstantCommand(() -> setShooterState(kShooterStates.DISABLED));
 	}
 
+    public void setSpeed(double speed) {
+        System.out.println("ShooterSubSystem::setSpeed() - speed: " + speed);
+    }
+
+    public double getSpeed() {
+        return shooter.getSpeed();
+    }
+
     /*public InstantCommand timedShootCommand(long timeToShoot) {
         return new InstantCommand(() -> shootTime(timeToShoot));
     }*/

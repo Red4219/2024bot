@@ -7,6 +7,10 @@ package frc.robot.subsystems;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.littletonrobotics.junction.Logger;
+
+import com.revrobotics.REVPhysicsSim;
+
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,8 +33,9 @@ public class IntakeSubsystem extends SubsystemBase {
 	//private Solenoid centerDumpSolenoid;
 	//private Solenoid centerSealerSolenoid;
 
-	private IntakeWheels intake = new IntakeWheels(Constants.IntakeConstants.kIntakeWheelPort);
+	private IntakeWheels intakeWheels = new IntakeWheels(Constants.IntakeConstants.kIntakeWheelPort);
 	private ColorSensor colorSensor = new ColorSensor();
+	private boolean hasNote = false;
 
 	private kIntakeStates currentIntakeState;
 
@@ -67,6 +72,41 @@ public class IntakeSubsystem extends SubsystemBase {
 		//SmartDashboard.putBoolean("Has CUBE", getHasCube());
 		//SmartDashboard.putBoolean("Has CONE", getHasCone()); 
 		//SmartDashboard.putNumber("distance sensor", distanceSensor.getDistanceAsVolts());
+
+		SmartDashboard.putBoolean("Has Note", colorSensor.noteDetected());
+		Logger.recordOutput("Intake/Note_Detected", colorSensor.noteDetected());
+
+		/*switch (currentIntakeState) {
+
+			case IDLE:
+				System.out.println("IntakeSubsystem::periodic() - IDLE state");
+				break;
+
+			case INTAKE:
+				System.out.println("IntakeSubsystem::periodic() - INTAKE state");
+				break;
+
+			case OUTTAKE:
+				System.out.println("IntakeSubsystem::periodic() - OUTTAKE state");
+				break;
+
+			case DISABLED:
+				System.out.println("IntakeSubsystem::periodic() - DISABLED state");
+				break;
+
+			case BUMP:
+				System.out.println("IntakeSubsystem::periodic() - BUMP state");
+				break;
+		}*/
+
+		if(this.currentIntakeState == kIntakeStates.BUMP) {
+
+		} else {
+			if(colorSensor.noteDetected()) {
+				hasNote = true;
+				setIntakeState(kIntakeStates.IDLE);
+			}
+		}
 	}
 
 	// region commands
@@ -107,19 +147,19 @@ public class IntakeSubsystem extends SubsystemBase {
 	}*/
 
 	public boolean noteDetected() {
-		return false;
+		return colorSensor.noteDetected();
 	}
 
 	public void intakeNote() {
-		intake.Intake();
+		intakeWheels.Intake();
 	}
 
 	public void outtakeNote() {
-		intake.OutTake();
+		intakeWheels.OutTake();
 	}
 
 	public void disableIntake() {
-		intake.disable();
+		intakeWheels.disable();
 	}
 
 	public void setIntakeState(kIntakeStates state) {
@@ -144,6 +184,10 @@ public class IntakeSubsystem extends SubsystemBase {
 				disableIntake();
 				break;
 
+			case BUMP:
+				intakeNote();
+				break;
+
 		}
 	}	
 
@@ -152,8 +196,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	}
 
 	public boolean hasNote() {
-		// finish this
-		return false;
+		return this.hasNote;
 	}
 
 	/*public boolean getHasCone() {

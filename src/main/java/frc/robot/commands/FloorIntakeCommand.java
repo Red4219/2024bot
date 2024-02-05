@@ -4,8 +4,13 @@
 
 package frc.robot.commands;
 
+import java.util.OptionalLong;
+
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants.kArmPoses;
+import frc.robot.Constants.IntakeConstants.kIntakeStates;
+import frc.robot.commands.Autonomous.IntakeCommand;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -16,11 +21,13 @@ public class FloorIntakeCommand extends SequentialCommandGroup {
 		// Add your commands in the addCommands() call, e.g.
 		// addCommands(new FooCommand(), new BarCommand());
 		addCommands(
-				new ArmPoseCommand(kArmPoses.TUCKED),
-				new ArmPoseCommand(kArmPoses.LOW_SCORE));
+				new ArmPoseCommand(kArmPoses.GROUND_INTAKE));
+				//new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()));
+				//new ArmPoseCommand(kArmPoses.LOW_SCORE));
 
 		if (isIntake) {
-			addCommands(new ArmPoseCommand(kArmPoses.LOW_INTAKE));
+			//addCommands(new ArmPoseCommand(kArmPoses.LOW_INTAKE));
+			new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty());
 		}
 	}
 }

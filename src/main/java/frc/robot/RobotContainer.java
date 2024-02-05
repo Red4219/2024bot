@@ -4,50 +4,32 @@
 
 package frc.robot;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalLong;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.Constants.ClimberConstants.kClimberPoses;
 import frc.robot.Constants.IntakeConstants.kIntakeStates;
 import frc.robot.Constants.ShooterConstants.kShooterStates;
-import frc.robot.Tools.AutonomousDetail;
 import frc.robot.Tools.JoystickUtils;
 import frc.robot.Tools.PhotonVision;
 import frc.robot.Tools.Parts.PathBuilder;
-import frc.robot.Constants.Mode;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.commands.AimCommand;
 import frc.robot.commands.ArmPoseCommand;
-import frc.robot.commands.ArmSwitchCommand;
 import frc.robot.commands.ClimberPoseCommand;
 import frc.robot.commands.FloorIntakeCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.TurnCommand;
-import frc.robot.commands.Autonomous.BalanceCommand;
-import frc.robot.commands.Autonomous.ScoreSequence;
 import frc.robot.commands.Autonomous.IntakeCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -73,7 +55,7 @@ public class RobotContainer {
 	public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
 	public PhotonVision _photonVision = driveSubsystem.getPhotonVision();
 	public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-	//public static final ArmSubsystem armSubsystem = new ArmSubsystem();
+	public static final ArmSubsystem armSubsystem = new ArmSubsystem();
 	public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 	public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 	
@@ -118,13 +100,14 @@ public class RobotContainer {
 		NamedCommands.registerCommand("ClimberDown", new ClimberPoseCommand(kClimberPoses.TUCKED));
 		NamedCommands.registerCommand("Aim", new AimCommand(_photonVision));
 		NamedCommands.registerCommand("TimedShootHalfSeconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.of(500)));
-		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(intakeSubsystem, kIntakeStates.INTAKE, OptionalLong.of(2000)));
-		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(intakeSubsystem, kIntakeStates.INTAKE, OptionalLong.of(1000)));
+		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(2000)));
+		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(1000)));
 		
 		
 		try {
-		autoChooser.addOption("5 Auto Left", AutoBuilder.buildAuto("5 Auto Left"));
-		autoChooser.addOption("auto-phil", AutoBuilder.buildAuto("auto-phil"));
+			autoChooser.addOption("5 Auto Left", AutoBuilder.buildAuto("5 Auto Left"));
+			autoChooser.addOption("5 Auto Left 2", AutoBuilder.buildAuto("5 Auto Left 2"));
+			autoChooser.addOption("auto-phil", AutoBuilder.buildAuto("auto-phil"));
 		} catch (Exception e) {
 			System.out.println("RobotContainer()::RobotContainer() - error: " + e.getMessage());
 		}
@@ -163,10 +146,27 @@ public class RobotContainer {
 				.onFalse(shooterSubsystem.idleCommand());*/
 
 		driverController.button(1).onTrue(
-				shooterSubsystem.shootCommand())
-				.onFalse(shooterSubsystem.idleCommand());
+				//shooterSubsystem.shootCommand()
+				//new AimCommand(_photonVision)
+				//intakeSubsystem.intakeCommand()
+				new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty())
+			);
+			//.onFalse(shooterSubsystem.idleCommand());
+			//.onFalse(new IntakeCommand(intakeSubsystem, kIntakeStates.IDLE, OptionalLong.empty()));
 
+		/*driverController.button(2).onTrue(
+			new IntakeCommand(kIntakeStates.BUMP, OptionalLong.of(500))
+		);*/
 
+		driverController.button(2).onTrue(
+			//new FloorIntakeCommand(true)
+			Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.GROUND_INTAKE))
+		);
+
+		driverController.button(3).onTrue(
+			//new FloorIntakeCommand(true)
+			Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE))
+		);
 
 
 		// region Arm Commands
@@ -244,7 +244,8 @@ public class RobotContainer {
 								driveJoystick.getHID().getRawButton(2)), // sneak boolean
 						driveSubsystem)*/
 				new RunCommand(() -> driveSubsystem.drive(
-					JoystickUtils.processJoystickInput(-driverController.getLeftY()),
+					//JoystickUtils.processJoystickInput(-driverController.getLeftY()),
+					(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? JoystickUtils.processJoystickInput(-driverController.getLeftY()) : JoystickUtils.processJoystickInput(driverController.getLeftY()),
 					JoystickUtils.processJoystickInput(-driverController.getLeftX()),
 					//-JoystickUtils.processJoystickInput((driverController.getHID().isConnected()) ? driverController.getRawAxis(2) : driverController.getRightX()),
 					//-JoystickUtils.processJoystickInput(driverController.getRightX()),

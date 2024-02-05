@@ -31,12 +31,12 @@ public class ArmBumpCommand extends InstantCommand {
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		armSubsystem.armStates.replace(kArmPoses.DRIVER_CONTROL,
+		/*armSubsystem.armStates.replace(kArmPoses.DRIVER_CONTROL,
 				new double[] {
 						armSubsystem.getTargetTheta()[0] + majorArmBump,
-						armSubsystem.getTargetTheta()[1] + minorArmBump });
+						armSubsystem.getTargetTheta()[1] + minorArmBump });*/
 
-		armSubsystem.UnsequencedArmPoseCommand(kArmPoses.DRIVER_CONTROL);
+		//armSubsystem.UnsequencedArmPoseCommand(kArmPoses.DRIVER_CONTROL);
 	}
 
 }

@@ -5,18 +5,24 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Tools.PhotonVision;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 public class AimCommand extends Command {
 
     private static DriveSubsystem _driveSubsystem;
+    private static ArmSubsystem _armSubsystem;
+    private static ShooterSubsystem _shooterSubsystem;
     private PhotonVision _photonVision;
     private int _targedNumber = 7;
 
     public AimCommand(PhotonVision photonVision) {
         _driveSubsystem = RobotContainer.driveSubsystem;
+        _armSubsystem = RobotContainer.armSubsystem;
+        _shooterSubsystem = RobotContainer.shooterSubsystem;
         // Use addRequirements() here to declare subsystem dependencies.
-		addRequirements(_driveSubsystem);
+		addRequirements(_driveSubsystem, _armSubsystem, _shooterSubsystem);
 
         _photonVision = photonVision;
     }
@@ -45,6 +51,14 @@ public class AimCommand extends Command {
 
     }
 
+    public double calculateShooterHeight(double distance) {
+        return distance;
+    }
+
+    public double calculateShooterSpeed(double distance) {
+        return distance;
+    }
+
     @Override
     public boolean isFinished() {
 
@@ -54,8 +68,16 @@ public class AimCommand extends Command {
         } 
 
         double targetYaw = _photonVision.aimAtTarget(_targedNumber);
+        double shooterHeight = calculateShooterHeight(_photonVision.targetDistance(_targedNumber));
+        double shooterSpeed = calculateShooterSpeed(_photonVision.targetDistance(_targedNumber));
 
-        System.out.println("isFinished() - targetYaw: " + targetYaw);
+        //System.out.println("isFinished() - targetYaw: " + targetYaw + " targetDistance: " + targetDistance);
+
+        _armSubsystem.moveToPosition(shooterHeight);
+        _shooterSubsystem.setSpeed(shooterSpeed);
+
+        double position = _armSubsystem.getPosition();
+        double speed = _shooterSubsystem.getSpeed();
 
         if(targetYaw == 0.0) {
             return true;
@@ -64,9 +86,11 @@ public class AimCommand extends Command {
         if(Math.abs(targetYaw) > Constants.AutoConstants.kAimTargetTolerance) {
 
             if(targetYaw > 0) {
-                _driveSubsystem.drive(0.0, 0.0, -.1);
-            } else {
+                //_driveSubsystem.drive(0.0, 0.0, -.1);
                 _driveSubsystem.drive(0.0, 0.0, .5);
+            } else {
+                //_driveSubsystem.drive(0.0, 0.0, .5);
+                _driveSubsystem.drive(0.0, 0.0, -.1);
             }
             
             return false;

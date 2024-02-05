@@ -1,5 +1,8 @@
 package frc.robot.Mechanisms;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorSensorV3.ColorSensorMeasurementRate;
+import com.revrobotics.ColorSensorV3.ColorSensorResolution;
+import com.revrobotics.ColorSensorV3.GainFactor;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
@@ -22,6 +25,8 @@ public class ColorSensor {
         m_colorMatcher.addColorMatch(kGreenTarget);
         m_colorMatcher.addColorMatch(kRedTarget);
         m_colorMatcher.addColorMatch(kYellowTarget); 
+
+        m_colorSensor.configureColorSensor(ColorSensorResolution.kColorSensorRes13bit, ColorSensorMeasurementRate.kColorRate500ms, GainFactor.kGain1x);
     }
 
     public Color getColor() {
@@ -31,5 +36,13 @@ public class ColorSensor {
 
     public void printColorValues() {
         System.out.println("Blue: " + m_colorSensor.getBlue() + " Red: " + m_colorSensor.getRed() + " Green: " + m_colorSensor.getGreen());
+    }
+
+    public boolean noteDetected() {
+        if(m_colorSensor.getRed() == 1.0) {
+            return true;
+        }
+
+        return false;
     }
 }

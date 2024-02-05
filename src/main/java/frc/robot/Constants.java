@@ -179,24 +179,28 @@ public final class Constants {
 	 * The constants pertaining to Arm (and sub arms)
 	 */
 	public static class ArmConstants {
+		// new
+		public static final int kRightArmPort = 13;
+		public static final int kLeftArmPort = 14;
+		//
 
 		// NEO turning motor CAN ID's
 		public static final int kRightMajorArmPort = 13;
 		public static final int kLeftMajorArmPort = 14;
-		public static final int kRightMinorArmPort = 15;
-		public static final int kLeftMinorArmPort = 16;
+		//public static final int kRightMinorArmPort = 15;
+		//public static final int kLeftMinorArmPort = 16;
 
 		public static final int kMajorArmGearBoxRatio = 100;
-		public static final int kMinorArmGearBoxRatio = 100;
+		//public static final int kMinorArmGearBoxRatio = 100;
 
 		public static final int kMajorArmBeltRatio = 2 / 1;
-		public static final int kMinorArmBeltRatio = 1;
+		//public static final int kMinorArmBeltRatio = 1;
 
 		/**
 		 * the total number of motor rotations for one 360 degree rotation of the arm
 		 */
 		public static final int kMajorArmTicks = kMajorArmGearBoxRatio * kMajorArmBeltRatio;
-		public static final int kMinorArmTicks = kMinorArmGearBoxRatio * kMinorArmBeltRatio;
+		//public static final int kMinorArmTicks = kMinorArmGearBoxRatio * kMinorArmBeltRatio;
 
 		/**
 		 * The radius of each arms rotation in inches (from center of rotation to next
@@ -206,12 +210,14 @@ public final class Constants {
 		//public static final int kMinorArmLength = 23;
 
 		// current limits of the arms
-		public static final int kMajorArmCurrentLimit = 5;
+		//public static final int kMajorArmCurrentLimit = 5;
 		//public static final int kMinorArmCurrentLimit = 8;
+
+		public static final int kArmCurrentLimit = 5;
 
 		// speed limits for the arms
 		public static final double kMajorPIDOutputLimit = 1;
-		public static final double kMinorPIDOutputLimit = 1;
+		//public static final double kMinorPIDOutputLimit = 1;
 
 		public static final double kMaxMajorVelRadiansPerSec = (Math.PI * 10) * 60;
 		public static final double kMaxMajorAccelRadiansPerSec = (Math.PI * 6.25 * 60);
@@ -224,13 +230,13 @@ public final class Constants {
 		public static final double kMajorArmConstraints = 110;
 		public static final double kMinorArmConstraints = 180;
  
-		// Arm PID constants
-		public static final PIDGains kMajorArmGains = new PIDGains(0.0035, 0.0000025, 0.002);
+		// Arm PID constants	
+		public static final PIDGains kArmGains = new PIDGains(0.035, 0.0000025, 0.002);
 
-		public static final PIDGains kMinorArmGains = new PIDGains(0.002, 0.0000008, 0.001);
+		public static final double kTolerance = 0.1;
 
 		public static enum kArmPoses {
-			TUCKED,
+			/*TUCKED,
 			LOW_SCORE,
 			MID_SCORE,
 			HIGH_SCORE,
@@ -239,21 +245,21 @@ public final class Constants {
 			HIGH_INTAKE,
 			DRIVER_CONTROL,
 			KICK_FRONT,
-			KICK_BACK,
+			KICK_BACK,*/
+			GROUND_INTAKE,
+			HUMAN_ELEMENT_INTAKE,
+			AMP_SCORE,
+			SPEAKER_SCORE,
+			TRAP_DOOR_SCORE
 		}
 
 		public static final HashMap<kArmPoses, double[]> kArmStatesMap = new HashMap<kArmPoses, double[]>() {
 			{
-				put(kArmPoses.TUCKED, new double[] { 0, 0 });
-				put(kArmPoses.LOW_SCORE, new double[] { 0, 80 });
-				put(kArmPoses.MID_SCORE, new double[] { 20, 36 });
-				put(kArmPoses.HIGH_SCORE, new double[] { 100, 55 });
-				put(kArmPoses.LOW_INTAKE, new double[] { -10, 98 });
-				put(kArmPoses.MID_INTAKE, new double[] { 13, 33 });
-				put(kArmPoses.HIGH_INTAKE, new double[] { 105, 87 });
-				put(kArmPoses.DRIVER_CONTROL, new double[] { 0, 0 });
-				put(kArmPoses.KICK_FRONT, new double[] { 35, 0 });
-				put(kArmPoses.KICK_BACK, new double[] { -35, 0 });
+				put(kArmPoses.GROUND_INTAKE, new double[] { 5 });
+				put(kArmPoses.HUMAN_ELEMENT_INTAKE, new double[] { 3 });
+				put(kArmPoses.AMP_SCORE, new double[] { 20 });
+				put(kArmPoses.SPEAKER_SCORE, new double[] { 100 });
+				put(kArmPoses.TRAP_DOOR_SCORE, new double[] { -10 });
 			}
 		};
 
@@ -318,12 +324,13 @@ public final class Constants {
 			IDLE,
 			INTAKE,
 			OUTTAKE,
-			DISABLED
+			DISABLED,
+			BUMP
 		}
 
 		public static final HashMap<kArmPoses, kIntakeStates> kArmStateToIntakeStateMap = new HashMap<kArmPoses, kIntakeStates>() {
 			{
-				put(kArmPoses.TUCKED, kIntakeStates.INTAKE);
+				/*put(kArmPoses.TUCKED, kIntakeStates.INTAKE);
 				put(kArmPoses.LOW_SCORE, kIntakeStates.IDLE);
 				put(kArmPoses.MID_SCORE, kIntakeStates.IDLE);
 				put(kArmPoses.HIGH_SCORE, kIntakeStates.IDLE);
@@ -332,7 +339,13 @@ public final class Constants {
 				put(kArmPoses.HIGH_INTAKE, kIntakeStates.INTAKE);
 				put(kArmPoses.DRIVER_CONTROL, kIntakeStates.INTAKE);
 				put(kArmPoses.KICK_FRONT, kIntakeStates.IDLE);
-				put(kArmPoses.KICK_BACK, kIntakeStates.IDLE);
+				put(kArmPoses.KICK_BACK, kIntakeStates.IDLE);*/
+
+				put(kArmPoses.GROUND_INTAKE, kIntakeStates.INTAKE);
+				put(kArmPoses.HUMAN_ELEMENT_INTAKE, kIntakeStates.INTAKE);
+				put(kArmPoses.AMP_SCORE, kIntakeStates.IDLE);
+				put(kArmPoses.SPEAKER_SCORE, kIntakeStates.IDLE);
+				put(kArmPoses.TRAP_DOOR_SCORE, kIntakeStates.IDLE);
 			}
 		};
 
@@ -343,6 +356,9 @@ public final class Constants {
 		public static final boolean VisionEnabled = true;
 		public static final boolean PhysicalCamera = false;
 
+		public static double TagHeight = Units.inchesToMeters(6.5);
+		public static double TagWidth = Units.inchesToMeters(6.5);
+
 		//public static final PoseStrategy poseStrategy = PoseStrategy.AVERAGE_BEST_TARGETS;
 		public static final PoseStrategy poseStrategy = PoseStrategy.CLOSEST_TO_REFERENCE_POSE;
 
@@ -350,7 +366,7 @@ public final class Constants {
 		public static double camPitch = 0.0;
 		public static double camHeightOffGround = Units.inchesToMeters(6.0);
 		// the side to side position of the camera relative to the robot center
-		public static double camX = Units.inchesToMeters(-12.0);
+		public static double camX = Units.inchesToMeters(-15.0);
 		// the front to back position of the camera relative to the robot center
 		public static double camY = Units.inchesToMeters(0.0);
 

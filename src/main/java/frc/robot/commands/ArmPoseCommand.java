@@ -5,9 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-
-import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -19,7 +18,7 @@ public class ArmPoseCommand extends Command {
 
 	/** Creates a new ArmPoseCommand. */
 	public ArmPoseCommand(kArmPoses armPose) {
-		//armSubsystem = RobotContainer.armSubsystem;
+		armSubsystem = RobotContainer.armSubsystem;
 		//intakeSubsystem = RobotContainer.intakeSubsystem;
 		this.armPose = armPose;
 		// Use addRequirements() here to declare subsystem dependencies.
@@ -29,8 +28,11 @@ public class ArmPoseCommand extends Command {
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
+		//armSubsystem.setSequencedArmState(armPose);
+		//intakeSubsystem.updateIntakeFromArmPose(armPose);
+		System.out.println("ArmPoseCommand::initialize() - called");
+
 		armSubsystem.setSequencedArmState(armPose);
-		intakeSubsystem.updateIntakeFromArmPose(armPose);
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
@@ -46,7 +48,8 @@ public class ArmPoseCommand extends Command {
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return armSubsystem.getAtTarget(8);
+		//return armSubsystem.getAtTarget(8);
+		return armSubsystem.isAtSetPoint();
 	}
 
 }

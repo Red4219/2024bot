@@ -27,15 +27,10 @@ public class IntakeCommand extends Command {
 	//private double timeMilis;
 	//private boolean suck;
 
-	public IntakeCommand(IntakeSubsystem intakeSubsystem, kIntakeStates state, OptionalLong intakeTime) {
+	public IntakeCommand(kIntakeStates state, OptionalLong intakeTime) {
 
-		//intakeSubsystem = RobotContainer.intakeSubsystem;
-
-		//timer = new Timer();
-		//this.timeMilis = timeMilis;
-		//this.suck = suck;
-
-		this.intakeSubsystem = intakeSubsystem;
+		//this.intakeSubsystem = intakeSubsystem;
+		intakeSubsystem = RobotContainer.intakeSubsystem;
 		this.intakeTime = intakeTime;
 		this.intakeState = state;
 
@@ -53,7 +48,8 @@ public class IntakeCommand extends Command {
             TimerTask task = new TimerTask() {
                 public void run() {
                     System.out.println("stopping the intake");
-                     finished = true;
+					intakeSubsystem.setIntakeState(kIntakeStates.IDLE);
+                    finished = true;
                 }
             };
             Timer timer = new Timer("Timer");
@@ -64,35 +60,23 @@ public class IntakeCommand extends Command {
         } else {
             finished = true;
         }
-
-
-		//timer.restart();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		/*if (suck) {
-			intakeSubsystem.setIntakeState(kIntakeStates.INTAKE);
-		} else {
-			intakeSubsystem.setIntakeState(kIntakeStates.OUTTAKE);
-		}*/
-
-		if(intakeSubsystem.noteDetected()) {
-			finished = true;
-		}
+		
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
-		//intakeSubsystem.startSucking();
+		System.out.println("IntakeCommand::end() called");
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		//return (Units.secondsToMilliseconds(timer.get()) >= timeMilis);
 		return finished;
 	}
 }

@@ -13,6 +13,7 @@ import org.photonvision.PhotonPoseEstimator;
 //import org.photonvision.SimVisionTarget;
 import org.photonvision.simulation.*;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -109,25 +110,33 @@ public class PhotonVision {
 		try {
 			
 			// Change this for testing
-			if(Constants.getMode() == Mode.SIM && !PhotonVisionConstants.PhysicalCamera) {
+			//if(Constants.getMode() == Mode.SIM && !PhotonVisionConstants.PhysicalCamera) {
+			if(Constants.getMode() == Mode.SIM) {
 				// Update PhotonVision based on our new robot position.
 				//_simVisionSystem.processFrame(prevEstimatedRobotPose);
 				_visionSystemSim.update(prevEstimatedRobotPose);
 			}
 
+			if(prevEstimatedRobotPose == null) {
+				System.out.println("PhonVision::getPose() - prevEstimatedRobotPose is null");
+			}
+
 			Optional<EstimatedRobotPose> o = getPhotonPose(prevEstimatedRobotPose);
 
 			if(o.isPresent()) {
+
+				//System.out.println("PhonVision::getPose() - it is present");
+
 				EstimatedRobotPose estimatedRobotPose = o.get();
 
 				List<Pose3d> allTagPoses = new ArrayList<>();
 
 				for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
-					//if (target.getFiducialId() != -1) {
-						allTagPoses.add(
-							_aprilTagFieldLayout.getTagPose(target.getFiducialId()).get()
-						);
-					//}
+					allTagPoses.add(
+						_aprilTagFieldLayout.getTagPose(target.getFiducialId()).get()
+					);
+
+					//System.out.println("Distance to " + target.getFiducialId() + " is: " + targetDistance(target.getFiducialId()));;
 				}
 
 				Logger.recordOutput(
@@ -138,6 +147,7 @@ public class PhotonVision {
 				return new PhotonVisionResult(true, estimatedRobotPose.estimatedPose, estimatedRobotPose.timestampSeconds);
 				
 			} else {
+				//System.out.println("PhonVision::getPose() - I don't see any tags");
 				// Since we do not have any tags that we can see, blank out the list
 				List<Pose3d> allTagPoses = new ArrayList<>();
 				Logger.recordOutput(
@@ -231,6 +241,27 @@ public class PhotonVision {
 		return false;
 	}
 
+	public double targetDistance(int targetNumber) {
+		PhotonPipelineResult result = _camera.getLatestResult();
+		List<PhotonTrackedTarget> targets = result.getTargets();
+
+		for(PhotonTrackedTarget target: targets) {
+			if(target.getFiducialId() == targetNumber) {
+				
+				double range =
+                        PhotonUtils.calculateDistanceToTargetMeters(
+                                Constants.PhotonVisionConstants.camHeightOffGround,
+                                Constants.PhotonVisionConstants.TagHeight,
+                                Constants.PhotonVisionConstants.camPitch,
+                                Units.degreesToRadians(result.getBestTarget().getPitch()));
+
+				return range;
+			}
+		}
+
+		return 0.0;
+	}
+
 	public double aimAtTarget(int targetNumber) {
 
 		PhotonPipelineResult result = _camera.getLatestResult();
@@ -276,17 +307,17 @@ public class PhotonVision {
 			// Check if we are in simulation and the previousEstimatedRobotPose is not null
 			// and we are not connected to the camera
 			// Change this for testing
-			if(
+			/*if(
 				Constants.getMode() == Mode.SIM 
-				&& prevEstimatedRobotPose != null
-				&& !PhotonVisionConstants.PhysicalCamera) {
+				&& prevEstimatedRobotPose != null) {
+				//&& !PhotonVisionConstants.PhysicalCamera) {
 				// Update PhotonVision based on our new robot position.
-				//_simVisionSystem.processFrame(prevEstimatedRobotPose);
 				_visionSystemSim.update(prevEstimatedRobotPose);
-			}
+			}*/
 
 			if(prevEstimatedRobotPose != null) {
 				_photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+				//System.out.println("PhotonVision::getPhotonPose() - x: " + prevEstimatedRobotPose.getX() + " y: " + prevEstimatedRobotPose.getY() + " rotation: " + prevEstimatedRobotPose.getRotation().getDegrees());
 			} else {
 				System.out.println("PhotonVision::getPhotonPose() - prevEstimatedRobotPose is null");
 			}

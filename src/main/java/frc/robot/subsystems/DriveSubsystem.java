@@ -221,7 +221,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 		odometry = new SwerveDriveOdometry(
 				DriveConstants.kDriveKinematics,
-				gyro.getRotation2d().times(-1.0),
+				gyro.getRotation2d(),
 				swervePosition);
 
 		field = new Field2d();
@@ -245,7 +245,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 		poseEstimator = new SwerveDrivePoseEstimator(
 				DriveConstants.kDriveKinematics,
-				gyro.getRotation2d().times(-1.0),
+				gyro.getRotation2d(),
 				swervePosition,
 				new Pose2d(),
 				stateStdDevs,
@@ -375,18 +375,18 @@ public class DriveSubsystem extends SubsystemBase {
 	// region getters
 	public double getHeading() {
 		if(Constants.getMode() == Mode.SIM) {
-			return gyro.getRotation2d().times(-1.0).getDegrees();
+			return gyro.getRotation2d().getDegrees();
 		}
 
-		return gyro.getRotation2d().times(-1.0).getDegrees();
+		return gyro.getRotation2d().getDegrees();
 	}
 
 	public double getHeading360() {
 		if(Constants.getMode() == Mode.SIM) {
-			return (gyro.getRotation2d().times(-1.0).getDegrees() % 360);
+			return (gyro.getRotation2d().getDegrees() % 360);
 		}
 		
-		return (gyro.getRotation2d().times(-1.0).getDegrees() % 360);
+		return (gyro.getRotation2d().getDegrees() % 360);
 	}
 
 	public double getRoll() {
@@ -486,16 +486,19 @@ public class DriveSubsystem extends SubsystemBase {
 		this.ySpeed = ySpeed;
 		this.rot = rot;
 
-		SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
+		/*SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
 				fieldRelative
-						? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d().times(-1.0))
-						: new ChassisSpeeds(xSpeed, ySpeed, rot));
+						? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
+						: new ChassisSpeeds(xSpeed, ySpeed, rot));*/
+
+		SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
+				ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()));
 		
 		setModuleStates(swerveModuleStates);
 	}
 
 	public ChassisSpeeds getChassisSpeedsRobotRelative() {
-		return ChassisSpeeds.fromRobotRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d().times(-1.0));
+		return ChassisSpeeds.fromRobotRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d());
 	}
 
 	public void setChassisSpeedsRobotRelative(ChassisSpeeds chassisSpeeds ){
@@ -505,7 +508,7 @@ public class DriveSubsystem extends SubsystemBase {
 		if(Constants.getMode() == Mode.SIM) {
 			int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
 			SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
-			angle.set(angle.get() + chassisSpeeds.omegaRadiansPerSecond);
+			angle.set(angle.get() + -chassisSpeeds.omegaRadiansPerSecond);
 		}
 
 		frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -558,43 +561,29 @@ public class DriveSubsystem extends SubsystemBase {
 
 		// For some reason, the code below is preventing rotation in SIM
 		if(Constants.getMode() == Mode.SIM) {
-			/*odometry.update(
-				odometry.getPoseMeters().getRotation(),
-				swervePosition
-			);*/
+
 			odometry.update(
 				Rotation2d.fromDegrees(getHeading()),
 				swervePosition);
 
-			/*poseEstimator.update(
-				poseEstimator.getEstimatedPosition().getRotation(),
-				swervePosition
-			);*/
-
 			poseEstimator.update(
 				Rotation2d.fromDegrees(getHeading()),
 				swervePosition
 			);
+
 		} else {
 			odometry.update(
-				gyro.getRotation2d().times(-1.0), 
+				gyro.getRotation2d(), 
 				swervePosition
 			);
 
 			poseEstimator.update(
-				gyro.getRotation2d().times(-1.0), 
+				gyro.getRotation2d(), 
 				swervePosition
 			);
 		}
 
-		/*if (LimelightHelpers.getTV("")) {
-			Pose2d llPose2d = LimelightHelpers.getBotPose2d_wpiRed("");
-			poseEstimator.addVisionMeasurement(
-				llPose2d, 
-				Timer.getFPGATimestamp() - LimelightHelpers.getLatency_Capture("") - LimelightHelpers.getLatency_Pipeline(""));
-		}*/
-
-		_photonVision.setReferencePose(poseEstimator.getEstimatedPosition());
+		//_photonVision.setReferencePose(poseEstimator.getEstimatedPosition());
 
 		photonVisionResult = _photonVision.getPose(poseEstimator.getEstimatedPosition());
 		
@@ -619,7 +608,7 @@ public class DriveSubsystem extends SubsystemBase {
 				if(photonVisionResult.targetFound()) {
 					//System.out.println("updating the pose from photonvision");
 					poseEstimator.resetPosition(
-						(Constants.getMode() == Mode.SIM) ? photonPose2d.getRotation() : gyro.getRotation2d().times(-1.0),
+						(Constants.getMode() == Mode.SIM) ? photonPose2d.getRotation() : gyro.getRotation2d(),
 						swervePosition,
 						photonPose2d
 					);
