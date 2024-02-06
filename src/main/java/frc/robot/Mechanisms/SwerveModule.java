@@ -28,6 +28,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.ModuleConstants;
@@ -133,8 +135,12 @@ public class SwerveModule {
 
 		m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
-		SmartDashboard.putNumber(this.moduleName + " Offset", angleZero);
-		SmartDashboard.putString(this.moduleName + " Abs. Status", absoluteEncoder.getLastError().toString());
+		//SmartDashboard.putNumber(this.moduleName + " Offset", angleZero);
+		//SmartDashboard.putString(this.moduleName + " Abs. Status", absoluteEncoder.getLastError().toString());
+
+		ShuffleboardTab swerveTab = Shuffleboard.getTab("Swerve");
+		swerveTab.addDouble(moduleName + " Offset", this::getAngleZero);
+		swerveTab.addString(moduleName + " Abs. Status", this::getStatus);
 	}
 
 	// Returns headings of the module
@@ -198,9 +204,9 @@ public class SwerveModule {
 				ControlType.kVelocity);
 		}
 
-		SmartDashboard.putNumber(this.moduleName + " Optimized Angle", optimizedState.angle.getDegrees());
-		SmartDashboard.putNumber(this.moduleName + " PID", angularPIDOutput);
-		SmartDashboard.putNumber(this.moduleName + " Turn Output", turnOutput);
+		//SmartDashboard.putNumber(this.moduleName + " Optimized Angle", optimizedState.angle.getDegrees());
+		//SmartDashboard.putNumber(this.moduleName + " PID", angularPIDOutput);
+		//SmartDashboard.putNumber(this.moduleName + " Turn Output", turnOutput);
 
 		/*Logger.getInstance().recordOutput("Motors/DriveMotorCurrentOutput_" + moduleName, driveMotor.getOutputCurrent());
 		Logger.getInstance().recordOutput("Motors/DriveMotorTemp_" + moduleName, driveMotor.getMotorTemperature());
@@ -231,4 +237,11 @@ public class SwerveModule {
 		turningMotor.stopMotor();
 	}
 
+	double getAngleZero() {
+		return this.angleZero;
+	}
+
+	String getStatus() {
+		return absoluteEncoder.getLastError().toString();
+	}
 }

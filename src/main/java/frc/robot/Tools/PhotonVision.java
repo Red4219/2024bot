@@ -9,8 +9,6 @@ import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-//import org.photonvision.SimVisionSystem;
-//import org.photonvision.SimVisionTarget;
 import org.photonvision.simulation.*;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
@@ -104,6 +102,7 @@ public class PhotonVision {
 		}
 
 		photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
+		photonVisionTab.addBoolean("Connection", this::isConnected);
 	}
 
 	public boolean isConnected() {

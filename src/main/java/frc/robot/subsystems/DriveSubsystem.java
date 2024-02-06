@@ -216,9 +216,6 @@ public class DriveSubsystem extends SubsystemBase {
 				rearRight.getPosition()
 		};
 
-		//gyro = new WPI_Pigeon2(DriveConstants.kPigeonPort, Constants.kCanivoreCANBusName);
-		//gyro.setYaw(0);
-
 		odometry = new SwerveDriveOdometry(
 				DriveConstants.kDriveKinematics,
 				gyro.getRotation2d(),
@@ -237,12 +234,6 @@ public class DriveSubsystem extends SubsystemBase {
 		gyroTurnPidController.enableContinuousInput(-180, 180);
 		gyroTurnPidController.setTolerance(DriveConstants.kGyroTurnTolerance);
 
-		/*poseEstimator = new SwerveDrivePoseEstimator(
-				DriveConstants.kDriveKinematics,
-				gyro.getRotation2d(),
-				swervePosition,
-				new Pose2d());*/
-
 		poseEstimator = new SwerveDrivePoseEstimator(
 				DriveConstants.kDriveKinematics,
 				gyro.getRotation2d(),
@@ -252,28 +243,32 @@ public class DriveSubsystem extends SubsystemBase {
 				visionMeasurementStdDevs
 			);
 		
-
 		targetRotationDegrees = 0;
 
+		// auto tab stuff
 		ShuffleboardTab autoTab = Shuffleboard.getTab("Autonomous");
-
 		autoTab.addDouble("AutoX Position", this::getAutoX_Position);
 		autoTab.addDouble("AutoY Position", this::getAutoY_Position);
-
 		autoTab.addBoolean("AutoX Status", this::getAutoPositionStatusX);
 		autoTab.addBoolean("AutoY Status", this::getAutoPositionStatusY);
-
-		if(DriverStation.getAlliance().isPresent()) {
-			if (DriverStation.getAlliance().get() == Alliance.Blue) {
-				alliance = "Blue";
-			} else {
-				alliance = "Red";
-			}
-		} else {
-			alliance = "Blue";
-		}
-
 		autoTab.addString("Alliance", this::getAlliance);
+
+		// gyro tab stuff
+		ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyro");
+		gyroTab.addDouble("Yaw", gyro::getYaw);
+		gyroTab.addDouble("Pitch", gyro::getPitch);
+		gyroTab.addDouble("Roll", gyro::getRoll);
+
+		// Swerve tab stuff
+		ShuffleboardTab swerveTab = Shuffleboard.getTab("Swerve");
+		swerveTab.addDouble("FL Absolute", frontLeft::getAbsoluteHeading);
+		swerveTab.addDouble("FR Absolute", frontRight::getAbsoluteHeading);
+		swerveTab.addDouble("RL Absolute", rearLeft::getAbsoluteHeading);
+		swerveTab.addDouble("RR Absolute", rearRight::getAbsoluteHeading);
+		swerveTab.addDouble("FL Meters", frontLeft::getDistanceMeters);
+		swerveTab.addDouble("FR Meters", frontRight::getDistanceMeters);
+		swerveTab.addDouble("RL Meters", rearLeft::getDistanceMeters);
+		swerveTab.addDouble("RR Meters", rearRight::getDistanceMeters);
 	}
 
 	public PhotonVision getPhotonVision() {
@@ -286,17 +281,17 @@ public class DriveSubsystem extends SubsystemBase {
 		
 		updateOdometry();
 
-		if (DriverStation.isDisabled()) {
+		/*if (DriverStation.isDisabled()) {
 			// frontLeft.resetEncoders();
 			// frontRight.resetEncoders();
 			// rearLeft.resetEncoders();
 			// rearRight.resetEncoders();
-		}
+		}*/
 
-		SmartDashboard.putNumber("FL Absolute", frontLeft.getAbsoluteHeading());
+		/*SmartDashboard.putNumber("FL Absolute", frontLeft.getAbsoluteHeading());
 		SmartDashboard.putNumber("FR Absolute", frontRight.getAbsoluteHeading());
 		SmartDashboard.putNumber("RL Absolute", rearLeft.getAbsoluteHeading());
-		SmartDashboard.putNumber("RR Absolute", rearRight.getAbsoluteHeading());
+		SmartDashboard.putNumber("RR Absolute", rearRight.getAbsoluteHeading());*/
 
 		//System.out.println(rearLeft.getAbsoluteHeading());
 		//System.out.println(frontRight.getAbsoluteHeading());
@@ -306,22 +301,18 @@ public class DriveSubsystem extends SubsystemBase {
 		SmartDashboard.putNumber("RL Offset Check", rearLeft.getAbsoluteHeading() + rearLeft.angleZero);
 		SmartDashboard.putNumber("RR Offset Check", rearRight.getAbsoluteHeading() + rearRight.angleZero);
 
-		SmartDashboard.putNumber("Gyro yaw", gyro.getYaw());
-		SmartDashboard.putNumber("Gyro pitch", gyro.getPitch());
-		SmartDashboard.putNumber("Gyro roll", gyro.getRoll());
-
-		SmartDashboard.putNumber("FL Meters", frontLeft.getDistanceMeters());
+		/*SmartDashboard.putNumber("FL Meters", frontLeft.getDistanceMeters());
 		SmartDashboard.putNumber("FR Meters", frontRight.getDistanceMeters());
 		SmartDashboard.putNumber("RL Meters", rearLeft.getDistanceMeters());
-		SmartDashboard.putNumber("RR Meters", rearRight.getDistanceMeters());
+		SmartDashboard.putNumber("RR Meters", rearRight.getDistanceMeters());*/
 
 		SmartDashboard.putData("field", field);
-		SmartDashboard.putNumber("2D Gyro", odometry.getPoseMeters().getRotation().getDegrees());
+		//SmartDashboard.putNumber("2D Gyro", odometry.getPoseMeters().getRotation().getDegrees());
 		SmartDashboard.putNumber("2D X", getPose().getX());
 		SmartDashboard.putNumber("2D Y", getPose().getY());
-		SmartDashboard.putBoolean("PV Status", _photonVision.isConnected());
+		//SmartDashboard.putBoolean("PV Status", _photonVision.isConnected());
 
-		if (_robotStatus == Constants.RobotStatus.DisabledPeriodic && _autoDetailSelected != null) {
+		/*if (_robotStatus == Constants.RobotStatus.DisabledPeriodic && _autoDetailSelected != null) {
 			if (DriverStation.getAlliance().get() == Alliance.Blue) {
 				// if(poseEstimator.getEstimatedPosition().getX() < )
 				alliance = "Blue";
@@ -362,7 +353,7 @@ public class DriveSubsystem extends SubsystemBase {
 					}
 				}
 			}
-		}
+		}*/
 	}
 
 	public void setAutoCommandSelected(Command autoCommand) {
@@ -692,15 +683,6 @@ public class DriveSubsystem extends SubsystemBase {
 			odometry.getPoseMeters().getY(),
 			odometry.getPoseMeters().getRotation()
 		);
-
-		if(DriverStation.getAlliance().isPresent()) {
-
-			if (DriverStation.getAlliance().get() == Alliance.Blue) {
-				alliance = "Blue";
-			} else {
-				alliance = "Red";
-			}
-		}	 
 		
 		var crossScale = new Pose2d(
 			//Units.feetToMeters(9.0),
@@ -774,6 +756,15 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 
 	public String getAlliance() {
+		String alliance = "";
+		if(DriverStation.getAlliance().isPresent()) {
+			if (DriverStation.getAlliance().get() == Alliance.Blue) {
+				alliance = "Blue";
+			} else {
+				alliance = "Red";
+			}
+		}
+
 		return alliance;
 	}
 
