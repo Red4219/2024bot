@@ -397,9 +397,9 @@ public class DriveSubsystem extends SubsystemBase {
 		return gyro.getPitch();
 	}
 
-	public double getTurnRate() {
+	/*public double getTurnRate() {
 		return gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
-	}
+	}*/
 
 	public Pose2d getPose() {
 		return odometry.getPoseMeters();

@@ -22,7 +22,6 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakeConstants.kIntakeStates;
 import frc.robot.Mechanisms.ColorSensor;
 import frc.robot.Mechanisms.IntakeWheels;
-import frc.robot.Mechanisms.Vaccum;
 import frc.robot.Tools.Parts.IRDistanceSensor;
 
 public class IntakeSubsystem extends SubsystemBase {

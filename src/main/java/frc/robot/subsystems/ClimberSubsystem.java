@@ -128,11 +128,11 @@ public class ClimberSubsystem extends SubsystemBase {
 		//rightMotor.setSmartCurrentLimit(frc.robot.Constants.ClimberConstants.kClimberCurrentLimit);
 		rightMotor.setSecondaryCurrentLimit(Constants.ArmConstants.kArmCurrentLimit + 3);
 
-		rightPIDController.setSmartMotionMaxVelocity(Constants.ArmConstants.kMaxMajorVelRadiansPerSec, 0);
+		rightPIDController.setSmartMotionMaxVelocity(Constants.ArmConstants.kMaxVelRadiansPerSec, 0);
 		rightPIDController.setSmartMotionMinOutputVelocity(0, 0);
 		//rightPIDController.setSmartMotionMaxAccel(Constants.ArmConstants. maxAccel, 0);
 
-		rightPIDController.setOutputRange(-Constants.ArmConstants.kMajorPIDOutputLimit, Constants.ArmConstants.kMajorPIDOutputLimit);
+		rightPIDController.setOutputRange(-Constants.ArmConstants.kPIDOutputLimit, Constants.ArmConstants.kPIDOutputLimit);
 
 		//////
 

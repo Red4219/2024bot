@@ -102,8 +102,8 @@ public final class Constants {
 
 		public static final double kBumperToBumperWidth = Units.inchesToMeters(31);
 
-		public static final double kTrackWidth = Units.inchesToMeters(24); // in meters!
-		public static final double kWheelBase = Units.inchesToMeters(24); // in meters!
+		public static final double kTrackWidth = Units.inchesToMeters(32); // in meters!
+		public static final double kWheelBase = Units.inchesToMeters(28); // in meters!
 
 		public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
 				new Translation2d(kWheelBase / 2, kTrackWidth / 2), // FL
@@ -111,7 +111,7 @@ public final class Constants {
 				new Translation2d(-kWheelBase / 2, kTrackWidth / 2), // RL
 				new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)); // RR
 
-		public static final boolean kGyroReversed = true;
+		//public static final boolean kGyroReversed = false;
 		//public static final boolean kFieldCentric = true;
 		//public static final boolean kGyroTuring = false;
 
@@ -182,53 +182,30 @@ public final class Constants {
 		// new
 		public static final int kRightArmPort = 13;
 		public static final int kLeftArmPort = 14;
-		//
-
-		// NEO turning motor CAN ID's
-		public static final int kRightMajorArmPort = 13;
-		public static final int kLeftMajorArmPort = 14;
-		//public static final int kRightMinorArmPort = 15;
-		//public static final int kLeftMinorArmPort = 16;
-
-		public static final int kMajorArmGearBoxRatio = 100;
-		//public static final int kMinorArmGearBoxRatio = 100;
-
-		public static final int kMajorArmBeltRatio = 2 / 1;
-		//public static final int kMinorArmBeltRatio = 1;
+		public static final int kArmGearBoxRatio = 100;
+		public static final int kArmBeltRatio = 2 / 1;
 
 		/**
 		 * the total number of motor rotations for one 360 degree rotation of the arm
 		 */
-		public static final int kMajorArmTicks = kMajorArmGearBoxRatio * kMajorArmBeltRatio;
-		//public static final int kMinorArmTicks = kMinorArmGearBoxRatio * kMinorArmBeltRatio;
+		public static final int kMajorArmTicks = kArmGearBoxRatio * kArmBeltRatio;
 
 		/**
 		 * The radius of each arms rotation in inches (from center of rotation to next
 		 * arms center of rotation)
 		 */
 		//public static final int kMajorArmLength = 38;
-		//public static final int kMinorArmLength = 23;
-
-		// current limits of the arms
-		//public static final int kMajorArmCurrentLimit = 5;
-		//public static final int kMinorArmCurrentLimit = 8;
 
 		public static final int kArmCurrentLimit = 5;
 
 		// speed limits for the arms
-		public static final double kMajorPIDOutputLimit = 1;
-		//public static final double kMinorPIDOutputLimit = 1;
+		public static final double kPIDOutputLimit = 1;
 
-		public static final double kMaxMajorVelRadiansPerSec = (Math.PI * 10) * 60;
-		public static final double kMaxMajorAccelRadiansPerSec = (Math.PI * 6.25 * 60);
-
-		
-		public static final double kMaxMinorVelRadiansPerSec = (Math.PI * 8) * 60;
-		public static final double kMaxMinorAccelRadiansPerSec = (Math.PI * 7) * 60;
+		public static final double kMaxVelRadiansPerSec = (Math.PI * 10) * 60;
+		public static final double kMaxAccelRadiansPerSec = (Math.PI * 6.25 * 60);
 
 		// angle limits for the arms
-		public static final double kMajorArmConstraints = 110;
-		public static final double kMinorArmConstraints = 180;
+		public static final double kArmConstraints = 110;
  
 		// Arm PID constants	
 		public static final PIDGains kArmGains = new PIDGains(0.035, 0.0000025, 0.002);
@@ -236,16 +213,6 @@ public final class Constants {
 		public static final double kTolerance = 0.1;
 
 		public static enum kArmPoses {
-			/*TUCKED,
-			LOW_SCORE,
-			MID_SCORE,
-			HIGH_SCORE,
-			LOW_INTAKE,
-			MID_INTAKE,
-			HIGH_INTAKE,
-			DRIVER_CONTROL,
-			KICK_FRONT,
-			KICK_BACK,*/
 			GROUND_INTAKE,
 			HUMAN_ELEMENT_INTAKE,
 			AMP_SCORE,
@@ -302,23 +269,6 @@ public final class Constants {
 		public static final double kOuttakeSpeed = -1.0;
 		public static final double kIntakeOutputCurrentThreshold = 6.0;
 		public static final int kIntakeWheelPort = 9;
-		//
-
-		//public static final int kRightIntakeWheelPort = 8;
-		//public static final int kLeftIntakeWheelPort = 9;
-
-		//public static final int kPnemnaticHubPort = 50;
-
-		//public static final int kCenterDumpSolenoidPort = 0;
-		//public static final int kCenterSealerSolenoidPort = 1;
-
-		// NEO Sucker motor CAN ID's
-		//public static final int kCenterSuckerPort = 18;
-
-		//public static final int kCenterSuckerCurrentLimit = 6;
-
-		//public static final double kCenterSuckerSetpoint = 0.65;
-		//public static final int kHasConeThreshold = 3530;
 
 		public static enum kIntakeStates {
 			IDLE,
@@ -330,17 +280,6 @@ public final class Constants {
 
 		public static final HashMap<kArmPoses, kIntakeStates> kArmStateToIntakeStateMap = new HashMap<kArmPoses, kIntakeStates>() {
 			{
-				/*put(kArmPoses.TUCKED, kIntakeStates.INTAKE);
-				put(kArmPoses.LOW_SCORE, kIntakeStates.IDLE);
-				put(kArmPoses.MID_SCORE, kIntakeStates.IDLE);
-				put(kArmPoses.HIGH_SCORE, kIntakeStates.IDLE);
-				put(kArmPoses.LOW_INTAKE, kIntakeStates.INTAKE);
-				put(kArmPoses.MID_INTAKE, kIntakeStates.INTAKE);
-				put(kArmPoses.HIGH_INTAKE, kIntakeStates.INTAKE);
-				put(kArmPoses.DRIVER_CONTROL, kIntakeStates.INTAKE);
-				put(kArmPoses.KICK_FRONT, kIntakeStates.IDLE);
-				put(kArmPoses.KICK_BACK, kIntakeStates.IDLE);*/
-
 				put(kArmPoses.GROUND_INTAKE, kIntakeStates.INTAKE);
 				put(kArmPoses.HUMAN_ELEMENT_INTAKE, kIntakeStates.INTAKE);
 				put(kArmPoses.AMP_SCORE, kIntakeStates.IDLE);
@@ -348,7 +287,6 @@ public final class Constants {
 				put(kArmPoses.TRAP_DOOR_SCORE, kIntakeStates.IDLE);
 			}
 		};
-
 	}
 
 	public static class PhotonVisionConstants {
@@ -407,9 +345,7 @@ public final class Constants {
 		public static double visionMeasurementStdDevsY = 0.5;
 		public static double visionMeasurementStdDevsTheta = Units.degreesToRadians(10);
 	}
-
 	
-
 	public static final String kRioCANBusName = "rio";
 
 	//public static final String kCanivoreCANBusName = "canivore";

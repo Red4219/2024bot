@@ -34,7 +34,6 @@ import frc.robot.commands.Autonomous.IntakeCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -50,7 +49,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class RobotContainer {
 
 	// The robot's subsystems and commands are defined here...
-	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	//public static final DriveSubsystem driveSubsystem = new DriveSubsystem(true);
 	public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
 	public PhotonVision _photonVision = driveSubsystem.getPhotonVision();

@@ -28,6 +28,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.PhotonVisionConstants;
@@ -47,6 +50,8 @@ public class PhotonVision {
 	private double _sim_targetHeight;
 	private AprilTagFieldLayout _aprilTagFieldLayout;
 	private PhotonPoseEstimator _photonPoseEstimator;
+	ShuffleboardTab photonVisionTab;
+	private EstimatedRobotPose _estimatedRobotPose;
 
 	Pose3d camPose = new Pose3d();
 	private Pose2d _lastPhotonPoseEstimatorPose = new Pose2d();
@@ -68,6 +73,8 @@ public class PhotonVision {
 			} else {
 				_aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
 			}
+
+			photonVisionTab = Shuffleboard.getTab("PhotonVision");
 		} catch (IOException e) {
 			System.out.println("PhotonVision::PhotonVision() - error:" + e.toString());
 			return;
@@ -95,6 +102,8 @@ public class PhotonVision {
 				System.out.println("PhotonVision::PhotonVision() - _camera is null");
 			}
 		}
+
+		photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
 	}
 
 	public boolean isConnected() {
@@ -128,6 +137,7 @@ public class PhotonVision {
 				//System.out.println("PhonVision::getPose() - it is present");
 
 				EstimatedRobotPose estimatedRobotPose = o.get();
+				_estimatedRobotPose = estimatedRobotPose;
 
 				List<Pose3d> allTagPoses = new ArrayList<>();
 
@@ -136,8 +146,22 @@ public class PhotonVision {
 						_aprilTagFieldLayout.getTagPose(target.getFiducialId()).get()
 					);
 
-					//System.out.println("Distance to " + target.getFiducialId() + " is: " + targetDistance(target.getFiducialId()));;
+					//System.out.println("Distance to " + target.getFiducialId() + " is: " + targetDistance(target.getFiducialId()));
+
+					/*if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+						if(target.getFiducialId() == 7) {
+							photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
+						}
+						//7
+					} else {
+						//4
+						if(target.getFiducialId() == 4) {
+							photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
+						}
+					}*/
 				}
+
+				//photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
 
 				Logger.recordOutput(
 					"AprilTagVision/TagPoses",
@@ -247,11 +271,12 @@ public class PhotonVision {
 
 		for(PhotonTrackedTarget target: targets) {
 			if(target.getFiducialId() == targetNumber) {
-				
+
 				double range =
                         PhotonUtils.calculateDistanceToTargetMeters(
                                 Constants.PhotonVisionConstants.camHeightOffGround,
-                                Constants.PhotonVisionConstants.TagHeight,
+                                _aprilTagFieldLayout.getTagPose(targetNumber).get().getZ(),
+								//Constants.PhotonVisionConstants.TagHeight,
                                 Constants.PhotonVisionConstants.camPitch,
                                 Units.degreesToRadians(result.getBestTarget().getPitch()));
 
@@ -260,6 +285,30 @@ public class PhotonVision {
 		}
 
 		return 0.0;
+	}
+
+	public double getTargetDistance() {
+		double distance = 0.0;
+
+		if(_estimatedRobotPose != null) {
+			for(PhotonTrackedTarget target : _estimatedRobotPose.targetsUsed) {
+				if(target.getFiducialId() == 7) {
+					if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+						distance = targetDistance(7);
+						Logger.recordOutput("AprilTagVision/Target", distance);
+						return distance;
+					}
+				} else if(target.getFiducialId() == 4) {
+					if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+						distance = targetDistance(4);
+						Logger.recordOutput("AprilTagVision/Target", distance);
+						return distance;
+					}
+				}
+			}
+		}
+		
+		return distance;
 	}
 
 	public double aimAtTarget(int targetNumber) {
