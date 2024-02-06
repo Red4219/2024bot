@@ -113,7 +113,7 @@ public class RobotContainer {
 		//autoChooser = AutoBuilder.buildAutoChooser();
 
 		// region Def Auto
-		Shuffleboard.getTab("Autonomous").add(autoChooser);
+		Shuffleboard.getTab("Autonomous").add("Auto", autoChooser);
 	}
 
 	/**
