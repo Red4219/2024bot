@@ -98,6 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 	private kDriveModes mode = kDriveModes.NORMAL;
 	private int speakerTarget = 0;
+	private boolean targetLocked = false;
 
 
 	PhotonVisionResult photonVisionResult = null;
@@ -273,6 +274,7 @@ public class DriveSubsystem extends SubsystemBase {
 		swerveTab.addDouble("RL Meters", rearLeft::getDistanceMeters);
 		swerveTab.addDouble("RR Meters", rearRight::getDistanceMeters);
 		swerveTab.addBoolean("Auto Aim", this::autoAim);
+		swerveTab.addBoolean("Target Locked", this::getTargetLocked);
 	}
 
 	public PhotonVision getPhotonVision() {
@@ -498,11 +500,14 @@ public class DriveSubsystem extends SubsystemBase {
 				double targetYaw = _photonVision.aimAtTarget(speakerTarget);
 
 				if(Math.abs(targetYaw) > Constants.AutoConstants.kAimTargetTolerance) {
+					targetLocked = false;
 					if(targetYaw > 0) {
 						rot += Constants.DriveConstants.kChassisAutoAimRotation;
 					} else {
 						rot -= Constants.DriveConstants.kChassisAutoAimRotation;
 					}
+				} else {
+					targetLocked = true;
 				}
 			} 
 		}
@@ -637,7 +642,6 @@ public class DriveSubsystem extends SubsystemBase {
 		Logger.recordOutput("Odometry/Robot", odometry.getPoseMeters());
 		Logger.recordOutput("Estimator/Robot", poseEstimator.getEstimatedPosition());
 		
-
 		//_gyroIONavX.updateInputs(_gyroInputs);
         //Logger.getInstance().processInputs("Drive/Gyro", _gyroInputs);
 		//Logger.processInputs("Drive/Gyro", _gyroInputs);
@@ -815,5 +819,9 @@ public class DriveSubsystem extends SubsystemBase {
 		}
 
 		return false;
+	}
+
+	public boolean getTargetLocked() {
+		return targetLocked;
 	}
 }
