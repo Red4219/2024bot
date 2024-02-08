@@ -15,6 +15,9 @@ import com.revrobotics.SparkPIDController.AccelStrategy;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,6 +26,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.Constants.Mode;
 import frc.robot.Mechanisms.ArmSegment;
+import frc.robot.Tools.PhotonVision;
 
 public class ArmSubsystem extends SubsystemBase {
 
@@ -36,6 +40,7 @@ public class ArmSubsystem extends SubsystemBase {
 	/** controls the side of the robot the arm is on */
 	private boolean isFront;
 	private boolean enableArm;
+	private boolean autoAim = false;
 
 	// endregion
 
@@ -49,9 +54,12 @@ public class ArmSubsystem extends SubsystemBase {
 	private boolean atSetPoint = false;
 	private double pidOutput;
 	private double targetPosition = 0.0;
+
+	private PhotonVision _photonVision;
+	private int speakerTarget = 0;
 	//
 
-	public ArmSubsystem() {
+	public ArmSubsystem(PhotonVision photonVision) {
 		/* 
 		// this will cause the code to fail to run if the hashmap is not full
 		for (kArmPoses pose : kArmPoses.values()) {
@@ -80,18 +88,6 @@ public class ArmSubsystem extends SubsystemBase {
 		majorArm.setMaxOutput(ArmConstants.kMajorPIDOutputLimit);
 		majorArm.setTrapazoidalConstraints(ArmConstants.kMaxMajorVelRadiansPerSec, ArmConstants.kMaxMajorAccelRadiansPerSec);
 
-		// minor arm defs
-		minorArm = new ArmSegment(
-				ArmConstants.kRightMinorArmPort,
-				ArmConstants.kLeftMinorArmPort,
-				ArmConstants.kMinorArmTicks,
-				true);
-
-		minorArm.setPID(ArmConstants.kMinorArmGains);
-
-		minorArm.setConstraints(ArmConstants.kMinorArmConstraints);
-		minorArm.setMaxOutput(ArmConstants.kMinorPIDOutputLimit);
-		minorArm.setTrapazoidalConstraints(ArmConstants.kMaxMinorVelRadiansPerSec, ArmConstants.kMaxMinorAccelRadiansPerSec);
 		// endregion
 
 		// the default state of the arms
@@ -134,6 +130,20 @@ public class ArmSubsystem extends SubsystemBase {
 		pidController = new PIDController(Constants.ArmConstants.kArmGains.kP, Constants.ArmConstants.kArmGains.kI, Constants.ArmConstants.kArmGains.kD);
 		pidController.setTolerance(Constants.ArmConstants.kTolerance, 10);
 
+		ShuffleboardTab armTab = Shuffleboard.getTab("Arm");
+		armTab.addDouble("Arm Position", this::getPosition);
+		armTab.addBoolean("Auto Aim", this::getAutoAim);
+
+		_photonVision = photonVision;
+
+		if(DriverStation.getAlliance().isPresent()) {
+            if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+                speakerTarget = 7;
+            } else {
+                speakerTarget = 4;
+            }
+        }
+
 		// end new
 
 		//setSequencedArmState(kArmPoses.TUCKED);
@@ -171,6 +181,23 @@ public class ArmSubsystem extends SubsystemBase {
 
 		Logger.recordOutput("Arm/position", rightEncoder.getPosition());
 		Logger.recordOutput("Arm/target", targetPosition);
+		Logger.recordOutput("Arm/autoAim", autoAim);
+
+		if(speakerTarget == 0) {
+			if(DriverStation.getAlliance().isPresent()) {
+            	if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+                	speakerTarget = 7;
+            	} else {
+                	speakerTarget = 4;
+            	}
+        	}
+		}
+
+
+		if(targetArmState == kArmPoses.AIM) {
+			position = _photonVision.targetDistance(speakerTarget);
+			//System.out.println("ArmSubsystem::periodic() - distance: " + position);
+		}
 
 		setReference();
 
@@ -253,9 +280,11 @@ public class ArmSubsystem extends SubsystemBase {
 		// get minor speed from map
 		// gets the angle values from the hashmap
 		//majorArm.setTargetTheta(armStates.get(targetArmState)[0]);
-		//minorArm.setTargetTheta(armStates.get(targetArmState)[1]);
-		//this.moveToPosition(armStates.get(targetArmState)[0]);
-		targetPosition = armStates.get(targetArmState)[0];
+
+		if(state != kArmPoses.AIM && state != kArmPoses.IDLE) {
+			targetPosition = armStates.get(targetArmState)[0];
+		}
+
 		atSetPoint = false;
 	}
 
@@ -268,6 +297,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 	public void moveToPosition(double position) {
 		System.out.println("ArmSubSystem::moveToPosition() - position: " + position);
+		targetPosition = position;
 	}
 
 	public void setReference() {
@@ -320,6 +350,15 @@ public class ArmSubsystem extends SubsystemBase {
 
 	public double getPosition() {
 		return position;
+	}
+
+	public boolean getAutoAim() {
+		
+		if(targetArmState == kArmPoses.AIM) {
+			return true;
+		}
+
+		return false;
 	}
 
 	// endregion

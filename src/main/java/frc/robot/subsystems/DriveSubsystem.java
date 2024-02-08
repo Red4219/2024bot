@@ -67,7 +67,7 @@ import frc.robot.Tools.PhotonVisionResult;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.ModuleConstants;
-
+import frc.robot.Constants.DriveConstants.kDriveModes;
 import frc.robot.RobotContainer;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -95,6 +95,9 @@ public class DriveSubsystem extends SubsystemBase {
 	private double xSpeed = 0.0;
 	private double ySpeed = 0.0;
 	private double rot = 0.0;
+
+	private kDriveModes mode = kDriveModes.NORMAL;
+	private int speakerTarget = 0;
 
 
 	PhotonVisionResult photonVisionResult = null;
@@ -269,6 +272,7 @@ public class DriveSubsystem extends SubsystemBase {
 		swerveTab.addDouble("FR Meters", frontRight::getDistanceMeters);
 		swerveTab.addDouble("RL Meters", rearLeft::getDistanceMeters);
 		swerveTab.addDouble("RR Meters", rearRight::getDistanceMeters);
+		swerveTab.addBoolean("Auto Aim", this::autoAim);
 	}
 
 	public PhotonVision getPhotonVision() {
@@ -278,6 +282,16 @@ public class DriveSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
+
+		if(speakerTarget == 0) {
+			if(DriverStation.getAlliance().isPresent()) {
+            	if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+                	speakerTarget = 7;
+            	} else {
+                	speakerTarget = 4;
+            	}
+        	}
+		}
 		
 		updateOdometry();
 
@@ -477,10 +491,21 @@ public class DriveSubsystem extends SubsystemBase {
 		this.ySpeed = ySpeed;
 		this.rot = rot;
 
-		/*SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-				fieldRelative
-						? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
-						: new ChassisSpeeds(xSpeed, ySpeed, rot));*/
+		// If we are set to auto aim
+		if(mode == kDriveModes.AIM) {
+			if(_photonVision.canSeeTarget(speakerTarget) == true) {
+
+				double targetYaw = _photonVision.aimAtTarget(speakerTarget);
+
+				if(Math.abs(targetYaw) > Constants.AutoConstants.kAimTargetTolerance) {
+					if(targetYaw > 0) {
+						rot += Constants.DriveConstants.kChassisAutoAimRotation;
+					} else {
+						rot -= Constants.DriveConstants.kChassisAutoAimRotation;
+					}
+				}
+			} 
+		}
 
 		SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
 				ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()));
@@ -774,5 +799,21 @@ public class DriveSubsystem extends SubsystemBase {
 
 	public double getAutoY_Position() {
 		return autoY_Position;
+	}
+
+	public void setMode(kDriveModes mode) {
+		this.mode = mode;
+	}
+
+	public kDriveModes getMode() {
+		return this.mode;
+	}
+
+	public boolean autoAim() {
+		if(this.mode == kDriveModes.AIM) {
+			return true;
+		}
+
+		return false;
 	}
 }

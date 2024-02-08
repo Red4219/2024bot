@@ -120,6 +120,13 @@ public final class Constants {
 		public static final double kMaxTurningAcceleratonDegrees = 10;
 		public static final double kGyroTurnTolerance = 2;
 
+		public static enum kDriveModes {
+			NORMAL,
+			AIM
+		}
+
+		public static final double kChassisAutoAimRotation = 1.9;
+
 	}
 
 	/**
@@ -217,7 +224,9 @@ public final class Constants {
 			HUMAN_ELEMENT_INTAKE,
 			AMP_SCORE,
 			SPEAKER_SCORE,
-			TRAP_DOOR_SCORE
+			TRAP_DOOR_SCORE,
+			AIM,
+			IDLE
 		}
 
 		public static final HashMap<kArmPoses, double[]> kArmStatesMap = new HashMap<kArmPoses, double[]>() {

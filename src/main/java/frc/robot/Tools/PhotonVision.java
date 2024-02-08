@@ -103,6 +103,7 @@ public class PhotonVision {
 
 		photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
 		photonVisionTab.addBoolean("Connection", this::isConnected);
+		photonVisionTab.addBoolean("Has Target", this::hasTarget);
 	}
 
 	public boolean isConnected() {
@@ -330,7 +331,7 @@ public class PhotonVision {
 		PhotonPipelineResult result = _camera.getLatestResult();
 
 		if(result.hasTargets() == false) {
-			System.out.println("Don't see any targets");
+			//System.out.println("Don't see any targets");
 			return false;
 		}
 
@@ -340,7 +341,7 @@ public class PhotonVision {
 
 		for(PhotonTrackedTarget target: targets) {
 			if(target.getFiducialId() == targetNumber) {
-				System.out.println("target: " + target.getFiducialId());
+				//System.out.println("target: " + target.getFiducialId());
 				return true;
 			}
 		}

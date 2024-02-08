@@ -26,7 +26,9 @@ import frc.robot.Tools.Parts.PathBuilder;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.commands.AimCommand;
+import frc.robot.commands.ArmAimCommand;
 import frc.robot.commands.ArmPoseCommand;
+import frc.robot.commands.ChassisAimCommand;
 import frc.robot.commands.ClimberPoseCommand;
 import frc.robot.commands.FloorIntakeCommand;
 import frc.robot.commands.ShootCommand;
@@ -53,7 +55,7 @@ public class RobotContainer {
 	public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
 	public PhotonVision _photonVision = driveSubsystem.getPhotonVision();
 	public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-	public static final ArmSubsystem armSubsystem = new ArmSubsystem();
+	public static final ArmSubsystem armSubsystem = new ArmSubsystem(driveSubsystem.getPhotonVision());
 	public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 	public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 	
@@ -66,7 +68,8 @@ public class RobotContainer {
 			//OperatorConstants.kTurnJoystickPort);
 	private final CommandXboxController driverController = new CommandXboxController(0);
 	//private final XboxController driverController = new XboxController(0);
-	private final XboxController operatorController = new XboxController(1);
+	//private final XboxController operatorController = new XboxController(1);
+	private final CommandXboxController operatorController = new CommandXboxController(1);
 	//private final CommandGenericHID operatorController = new CommandGenericHID(
 			//OperatorConstants.kOperatorControllerPort);
 	private final CommandXboxController programmerController = new CommandXboxController(
@@ -164,6 +167,14 @@ public class RobotContainer {
 		driverController.button(3).onTrue(
 			//new FloorIntakeCommand(true)
 			Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE))
+		);
+
+		operatorController.button(1).onTrue(
+			new ArmAimCommand()
+		);
+
+		operatorController.button(2).onTrue(
+			Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())
 		);
 
 
