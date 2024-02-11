@@ -177,6 +177,9 @@ public class RobotContainer {
 			Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())
 		);
 
+		operatorController.button(3).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.AMPLIFIER)));
+		operatorController.button(4).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.SOURCE)));
+
 
 		// region Arm Commands
 		// Schedule ArmPoseCommand when operator presses coresponding button.

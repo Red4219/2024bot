@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.Tools.AutonomousDetail;
 import frc.robot.Tools.Parts.PIDGains;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 
@@ -56,7 +58,7 @@ public final class Constants {
 
 		// TODO: Retune feedforward values for turning
 		public static final double kvTurning = .43205;
-		public static final double ksTurning = .17161; // Tuned February 2, 2023
+		public static final double ksTurning = .17161; 
 
 		// NEO drive motor CAN ID's
 		public static final int kFrontLeftDriveMotorPort = 1;
@@ -126,7 +128,18 @@ public final class Constants {
 		}
 
 		public static final double kChassisAutoAimRotation = 1.9;
+	}
 
+	public static class PoseDefinitions {
+		public static enum kFieldPoses {
+			AMPLIFIER,
+			SOURCE
+		}
+
+		public static final Pose2d kAmplifierPoseRed = new Pose2d(14.73, 7.69, Rotation2d.fromDegrees(90.0));
+		public static final Pose2d kAmplifierPoseBlue = new Pose2d(1.83, 7.78, Rotation2d.fromDegrees(90.0));
+		public static final Pose2d kSourcePoseRed = new Pose2d(0.98, 1.05, Rotation2d.fromDegrees(-120.16));
+		public static final Pose2d kSourcePoseBlue = new Pose2d(15.35, 0.88, Rotation2d.fromDegrees(-120.0));
 	}
 
 	/**
@@ -243,8 +256,8 @@ public final class Constants {
 
 	public static class ClimberConstants {
 
-		public static final int kRightPort = 20;
-		public static final int kLeftPort = 21;
+		public static final int kRightPort = 15;
+		public static final int kLeftPort = 16;
 
 		//public static final PIDGains kClimberGains = new PIDGains(0.0035, 0.0000025, 0.002);
 		public static final PIDGains kClimberGains = new PIDGains(0.2, 0.0000025, 0.002);
@@ -277,7 +290,7 @@ public final class Constants {
 		public static final double kIntakeSpeed = 1.0;
 		public static final double kOuttakeSpeed = -1.0;
 		public static final double kIntakeOutputCurrentThreshold = 6.0;
-		public static final int kIntakeWheelPort = 9;
+		public static final int kIntakeWheelPort = 17;
 
 		public static enum kIntakeStates {
 			IDLE,
@@ -422,8 +435,8 @@ public final class Constants {
 		public static final int kSmartCurrentLimit = 5;
 		public static final double kSpeed = 1.0;
 
-		public static final int kPrimaryPort = 23;
-		public static final int kSecondaryPort = 24;
+		public static final int kPrimaryPort = 18;
+		public static final int kSecondaryPort = 19;
 
 		public static enum kShooterStates {
 			IDLE,

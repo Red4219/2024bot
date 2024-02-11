@@ -7,12 +7,7 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
-import java.util.Optional;
-
-
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.EstimatedRobotPose;
-
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.VecBuilder;
@@ -22,9 +17,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -37,9 +30,6 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoubleEntry;
-import edu.wpi.first.networktables.DoubleTopic;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -52,24 +42,16 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-//import frc.robot.Tools.GyroIOInputsAutoLogged;
-
-
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.Mechanisms.SwerveModule;
 import frc.robot.Tools.AutonomousDetail;
-//import frc.robot.Tools.GyroIOInputsAutoLogged;
 import frc.robot.Tools.GyroIONavX;
-import frc.robot.Tools.LimelightHelpers;
 import frc.robot.Tools.PhotonVision;
 import frc.robot.Tools.PhotonVisionResult;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.DriveConstants.kDriveModes;
-import frc.robot.RobotContainer;
-
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -112,7 +94,7 @@ public class DriveSubsystem extends SubsystemBase {
 		new PIDController(1, 0, 0),
 		new ProfiledPIDController(
 			//1,
-			1,
+			2,
 			0,
 			0,
 			new TrapezoidProfile.Constraints(
@@ -686,13 +668,13 @@ public class DriveSubsystem extends SubsystemBase {
 
 	// endregion
 
-	public void generateTrajectory() {
+	public Trajectory.State generateTrajectory(Pose2d targetPose) {
 
 
 		//NetworkTable table = networkTableInstance.getTable("/photonvision");
 		//boolean asdf = table.containsSubTable("cam1");
 
-		NetworkTable camtable = networkTableInstance.getTable("/photonvision/cam1");
+		/*NetworkTable camtable = networkTableInstance.getTable("/photonvision/cam1");
 		//boolean asdff = camtable.containsKey("targetYaw");
 		//DoubleTopic topic = camtable.getDoubleTopic("targetYaw");
 		NetworkTableEntry entry = camtable.getEntry("targetYaw");
@@ -704,7 +686,7 @@ public class DriveSubsystem extends SubsystemBase {
 		//DoubleTopic dblTopic = networkTableInstance.getDoubleTopic("/photonvision");
 
 
-
+		*/
 
 		// 2018 cross scale auto waypoints.
 		var sideStart = new Pose2d(
@@ -713,7 +695,7 @@ public class DriveSubsystem extends SubsystemBase {
 			odometry.getPoseMeters().getRotation()
 		);
 		
-		var crossScale = new Pose2d(
+		/*var crossScale = new Pose2d(
 			//Units.feetToMeters(9.0),
 			//2.0,
 			(DriverStation.getAlliance().get() == Alliance.Blue) ? 2.0 : 13.0,
@@ -721,7 +703,7 @@ public class DriveSubsystem extends SubsystemBase {
 			//(DriverStation.getAlliance().get() == Alliance.Blue) ? 1.09 : 8.1026 - 1.09,
 			1.09,
 			Rotation2d.fromDegrees(0.0)
-		);
+		);*/
 	
 		var interiorWaypoints = new ArrayList<Translation2d>();
 		/*interiorWaypoints.add(
@@ -743,24 +725,53 @@ public class DriveSubsystem extends SubsystemBase {
 		);
 
 		//config.setReversed(true);
+
+		try {
 	
-		trajectory = TrajectoryGenerator.generateTrajectory(
-			sideStart,
-			interiorWaypoints,
-			crossScale,
-			config
-		);
-
-		goal = trajectory.sample(trajectory.getTotalTimeSeconds());
-	}
-
-	public void goToPose() {
-
-		if(trajectory == null) {
-			generateTrajectory();
+			trajectory = TrajectoryGenerator.generateTrajectory(
+				sideStart,
+				interiorWaypoints,
+				//crossScale,
+				targetPose,
+				config
+			);
+		} catch (Exception e) {
+			//System.out.println("DriveSubsystem::generateTrajectory() - " + e.getMessage());
+			return null;
 		}
 
-		System.out.println("go to pose called, time is: " + trajectory.getTotalTimeSeconds());
+		return trajectory.sample(trajectory.getTotalTimeSeconds());
+	}
+
+	public void goToPose(Constants.PoseDefinitions.kFieldPoses targetPose) {
+
+		Pose2d pose = null;
+
+		if(targetPose == Constants.PoseDefinitions.kFieldPoses.AMPLIFIER) {
+			if (DriverStation.getAlliance().get() == Alliance.Blue) {
+				pose = Constants.PoseDefinitions.kAmplifierPoseBlue;
+			} else {
+				pose = Constants.PoseDefinitions.kAmplifierPoseRed;
+			}
+		} else if(targetPose == Constants.PoseDefinitions.kFieldPoses.SOURCE) {
+			if (DriverStation.getAlliance().get() == Alliance.Blue) {
+				pose = Constants.PoseDefinitions.kSourcePoseBlue;
+			} else {
+				pose = Constants.PoseDefinitions.kSourcePoseRed;
+			}
+		}
+
+		//if(trajectory == null) {
+			goal = generateTrajectory(pose);
+		//}
+
+		if(goal == null) {
+			return;
+		}
+
+		
+
+		//System.out.println("go to pose called, time is: " + trajectory.getTotalTimeSeconds());
 
 		// Get the adjusted speeds. Here, we want the robot to be facing
 		// 180 degrees (in the field-relative coordinate system).
@@ -768,7 +779,7 @@ public class DriveSubsystem extends SubsystemBase {
   			//getPose(),
 			getPoseEstimatorPose2d(),
 			goal,
-			Rotation2d.fromDegrees(0.0)
+			pose.getRotation()
 		);
 
 		SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(adjustedSpeeds);
