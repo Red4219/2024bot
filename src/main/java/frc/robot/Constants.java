@@ -228,9 +228,10 @@ public final class Constants {
 		public static final double kArmConstraints = 110;
  
 		// Arm PID constants	
-		public static final PIDGains kArmGains = new PIDGains(0.035, 0.0000025, 0.002);
+		//public static final PIDGains kArmGains = new PIDGains(0.035, 0.0000025, 0.002);
+		public static final PIDGains kArmGains = new PIDGains(1.0, 0.25, 0.2);
 
-		public static final double kTolerance = 0.1;
+		public static final double kTolerance = 0.05;
 
 		public static enum kArmPoses {
 			GROUND_INTAKE,
@@ -244,8 +245,8 @@ public final class Constants {
 
 		public static final HashMap<kArmPoses, double[]> kArmStatesMap = new HashMap<kArmPoses, double[]>() {
 			{
-				put(kArmPoses.GROUND_INTAKE, new double[] { 5 });
-				put(kArmPoses.HUMAN_ELEMENT_INTAKE, new double[] { 3 });
+				put(kArmPoses.GROUND_INTAKE, new double[] { .86 });
+				put(kArmPoses.HUMAN_ELEMENT_INTAKE, new double[] { .94 });
 				put(kArmPoses.AMP_SCORE, new double[] { 20 });
 				put(kArmPoses.SPEAKER_SCORE, new double[] { 100 });
 				put(kArmPoses.TRAP_DOOR_SCORE, new double[] { -10 });

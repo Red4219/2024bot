@@ -6,6 +6,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.REVPhysicsSim;
@@ -49,11 +50,12 @@ public class ArmSubsystem extends SubsystemBase {
 	public SparkPIDController rightPIDController;
 	private PIDController pidController;
 	private RelativeEncoder rightEncoder, leftEncoder;
+	private AbsoluteEncoder rightBoreEncoder;
 
 	private double position;
 	private boolean atSetPoint = false;
 	private double pidOutput;
-	private double targetPosition = 0.0;
+	private double targetPosition = 0.862;
 
 	private PhotonVision _photonVision;
 	private int speakerTarget = 0;
@@ -98,6 +100,8 @@ public class ArmSubsystem extends SubsystemBase {
 		rightMotor = new CANSparkMax(frc.robot.Constants.ArmConstants.kRightArmPort, MotorType.kBrushless);
 		leftMotor = new CANSparkMax(frc.robot.Constants.ArmConstants.kLeftArmPort, MotorType.kBrushless);
 
+		rightMotor.setInverted(true);
+
 		if(Constants.getMode() == Mode.SIM) {
 			REVPhysicsSim.getInstance().addSparkMax(rightMotor, 2.6f, 5676);
 			REVPhysicsSim.getInstance().addSparkMax(leftMotor, 2.6f, 5676);
@@ -113,9 +117,11 @@ public class ArmSubsystem extends SubsystemBase {
 		leftMotor.follow(leftMotor, true);
 
 		rightEncoder = rightMotor.getEncoder();
+		rightBoreEncoder = rightMotor.getAbsoluteEncoder();
 		leftEncoder = leftMotor.getEncoder();
 
 		rightPIDController = rightMotor.getPIDController();
+		rightPIDController.setFeedbackDevice(rightMotor.getAbsoluteEncoder());
 
 		rightPIDController.setOutputRange(-Constants.ArmConstants.kArmCurrentLimit, Constants.ArmConstants.kArmCurrentLimit);
 
@@ -133,6 +139,11 @@ public class ArmSubsystem extends SubsystemBase {
 		ShuffleboardTab armTab = Shuffleboard.getTab("Arm");
 		armTab.addDouble("Arm Position", this::getPosition);
 		armTab.addBoolean("Auto Aim", this::getAutoAim);
+		armTab.addDouble("Target Position", this::getTargetPosition);
+		armTab.addDouble("Right Voltage", this::getRightVoltage);
+		armTab.addDouble("Left Voltage", this::getLeftVoltage);
+		armTab.addDouble("Right Temp", this::getRightTemp);
+		armTab.addDouble("Left Temp", this::getLeftTemp);
 
 		_photonVision = photonVision;
 
@@ -194,10 +205,12 @@ public class ArmSubsystem extends SubsystemBase {
 		}
 
 
-		if(targetArmState == kArmPoses.AIM) {
+		/*if(targetArmState == kArmPoses.AIM) {
 			position = _photonVision.targetDistance(speakerTarget);
 			//System.out.println("ArmSubsystem::periodic() - distance: " + position);
-		}
+		}*/
+
+		position = this.rightBoreEncoder.getPosition();
 
 		setReference();
 
@@ -311,10 +324,10 @@ public class ArmSubsystem extends SubsystemBase {
 				}
 
 				// Are we close to the target position?
-				if(Math.abs(rightEncoder.getPosition() - targetPosition) <= Constants.ClimberConstants.kTolerance) {
+				if(Math.abs(rightEncoder.getPosition() - targetPosition) <= Constants.ArmConstants.kTolerance) {
 					// Yes we are
 					atSetPoint = true;
-					System.out.println("setting atSetPint to true");
+					System.out.println("setting atSetPoint to true");
 				}
 			} else if(Constants.getMode() == Mode.SIM) {
 				// We are not at the set point and are in SIM
@@ -352,6 +365,10 @@ public class ArmSubsystem extends SubsystemBase {
 		return position;
 	}
 
+	public double getTargetPosition() {
+		return targetPosition;
+	}
+
 	public boolean getAutoAim() {
 		
 		if(targetArmState == kArmPoses.AIM) {
@@ -382,6 +399,22 @@ public class ArmSubsystem extends SubsystemBase {
 
 	public boolean isAtSetPoint() {
 		return atSetPoint;
+	}
+
+	public double getRightVoltage() {
+		return rightMotor.getAppliedOutput();
+	}
+
+	public double getLeftVoltage() {
+		return leftMotor.getAppliedOutput();
+	}
+
+	public double getRightTemp() {
+		return rightMotor.getMotorTemperature();
+	}
+
+	public double getLeftTemp() {
+		return leftMotor.getMotorTemperature();
 	}
 
 	/*public boolean getAtTarget(double deadBand) {
