@@ -140,8 +140,10 @@ public class ArmSubsystem extends SubsystemBase {
 		armTab.addDouble("Arm Position", this::getPosition);
 		armTab.addBoolean("Auto Aim", this::getAutoAim);
 		armTab.addDouble("Target Position", this::getTargetPosition);
-		armTab.addDouble("Right Voltage", this::getRightVoltage);
-		armTab.addDouble("Left Voltage", this::getLeftVoltage);
+		armTab.addDouble("Right Applied Output", this::getRightAppliedOutput);
+		armTab.addDouble("Left Applied Output", this::getLeftAppliedOutput);
+		armTab.addDouble("Right Output Current", this::getRightOutputCurrent);
+		armTab.addDouble("Left Output Current", this::getLeftOutputCurrent);
 		armTab.addDouble("Right Temp", this::getRightTemp);
 		armTab.addDouble("Left Temp", this::getLeftTemp);
 
@@ -193,6 +195,12 @@ public class ArmSubsystem extends SubsystemBase {
 		Logger.recordOutput("Arm/position", rightEncoder.getPosition());
 		Logger.recordOutput("Arm/target", targetPosition);
 		Logger.recordOutput("Arm/autoAim", autoAim);
+		Logger.recordOutput("Arm/rightAppliedOutput", rightMotor.getAppliedOutput());
+		Logger.recordOutput("Arm/leftAppliedOutput", leftMotor.getAppliedOutput());
+		Logger.recordOutput("Arm/rightOutputCurrent", rightMotor.getOutputCurrent());
+		Logger.recordOutput("Arm/leftOutputCurrent", leftMotor.getOutputCurrent());
+		Logger.recordOutput("Arm/rightMotorTemp", rightMotor.getMotorTemperature());
+		Logger.recordOutput("Arm/leftMotorTemp", leftMotor.getMotorTemperature());
 
 		if(speakerTarget == 0) {
 			if(DriverStation.getAlliance().isPresent()) {
@@ -401,20 +409,32 @@ public class ArmSubsystem extends SubsystemBase {
 		return atSetPoint;
 	}
 
-	public double getRightVoltage() {
+	public double getRightAppliedOutput() {
 		return rightMotor.getAppliedOutput();
 	}
 
-	public double getLeftVoltage() {
+	public double getLeftAppliedOutput() {
 		return leftMotor.getAppliedOutput();
 	}
 
 	public double getRightTemp() {
-		return rightMotor.getMotorTemperature();
+		// Convert from celcius to Fahrenheit
+		return (rightMotor.getMotorTemperature() * 9 / 5) + 32;
 	}
 
 	public double getLeftTemp() {
-		return leftMotor.getMotorTemperature();
+		// Convert from celcius to Fahrenheit
+		return (leftMotor.getMotorTemperature() * 9 / 5) + 32;
+	}
+
+	// motor controller's output current in Amps
+	public double getRightOutputCurrent() {
+		return rightMotor.getOutputCurrent();
+	}
+
+	// motor controller's output current in Amps
+	public double getLeftOutputCurrent() {
+		return leftMotor.getOutputCurrent();
 	}
 
 	/*public boolean getAtTarget(double deadBand) {
