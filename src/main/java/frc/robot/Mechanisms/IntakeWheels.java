@@ -27,7 +27,7 @@ public class IntakeWheels {
 		_intakeSparkMax.clearFaults();
 		_intakeSparkMax.restoreFactoryDefaults();
 		_intakeSparkMax.setIdleMode(IdleMode.kBrake);
-		_intakeSparkMax.setSmartCurrentLimit(Constants.IntakeConstants.kSmartCurrentLimit);
+		//_intakeSparkMax.setSmartCurrentLimit(Constants.IntakeConstants.kSmartCurrentLimit);
 	}
 
 	public void Intake() {
@@ -36,6 +36,7 @@ public class IntakeWheels {
 		if(Constants.getMode() == Mode.SIM) {
 			_intakeSparkMax.setVoltage(1.0);
 		} else {
+			//System.out.println("Intake() being called");
 			_intakeSparkMax.set(Constants.IntakeConstants.kIntakeSpeed);
 		}
 	}
@@ -43,25 +44,33 @@ public class IntakeWheels {
 	public void OutTake() {
 		//System.out.println("IntakeWheels::OutTake() called");
 		
-		if(Constants.getMode() == Mode.SIM) {
+		/*if(Constants.getMode() == Mode.SIM) {
 			_intakeSparkMax.setVoltage(1.0);
 		} else {
 			_intakeSparkMax.set(Constants.IntakeConstants.kOuttakeSpeed);
-		}
+		}*/
 	}
 
 	public void disable() {
 		//System.out.println("IntakeWheels::disable() called");
 
-		if(Constants.getMode() == Mode.SIM) {
+		/*if(Constants.getMode() == Mode.SIM) {
 			_intakeSparkMax.setVoltage(0.0);
 		} else {
 			_intakeSparkMax.stopMotor();
-		}
+		}*/
 	}
 
 	public double getOutputCurrent() {
 		return _intakeSparkMax.getOutputCurrent();
+	}
+
+	public double getTemp() {
+		return (_intakeSparkMax.getMotorTemperature() * 9 / 5) + 32;
+	}
+
+	public double getAppliedOutput() {
+		return _intakeSparkMax.getAppliedOutput();
 	}
 
 	public boolean hasNote() {

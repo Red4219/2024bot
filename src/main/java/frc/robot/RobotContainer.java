@@ -166,15 +166,27 @@ public class RobotContainer {
 
 		driverController.button(3).onTrue(
 			//new FloorIntakeCommand(true)
-			Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE))
+			//Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE))
+			new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty())
 		);
+
+		driverController.button(4).onTrue(
+			//new FloorIntakeCommand(true)
+			//Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE))
+			new ClimberPoseCommand(kClimberPoses.MID)
+		);
+
+		/*operatorController.button(1).onTrue(
+			//new ArmAimCommand()
+			new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE)
+		);*/
 
 		operatorController.button(1).onTrue(
-			new ArmAimCommand()
-		);
+				//new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.of(500)));
+				new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.empty()));
 
 		operatorController.button(2).onTrue(
-			Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())
+			Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())			
 		);
 
 		operatorController.button(3).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.AMPLIFIER)));
@@ -258,10 +270,10 @@ public class RobotContainer {
 				new RunCommand(() -> driveSubsystem.drive(
 					//JoystickUtils.processJoystickInput(-driverController.getLeftY()),
 					(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? JoystickUtils.processJoystickInput(-driverController.getLeftY()) : JoystickUtils.processJoystickInput(driverController.getLeftY()),
-					JoystickUtils.processJoystickInput(-driverController.getLeftX()),
+					JoystickUtils.processJoystickInput(driverController.getLeftX()),
 					//-JoystickUtils.processJoystickInput((driverController.getHID().isConnected()) ? driverController.getRawAxis(2) : driverController.getRightX()),
-					//-JoystickUtils.processJoystickInput(driverController.getRightX()),
-					-JoystickUtils.processJoystickInput( driverController.getRawAxis(2) ),
+					-JoystickUtils.processJoystickInput(driverController.getRightX()),
+					//-JoystickUtils.processJoystickInput( driverController.getRawAxis(2) ),
 					true,
 					false
 				),

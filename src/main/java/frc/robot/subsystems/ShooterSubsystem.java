@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -14,8 +16,12 @@ public class ShooterSubsystem extends SubsystemBase {
     
     private ShooterWheels shooter = new ShooterWheels(Constants.ShooterConstants.kPrimaryPort, Constants.ShooterConstants.kSecondaryPort);
     private kShooterStates currentShooterState = kShooterStates.DISABLED;
+    private double speed = 0.0;
 
     public ShooterSubsystem() {
+
+        ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
+		shooterTab.addDouble("Target Speed", this::getSpeed);
         
     }
 
@@ -25,7 +31,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void shootNote() {
-        shooter.shoot(1.0);
+        //System.out.println("shootNote called");
+        shooter.shoot(0.5);
 	}
 
 	public void disableShooter() {
@@ -86,6 +93,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	}
 
     public void setSpeed(double speed) {
+        this.speed = speed;
         System.out.println("ShooterSubSystem::setSpeed() - speed: " + speed);
     }
 

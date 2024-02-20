@@ -39,7 +39,8 @@ public class ColorSensor {
     }
 
     public boolean noteDetected() {
-        if(m_colorSensor.getRed() == 1.0) {
+        if(m_colorSensor.getRed() >= 30.0) {
+            //System.out.println("note detected");
             return true;
         }
 

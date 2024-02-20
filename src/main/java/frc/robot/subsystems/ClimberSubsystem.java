@@ -54,46 +54,46 @@ public class ClimberSubsystem extends SubsystemBase {
 	HashMap<kClimberPoses, double[]> climberStates = Constants.ClimberConstants.kClimberStatesMap;
 
 	private static ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber");
-	private static GenericEntry ClimberPosition = ClimberTab.addPersistent("Climber Position", 0).getEntry();
-	private static GenericEntry ClimberTarget = ClimberTab.addPersistent("Climber Target", 0).getEntry();
+	//private static GenericEntry ClimberPosition = ClimberTab.addPersistent("Climber Position", 0).getEntry();
+	//private static GenericEntry ClimberTarget = ClimberTab.addPersistent("Climber Target", 0).getEntry();
 
-	private NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
-	private static GenericEntry climberNTPosition = ClimberTab.addPersistent("Climber NT Value", 0).getEntry();
+	//private NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
+	//private static GenericEntry climberNTPosition = ClimberTab.addPersistent("Climber NT Value", 0).getEntry();
 
-	NetworkTable climberTable = networkTableInstance.getTable("/climber");
-	NetworkTableEntry entry;
+	//NetworkTable climberTable = networkTableInstance.getTable("/climber");
+	//NetworkTableEntry entry;
 
 	public ClimberSubsystem() {
 		rightMotor = new CANSparkMax(frc.robot.Constants.ClimberConstants.kRightPort, MotorType.kBrushless);
-		leftMotor = new CANSparkMax(frc.robot.Constants.ClimberConstants.kLeftPort, MotorType.kBrushless);
+		//leftMotor = new CANSparkMax(frc.robot.Constants.ClimberConstants.kLeftPort, MotorType.kBrushless);
 
 		if(Constants.getMode() == Mode.SIM) {
 			REVPhysicsSim.getInstance().addSparkMax(rightMotor, 2.6f, 5676);
-			REVPhysicsSim.getInstance().addSparkMax(leftMotor, 2.6f, 5676);
+			//REVPhysicsSim.getInstance().addSparkMax(leftMotor, 2.6f, 5676);
 		}
 
 		rightMotor.restoreFactoryDefaults();
-		leftMotor.restoreFactoryDefaults();
+		//leftMotor.restoreFactoryDefaults();
 
 		rightMotor.setIdleMode(IdleMode.kBrake);
-		leftMotor.setIdleMode(IdleMode.kBrake);
+		//leftMotor.setIdleMode(IdleMode.kBrake);
 
 		rightEncoder = rightMotor.getEncoder();
-		leftEncoder = leftMotor.getEncoder();
+		//leftEncoder = leftMotor.getEncoder();
 
 		resetZeros();
 
 		// Tells the motors to automatically convert degrees to rotations
 		if(Constants.getMode() == Mode.REAL) {
 			rightEncoder.setPositionConversionFactor((2 * Math.PI) / frc.robot.Constants.ClimberConstants.kClimberTicks);
-			leftEncoder.setPositionConversionFactor((2 * Math.PI) / frc.robot.Constants.ClimberConstants.kClimberTicks);
+			//leftEncoder.setPositionConversionFactor((2 * Math.PI) / frc.robot.Constants.ClimberConstants.kClimberTicks);
 			rightEncoder.setVelocityConversionFactor((2 * Math.PI) / frc.robot.Constants.ClimberConstants.kClimberTicks);
-			leftEncoder.setVelocityConversionFactor((2 * Math.PI) / frc.robot.Constants.ClimberConstants.kClimberTicks);
+			//leftEncoder.setVelocityConversionFactor((2 * Math.PI) / frc.robot.Constants.ClimberConstants.kClimberTicks);
 		} else {
 			rightEncoder.setPositionConversionFactor((2 * Math.PI) / frc.robot.Constants.ArmConstants.kMajorArmTicks);
-			leftEncoder.setPositionConversionFactor((2 * Math.PI) / frc.robot.Constants.ArmConstants.kMajorArmTicks);
+			//leftEncoder.setPositionConversionFactor((2 * Math.PI) / frc.robot.Constants.ArmConstants.kMajorArmTicks);
 			rightEncoder.setVelocityConversionFactor((2 * Math.PI) / frc.robot.Constants.ArmConstants.kMajorArmTicks);
-			leftEncoder.setVelocityConversionFactor((2 * Math.PI) / frc.robot.Constants.ArmConstants.kMajorArmTicks);
+			//leftEncoder.setVelocityConversionFactor((2 * Math.PI) / frc.robot.Constants.ArmConstants.kMajorArmTicks);
 		}
 
 		
@@ -116,7 +116,7 @@ public class ClimberSubsystem extends SubsystemBase {
 		//rightMotor.setInverted(invertLeader);
 		//leftMotor.follow(rightMotor, true);
 
-		setMaxOutput(frc.robot.Constants.ClimberConstants.kClimberCurrentLimit);
+		//setMaxOutput(frc.robot.Constants.ClimberConstants.kClimberCurrentLimit);
 
 		rightPIDController.setP(Constants.ClimberConstants.kClimberGains.kP);
 		rightPIDController.setI(Constants.ClimberConstants.kClimberGains.kI);
@@ -126,7 +126,7 @@ public class ClimberSubsystem extends SubsystemBase {
 		rightPIDController.setFF(0);
 
 		//rightMotor.setSmartCurrentLimit(frc.robot.Constants.ClimberConstants.kClimberCurrentLimit);
-		rightMotor.setSecondaryCurrentLimit(Constants.ArmConstants.kArmCurrentLimit + 3);
+		//rightMotor.setSecondaryCurrentLimit(Constants.ArmConstants.kArmCurrentLimit + 3);
 
 		rightPIDController.setSmartMotionMaxVelocity(Constants.ArmConstants.kMaxVelRadiansPerSec, 0);
 		rightPIDController.setSmartMotionMinOutputVelocity(0, 0);
@@ -155,9 +155,9 @@ public class ClimberSubsystem extends SubsystemBase {
 
 		
 		// Listen for changes
-		DoubleSubscriber positionSubscriber = climberTable.getDoubleTopic("position").subscribe(0.0);
+		//DoubleSubscriber positionSubscriber = climberTable.getDoubleTopic("position").subscribe(0.0);
 
-		NetworkTableInstance.getDefault().addListener(
+		/*NetworkTableInstance.getDefault().addListener(
 			positionSubscriber,
 			EnumSet.of(NetworkTableEvent.Kind.kValueAll), 
 			event -> {
@@ -167,7 +167,13 @@ public class ClimberSubsystem extends SubsystemBase {
 
 				atSetPoint = false;
 			}
-		);
+		);*/
+
+		ClimberTab.addDouble("Target again", this::getTargetPosition);
+		ClimberTab.addDouble("Position again", this::getPosition);
+		ClimberTab.addDouble("Right Current", this::getRightCurrent);
+		ClimberTab.addDouble("Right Temp", this::getRightTemp);
+		ClimberTab.addDouble("Right Output", this::getRightOutput);
 	}
 
 	public boolean isAtSetPoint() {
@@ -184,10 +190,10 @@ public class ClimberSubsystem extends SubsystemBase {
 	}
 
 	public void setSmartCurrentLimit(int limit) {
-		rightMotor.setSmartCurrentLimit(limit);
-		leftMotor.setSmartCurrentLimit(limit);
-		rightMotor.setSecondaryCurrentLimit(limit + 3);
-		leftMotor.setSecondaryCurrentLimit(limit + 3);
+		//rightMotor.setSmartCurrentLimit(limit);
+		//leftMotor.setSmartCurrentLimit(limit);
+		//rightMotor.setSecondaryCurrentLimit(limit + 3);
+		//leftMotor.setSecondaryCurrentLimit(limit + 3);
 	}
 
 	/** used to disable the motors for rezeroing */
@@ -262,7 +268,7 @@ public class ClimberSubsystem extends SubsystemBase {
 	/** resets the zeros of the arms to their current positions */
 	public void resetZeros() {
 		rightEncoder.setPosition(0);
-		leftEncoder.setPosition(0);
+		//leftEncoder.setPosition(0);
 	}
 
 	/**
@@ -282,8 +288,8 @@ public class ClimberSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 
-		ClimberPosition.setDouble(rightEncoder.getPosition());
-		ClimberTarget.setDouble(targetPosition);
+		//ClimberPosition.setDouble(rightEncoder.getPosition());
+		//ClimberTarget.setDouble(targetPosition);
 
 		//Logger.getInstance().recordOutput("Climber/position", rightEncoder.getPosition());
 		//Logger.getInstance().recordOutput("Climber/target", targetPosition);
@@ -291,12 +297,12 @@ public class ClimberSubsystem extends SubsystemBase {
 		Logger.recordOutput("Climber/position", rightEncoder.getPosition());
 		Logger.recordOutput("Climber/target", targetPosition);
 
-		entry = climberTable.getEntry("position");
+		//entry = climberTable.getEntry("position");
 
-		double value = entry.getDouble(0.0);
+		//double value = entry.getDouble(0.0);
 
 		// Set the value of the shuffleboard
-		climberNTPosition.setDouble(value);
+		//climberNTPosition.setDouble(value);
 		
 		// Set the value of the PID
 		setReference();
@@ -332,7 +338,8 @@ public class ClimberSubsystem extends SubsystemBase {
 		targetClimberState = state;
 		enableClimber = true;
 
-		targetPosition = climberStates.get(targetClimberState)[0];
+		//targetPosition = climberStates.get(targetClimberState)[0];
+		targetPosition = 300.0;
 		atSetPoint = false;
 
 		// get minor speed from map
@@ -379,6 +386,26 @@ public class ClimberSubsystem extends SubsystemBase {
 
 	public boolean isFullyRetracted() {
 		return true;
+	}
+
+	public double getTargetPosition() {
+		return this.targetPosition;
+	}
+
+	public double getPosition() {
+		return rightEncoder.getPosition();
+	}
+
+	public double getRightOutput() {
+		return rightMotor.getAppliedOutput();
+	}
+
+	public double getRightTemp() {
+		return (rightMotor.getMotorTemperature() * 9 / 5) + 32;
+	}
+
+	public double getRightCurrent() {
+		return rightMotor.getOutputCurrent();
 	}
 	
 }

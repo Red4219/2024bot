@@ -12,7 +12,8 @@ import org.littletonrobotics.junction.Logger;
 import com.revrobotics.REVPhysicsSim;
 
 import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,7 +23,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakeConstants.kIntakeStates;
 import frc.robot.Mechanisms.ColorSensor;
 import frc.robot.Mechanisms.IntakeWheels;
-import frc.robot.Tools.Parts.IRDistanceSensor;
+
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -61,6 +62,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
 		//gripper = new IntakeWheels(IntakeConstants.kRightIntakeWheelPort, IntakeConstants.kLeftIntakeWheelPort);
+
+		ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
+		intakeTab.addDouble("Intake Current", intakeWheels::getOutputCurrent);
+		intakeTab.addDouble("Intake Temp", intakeWheels::getTemp);
+		intakeTab.addDouble("Intake Output", intakeWheels::getAppliedOutput);
+		intakeTab.addBoolean("Note Detected", colorSensor::noteDetected);
 	}
 
 	@Override
@@ -72,8 +79,12 @@ public class IntakeSubsystem extends SubsystemBase {
 		//SmartDashboard.putBoolean("Has CONE", getHasCone()); 
 		//SmartDashboard.putNumber("distance sensor", distanceSensor.getDistanceAsVolts());
 
-		SmartDashboard.putBoolean("Has Note", colorSensor.noteDetected());
+		//colorSensor.printColorValues();
+
+		//SmartDashboard.putBoolean("Has Note", colorSensor.noteDetected());
 		Logger.recordOutput("Intake/Note_Detected", colorSensor.noteDetected());
+
+		intakeWheels.Intake();
 
 		/*switch (currentIntakeState) {
 
@@ -98,14 +109,16 @@ public class IntakeSubsystem extends SubsystemBase {
 				break;
 		}*/
 
-		if(this.currentIntakeState == kIntakeStates.BUMP) {
+		
+
+		/*if(this.currentIntakeState == kIntakeStates.BUMP) {
 
 		} else {
 			if(colorSensor.noteDetected()) {
 				hasNote = true;
 				setIntakeState(kIntakeStates.IDLE);
 			}
-		}
+		}*/
 	}
 
 	// region commands

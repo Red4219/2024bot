@@ -28,8 +28,9 @@ public class ShooterWheels {
 
         _shooterSparkMaxPrimary.clearFaults();
 		_shooterSparkMaxPrimary.restoreFactoryDefaults();
-		_shooterSparkMaxPrimary.setIdleMode(IdleMode.kBrake);
-		_shooterSparkMaxPrimary.setSmartCurrentLimit(Constants.ShooterConstants.kSmartCurrentLimit);
+		_shooterSparkMaxPrimary.setIdleMode(IdleMode.kCoast);
+		//_shooterSparkMaxPrimary.setSmartCurrentLimit(Constants.ShooterConstants.kSmartCurrentLimit);
+        _shooterSparkMaxPrimary.setInverted(true);
 
         _shooterSparkMaxSecondary = new CANSparkMax(secondaryPort, MotorType.kBrushless);
 
@@ -42,10 +43,10 @@ public class ShooterWheels {
 
         _shooterSparkMaxSecondary.clearFaults();
 		_shooterSparkMaxSecondary.restoreFactoryDefaults();
-		_shooterSparkMaxSecondary.setIdleMode(IdleMode.kBrake);
-		_shooterSparkMaxSecondary.setSmartCurrentLimit(Constants.ShooterConstants.kSmartCurrentLimit);
+		_shooterSparkMaxSecondary.setIdleMode(IdleMode.kCoast);
+		//_shooterSparkMaxSecondary.setSmartCurrentLimit(Constants.ShooterConstants.kSmartCurrentLimit);
 
-        _shooterSparkMaxSecondary.follow(_shooterSparkMaxPrimary, true);
+        _shooterSparkMaxSecondary.follow(_shooterSparkMaxPrimary, false);
 
         rightEncoder = _shooterSparkMaxPrimary.getEncoder();
 		leftEncoder = _shooterSparkMaxSecondary.getEncoder();

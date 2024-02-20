@@ -216,7 +216,7 @@ public final class Constants {
 		 */
 		//public static final int kMajorArmLength = 38;
 
-		public static final int kArmCurrentLimit = 5;
+		public static final int kArmCurrentLimit = 8;
 
 		// speed limits for the arms
 		public static final double kPIDOutputLimit = 1;
@@ -229,7 +229,7 @@ public final class Constants {
  
 		// Arm PID constants	
 		//public static final PIDGains kArmGains = new PIDGains(0.035, 0.0000025, 0.002);
-		public static final PIDGains kArmGains = new PIDGains(1.0, 0.25, 0.2);
+		public static final PIDGains kArmGains = new PIDGains(1.0, 1.0, 0.2);
 
 		public static final double kTolerance = 0.05;
 
@@ -288,7 +288,7 @@ public final class Constants {
 
 		//
 		public static final int kSmartCurrentLimit = 5;
-		public static final double kIntakeSpeed = 1.0;
+		public static final double kIntakeSpeed = .7;
 		public static final double kOuttakeSpeed = -1.0;
 		public static final double kIntakeOutputCurrentThreshold = 6.0;
 		public static final int kIntakeWheelPort = 17;

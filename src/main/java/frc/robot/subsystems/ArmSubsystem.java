@@ -14,19 +14,17 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.AccelStrategy;
 
+import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.Constants.Mode;
-import frc.robot.Mechanisms.ArmSegment;
 import frc.robot.Tools.PhotonVision;
 
 public class ArmSubsystem extends SubsystemBase {
@@ -55,7 +53,7 @@ public class ArmSubsystem extends SubsystemBase {
 	private double position;
 	private boolean atSetPoint = false;
 	private double pidOutput;
-	private double targetPosition = 0.862;
+	private double targetPosition = 0.0;
 
 	private PhotonVision _photonVision;
 	private int speakerTarget = 0;
@@ -100,8 +98,6 @@ public class ArmSubsystem extends SubsystemBase {
 		rightMotor = new CANSparkMax(frc.robot.Constants.ArmConstants.kRightArmPort, MotorType.kBrushless);
 		leftMotor = new CANSparkMax(frc.robot.Constants.ArmConstants.kLeftArmPort, MotorType.kBrushless);
 
-		rightMotor.setInverted(true);
-
 		if(Constants.getMode() == Mode.SIM) {
 			REVPhysicsSim.getInstance().addSparkMax(rightMotor, 2.6f, 5676);
 			REVPhysicsSim.getInstance().addSparkMax(leftMotor, 2.6f, 5676);
@@ -110,18 +106,22 @@ public class ArmSubsystem extends SubsystemBase {
 		rightMotor.restoreFactoryDefaults();
 		leftMotor.restoreFactoryDefaults();
 
+		rightMotor.setInverted(true);
+		rightMotor.setSmartCurrentLimit(Constants.ArmConstants.kArmCurrentLimit);
+		rightMotor.setSecondaryCurrentLimit(Constants.ArmConstants.kArmCurrentLimit + 3);
+
 		rightMotor.setIdleMode(IdleMode.kBrake);
 		leftMotor.setIdleMode(IdleMode.kBrake);
 
 		// Have the left follow the right inverted
-		leftMotor.follow(leftMotor, true);
+		leftMotor.follow(rightMotor, true);
 
 		rightEncoder = rightMotor.getEncoder();
 		rightBoreEncoder = rightMotor.getAbsoluteEncoder();
 		leftEncoder = leftMotor.getEncoder();
 
 		rightPIDController = rightMotor.getPIDController();
-		rightPIDController.setFeedbackDevice(rightMotor.getAbsoluteEncoder());
+		rightPIDController.setFeedbackDevice(rightBoreEncoder);
 
 		rightPIDController.setOutputRange(-Constants.ArmConstants.kArmCurrentLimit, Constants.ArmConstants.kArmCurrentLimit);
 
@@ -360,6 +360,8 @@ public class ArmSubsystem extends SubsystemBase {
 					System.out.println("adjusting position: " + rightEncoder.getPosition());
 				}
 			}
+
+			
 		} else {
 			//System.out.println("we are at the setpoint, position: " + rightEncoder.getPosition());
 
