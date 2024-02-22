@@ -19,7 +19,8 @@ public class ClimberPoseCommand extends Command {
 
 	@Override
 	public void initialize() {
-		climberSubsystem.setSequencedClimberState(climberPose);
+		//climberSubsystem.setSequencedClimberState(climberPose);
+		//climberSubsystem.setTargetClimberState(climberPose);
 		System.out.println("ClimberPoseCommand::initialize() called");
 	}
 
@@ -27,6 +28,7 @@ public class ClimberPoseCommand extends Command {
 	@Override
 	public void execute() {
 		//System.out.println("ClimberPoseCommand::execute() called");
+		climberSubsystem.setTargetClimberState(climberPose);
 	}
 
 	// Called once the command ends or is interrupted.
@@ -55,10 +57,12 @@ public class ClimberPoseCommand extends Command {
 		}
 		return climberSubsystem.isFullyExtended();*/
 
-		if(climberSubsystem.isAtSetPoint()) {
+		/*if(climberSubsystem.isAtSetPointRight() && climberSubsystem.isAtSetPointLeft()) {
 			System.out.println("isFinished returning true");
 		}
 		
-		return climberSubsystem.isAtSetPoint();
+		return climberSubsystem.isAtSetPointRight() && climberSubsystem.isAtSetPointLeft();*/
+
+		return true;
 	}
 }

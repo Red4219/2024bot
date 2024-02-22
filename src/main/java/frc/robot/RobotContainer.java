@@ -54,7 +54,8 @@ public class RobotContainer {
 	//public static final DriveSubsystem driveSubsystem = new DriveSubsystem(true);
 	public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
 	public PhotonVision _photonVision = driveSubsystem.getPhotonVision();
-	public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+	private static final CommandXboxController operatorController = new CommandXboxController(1);
+	public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorController);
 	public static final ArmSubsystem armSubsystem = new ArmSubsystem(driveSubsystem.getPhotonVision());
 	public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 	public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
@@ -69,7 +70,7 @@ public class RobotContainer {
 	private final CommandXboxController driverController = new CommandXboxController(0);
 	//private final XboxController driverController = new XboxController(0);
 	//private final XboxController operatorController = new XboxController(1);
-	private final CommandXboxController operatorController = new CommandXboxController(1);
+	//private final CommandXboxController operatorController = new CommandXboxController(1);
 	//private final CommandGenericHID operatorController = new CommandGenericHID(
 			//OperatorConstants.kOperatorControllerPort);
 	private final CommandXboxController programmerController = new CommandXboxController(
@@ -135,8 +136,8 @@ public class RobotContainer {
 		//test
 		//driverController.button(1).whileTrue(new RunCommand(() -> driveSubsystem.goToPose()));
 
-		driverController.button(3).onTrue(new ClimberPoseCommand(kClimberPoses.HIGH));
-		driverController.button(4).onTrue(new ClimberPoseCommand(kClimberPoses.TUCKED));
+		//driverController.button(3).onTrue(new ClimberPoseCommand(kClimberPoses.HIGH));
+		//driverController.button(4).onTrue(new ClimberPoseCommand(kClimberPoses.TUCKED));
 
 		/*driverController.button(1).onTrue(
 				intakeSubsystem.intakeCommand())
@@ -173,7 +174,7 @@ public class RobotContainer {
 		driverController.button(4).onTrue(
 			//new FloorIntakeCommand(true)
 			//Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE))
-			new ClimberPoseCommand(kClimberPoses.MID)
+			new ClimberPoseCommand(kClimberPoses.HIGH)
 		);
 
 		/*operatorController.button(1).onTrue(
@@ -191,6 +192,9 @@ public class RobotContainer {
 
 		operatorController.button(3).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.AMPLIFIER)));
 		operatorController.button(4).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.SOURCE)));
+
+		//asdf
+		//JoystickUtils.processJoystickInput(operatorController.getLeftY());
 
 
 		// region Arm Commands
@@ -280,7 +284,7 @@ public class RobotContainer {
 				driveSubsystem
 			)
 		);
-		
+
 		// endregion
 	}
 

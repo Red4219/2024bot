@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.AccelStrategy;
 
@@ -117,7 +118,7 @@ public class ArmSubsystem extends SubsystemBase {
 		leftMotor.follow(rightMotor, true);
 
 		rightEncoder = rightMotor.getEncoder();
-		rightBoreEncoder = rightMotor.getAbsoluteEncoder();
+		rightBoreEncoder = rightMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
 		leftEncoder = leftMotor.getEncoder();
 
 		rightPIDController = rightMotor.getPIDController();

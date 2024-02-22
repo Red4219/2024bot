@@ -274,12 +274,15 @@ public final class Constants {
 			TUCKED,
 			MID,
 			HIGH,
+			USER
 		}
 
 		public static final HashMap<kClimberPoses, double[]> kClimberStatesMap = new HashMap<kClimberPoses, double[]>() {
 			{
-				put(kClimberPoses.TUCKED, new double[] { 1, 0 });
-				put(kClimberPoses.HIGH, new double[] { 7, 10 });
+				put(kClimberPoses.TUCKED, new double[] { 0 });
+				put(kClimberPoses.MID, new double[] { 7 });
+				put(kClimberPoses.HIGH, new double[] { 100 });
+				put(kClimberPoses.USER, new double[] { 7 });
 			}
 		};
 	}

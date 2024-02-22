@@ -84,7 +84,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		//SmartDashboard.putBoolean("Has Note", colorSensor.noteDetected());
 		Logger.recordOutput("Intake/Note_Detected", colorSensor.noteDetected());
 
-		intakeWheels.Intake();
+		//intakeWheels.Intake();
 
 		/*switch (currentIntakeState) {
 
