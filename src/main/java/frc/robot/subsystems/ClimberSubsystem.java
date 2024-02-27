@@ -449,26 +449,32 @@ public class ClimberSubsystem extends SubsystemBase {
 		double maxValue = climberStates.get(kClimberPoses.HIGH)[0];
 
 		if(leftValue > 0.1) {
-			if(targetPositionLeft <= maxValue) {
+			// move down
+			if(Math.abs( leftMotor.getEncoder().getPosition()) >= 5.0) {
 				atSetPointLeft = false;
 				targetPositionLeft += leftValue;
 			}
 		} else if(leftValue < -0.1) {
-			if(targetPositionLeft >= 0) {
+			// move up
+			if(Math.abs( leftMotor.getEncoder().getPosition()) <= maxValue) {
 				atSetPointLeft = false;
-				this.targetPositionLeft -= leftValue;
+				this.targetPositionLeft += leftValue;
 			}
 		}
 
+		//System.out.println("rightValue: " + rightValue);
+
 		if(rightValue > 0.1) {
-			if(targetPositionLeft <= maxValue) {
+			// move down
+			if(Math.abs( rightMotor.getEncoder().getPosition()) >= 5.0) {
 				atSetPointRight = false;
-				this.targetPositionRight += rightValue;
+				targetPositionRight += rightValue;
 			}
 		} else if(rightValue < -0.1) {
-			if(targetPositionLeft >= 0) {
+			// move up
+			if(Math.abs( rightMotor.getEncoder().getPosition()) <= maxValue) {
 				atSetPointRight = false;
-				this.targetPositionRight -= rightValue;
+				targetPositionRight += rightValue;
 			}
 		}
 

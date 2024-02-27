@@ -229,9 +229,10 @@ public final class Constants {
  
 		// Arm PID constants	
 		//public static final PIDGains kArmGains = new PIDGains(0.035, 0.0000025, 0.002);
-		public static final PIDGains kArmGains = new PIDGains(1.0, 1.0, 0.2);
+		//public static final PIDGains kArmGains = new PIDGains(1.0, 1.0, 0.2);
+		public static final PIDGains kArmGains = new PIDGains(25.0, 8.0, 0.2);
 
-		public static final double kTolerance = 0.05;
+		public static final double kTolerance = 0.01;
 
 		public static enum kArmPoses {
 			GROUND_INTAKE,
@@ -245,7 +246,9 @@ public final class Constants {
 
 		public static final HashMap<kArmPoses, double[]> kArmStatesMap = new HashMap<kArmPoses, double[]>() {
 			{
-				put(kArmPoses.GROUND_INTAKE, new double[] { .86 });
+				//put(kArmPoses.GROUND_INTAKE, new double[] { .74 });
+				//put(kArmPoses.GROUND_INTAKE, new double[] { .84 });
+				put(kArmPoses.GROUND_INTAKE, new double[] { .96 });
 				put(kArmPoses.HUMAN_ELEMENT_INTAKE, new double[] { .94 });
 				put(kArmPoses.AMP_SCORE, new double[] { 20 });
 				put(kArmPoses.SPEAKER_SCORE, new double[] { 100 });
@@ -281,7 +284,7 @@ public final class Constants {
 			{
 				put(kClimberPoses.TUCKED, new double[] { 0 });
 				put(kClimberPoses.MID, new double[] { 7 });
-				put(kClimberPoses.HIGH, new double[] { 100 });
+				put(kClimberPoses.HIGH, new double[] { 130 });
 				put(kClimberPoses.USER, new double[] { 7 });
 			}
 		};

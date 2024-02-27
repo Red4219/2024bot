@@ -108,8 +108,8 @@ public class ArmSubsystem extends SubsystemBase {
 		leftMotor.restoreFactoryDefaults();
 
 		rightMotor.setInverted(true);
-		rightMotor.setSmartCurrentLimit(Constants.ArmConstants.kArmCurrentLimit);
-		rightMotor.setSecondaryCurrentLimit(Constants.ArmConstants.kArmCurrentLimit + 3);
+		//rightMotor.setSmartCurrentLimit(Constants.ArmConstants.kArmCurrentLimit);
+		//rightMotor.setSecondaryCurrentLimit(Constants.ArmConstants.kArmCurrentLimit + 3);
 
 		rightMotor.setIdleMode(IdleMode.kBrake);
 		leftMotor.setIdleMode(IdleMode.kBrake);
@@ -140,6 +140,7 @@ public class ArmSubsystem extends SubsystemBase {
 		ShuffleboardTab armTab = Shuffleboard.getTab("Arm");
 		armTab.addDouble("Arm Position", this::getPosition);
 		armTab.addBoolean("Auto Aim", this::getAutoAim);
+		armTab.addBoolean("At Set Point", this::atSetPoint);
 		armTab.addDouble("Target Position", this::getTargetPosition);
 		armTab.addDouble("Right Applied Output", this::getRightAppliedOutput);
 		armTab.addDouble("Left Applied Output", this::getLeftAppliedOutput);
@@ -147,6 +148,8 @@ public class ArmSubsystem extends SubsystemBase {
 		armTab.addDouble("Left Output Current", this::getLeftOutputCurrent);
 		armTab.addDouble("Right Temp", this::getRightTemp);
 		armTab.addDouble("Left Temp", this::getLeftTemp);
+		armTab.addString("State Name", this::getTargetStateName);
+		armTab.addDouble("Voltage", this::getVoltage);
 
 		_photonVision = photonVision;
 
@@ -157,6 +160,9 @@ public class ArmSubsystem extends SubsystemBase {
                 speakerTarget = 4;
             }
         }
+
+		this.targetArmState = kArmPoses.GROUND_INTAKE;
+		this.targetPosition = armStates.get(targetArmState)[0];
 
 		// end new
 
@@ -323,21 +329,35 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public void setReference() {
-		if(atSetPoint == false) {
+		//if(atSetPoint == false) {
+			//System.out.println("atSetPoint is false");
 			if(Constants.getMode() == Mode.REAL) {
 				//System.out.println("it is being called, targetPosition: " + targetPosition);
-				REVLibError error = rightPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
+				//REVLibError error = rightPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
+				//REVLibError error = rightPIDController.setReference(targetPosition, CANSparkMax.ControlType.kSmartMotion);
 
-				if(error != REVLibError.kOk) {
+				/*if(error != REVLibError.kOk) {
 					System.out.println("ClimberSubsystem::setReference() - Error - could not set the PID controller");
+				}*/
+
+				pidOutput = pidController.calculate(rightBoreEncoder.getPosition(), targetPosition);
+
+				if(pidOutput > 12) {
+					pidOutput = 12;
+				} else if(pidOutput < -12) {
+					pidOutput = -12;
 				}
+
+				rightMotor.setVoltage(pidOutput);
+
+				//System.out.println("pidOutput: " + pidOutput);
 
 				// Are we close to the target position?
-				if(Math.abs(rightEncoder.getPosition() - targetPosition) <= Constants.ArmConstants.kTolerance) {
+				/*if(Math.abs(rightBoreEncoder.getPosition() - targetPosition) <= Constants.ArmConstants.kTolerance) {
 					// Yes we are
 					atSetPoint = true;
-					System.out.println("setting atSetPoint to true");
-				}
+					//System.out.println("setting atSetPoint to true");
+				}*/
 			} else if(Constants.getMode() == Mode.SIM) {
 				// We are not at the set point and are in SIM
 
@@ -363,12 +383,22 @@ public class ArmSubsystem extends SubsystemBase {
 			}
 
 			
-		} else {
+
+			
+		/* } else {
 			//System.out.println("we are at the setpoint, position: " + rightEncoder.getPosition());
 
 			if(Constants.getMode() == Mode.SIM) {
 				rightMotor.setVoltage(0.0);
 			}
+		}*/
+
+		if(Math.abs(rightBoreEncoder.getPosition() - targetPosition) <= Constants.ArmConstants.kTolerance) {
+			// Yes we are
+			//atSetPoint = true;
+			//rightMotor.setVoltage(0.0);
+		} else {
+			//atSetPoint = false;
 		}
 	}
 
@@ -438,6 +468,46 @@ public class ArmSubsystem extends SubsystemBase {
 	// motor controller's output current in Amps
 	public double getLeftOutputCurrent() {
 		return leftMotor.getOutputCurrent();
+	}
+
+	public boolean atSetPoint() {
+		return this.atSetPoint;
+	}
+
+	public String getTargetStateName() {
+		String stateName;
+		switch(targetArmState) {
+			case AIM:
+				stateName = "AIM";
+				break;
+			case AMP_SCORE:
+				stateName = "AMP_SCORE";
+				break;
+			case GROUND_INTAKE:
+				stateName = "GROUND_INTAKE";
+				break;
+			case HUMAN_ELEMENT_INTAKE:
+				stateName = "HUMAN_ELEMENT_INTAKE";
+				break;
+			case IDLE:
+				stateName = "IDLE";
+				break;
+			case SPEAKER_SCORE:
+				stateName = "SPEAKER_SCORE";
+				break;
+			case TRAP_DOOR_SCORE:
+				stateName = "TRAP_DOOR_SCORE";
+				break;
+			default:
+				stateName = "UNKNOWN";
+				break;
+		}
+
+		return stateName;
+	}
+
+	double getVoltage() {
+		return this.pidOutput;
 	}
 
 	/*public boolean getAtTarget(double deadBand) {

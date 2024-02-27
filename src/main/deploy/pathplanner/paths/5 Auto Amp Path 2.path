@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.93,
-        "y": 5.57
+        "x": 2.97,
+        "y": 6.98
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9711351674909232,
-        "y": 5.898703607554276
+        "x": 2.2522133218286045,
+        "y": 6.627065368867258
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.94,
-        "y": 7.04
+        "x": 2.78,
+        "y": 5.606089501740175
       },
       "prevControl": {
-        "x": 2.0195026445438526,
-        "y": 6.274973775798615
+        "x": 1.690070568407068,
+        "y": 6.0924774683495455
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,32 +31,50 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0,
-      "rotationDegrees": 180.0,
+      "rotationDegrees": -150.0,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -160.0,
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 180.0,
       "rotateFast": false
     }
   ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.6,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "TimedIntake1Seconds"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 8.0,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -160.0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "5 Auto Left 2 Paths",
+  "folder": "5 Auto Amp 1 Paths",
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": -150.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

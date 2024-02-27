@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5 Auto Left 2 Path 1"
+            "pathName": "5 Auto Amp 2 Path 1"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5 Auto Left 2 Path 2"
+            "pathName": "5 Auto Amp 2 Path 2"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5 Auto Left 2 Path 3"
+            "pathName": "5 Auto Amp 2 Path 3"
           }
         },
         {
@@ -68,13 +68,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5 Auto Left 2 Path 4"
+            "pathName": "5 Auto Amp 2 Path 4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "5 Auto Left 2 Path 5"
+            "pathName": "5 Auto Amp 2 Path 5"
           }
         },
         {

@@ -107,8 +107,8 @@ public class RobotContainer {
 		
 		
 		try {
-			autoChooser.addOption("5 Auto Left", AutoBuilder.buildAuto("5 Auto Left"));
-			autoChooser.addOption("5 Auto Left 2", AutoBuilder.buildAuto("5 Auto Left 2"));
+			autoChooser.addOption("5 Auto Amp 1", AutoBuilder.buildAuto("5 Auto Amp 1"));
+			autoChooser.addOption("5 Auto Amp 2", AutoBuilder.buildAuto("5 Auto Amp 2"));
 			autoChooser.addOption("auto-phil", AutoBuilder.buildAuto("auto-phil"));
 		} catch (Exception e) {
 			System.out.println("RobotContainer()::RobotContainer() - error: " + e.getMessage());
