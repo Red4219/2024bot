@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Vector;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
@@ -50,6 +51,8 @@ public class PhotonVision {
 	private PhotonPoseEstimator _photonPoseEstimator;
 	ShuffleboardTab photonVisionTab;
 	private EstimatedRobotPose _estimatedRobotPose;
+	private double[] _targetsUsed = new double[0];
+	private int _speakerTarget = 0;
 
 	Pose3d camPose = new Pose3d();
 	private Pose2d _lastPhotonPoseEstimatorPose = new Pose2d();
@@ -104,6 +107,9 @@ public class PhotonVision {
 		photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
 		photonVisionTab.addBoolean("Connection", this::isConnected);
 		photonVisionTab.addBoolean("Has Target", this::hasTarget);
+		photonVisionTab.addString("Targets Used", this::targetsUsed);
+		photonVisionTab.addDouble("Target Used", this::getTargetUsed);
+		photonVisionTab.addDouble("Speaker ID", this::getSpeakerTarget);
 	}
 
 	public boolean isConnected() {
@@ -117,6 +123,18 @@ public class PhotonVision {
 	public PhotonVisionResult getPose(Pose2d prevEstimatedRobotPose) {
 
 		try {
+
+			if(_speakerTarget == 0) {
+				if(DriverStation.getAlliance().isPresent()) {
+					if(DriverStation.getAlliance().get() == Alliance.Blue) {
+						//_aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
+						_speakerTarget = 7;
+					} else {
+						//_aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
+						_speakerTarget = 4;
+					}
+				}
+			}
 			
 			// Change this for testing
 			//if(Constants.getMode() == Mode.SIM && !PhotonVisionConstants.PhysicalCamera) {
@@ -141,10 +159,17 @@ public class PhotonVision {
 
 				List<Pose3d> allTagPoses = new ArrayList<>();
 
+				_targetsUsed = new double[estimatedRobotPose.targetsUsed.size()];
+
+				int i = 0;
+
 				for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
 					allTagPoses.add(
 						_aprilTagFieldLayout.getTagPose(target.getFiducialId()).get()
 					);
+
+					_targetsUsed[i] = target.getFiducialId();
+					i++;
 
 					//System.out.println("Distance to " + target.getFiducialId() + " is: " + targetDistance(target.getFiducialId()));
 
@@ -178,6 +203,8 @@ public class PhotonVision {
 					"AprilTagVision/TagPoses",
 					allTagPoses.toArray(new Pose3d[allTagPoses.size()])
 				);
+
+				_targetsUsed = new double[0];
 			}
 
 			// Return this if we do not have a value
@@ -292,18 +319,27 @@ public class PhotonVision {
 
 		if(_estimatedRobotPose != null) {
 			for(PhotonTrackedTarget target : _estimatedRobotPose.targetsUsed) {
-				if(target.getFiducialId() == 7) {
-					if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-						distance = targetDistance(7);
-						Logger.recordOutput("AprilTagVision/Target", distance);
-						return distance;
+				if(_speakerTarget == 0) {
+					if(target.getFiducialId() == 7) {
+						if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+							distance = targetDistance(7);
+							_speakerTarget = 7;
+							Logger.recordOutput("AprilTagVision/Target", distance);
+							return distance;
+						}
+					} else if(target.getFiducialId() == 4) {
+						if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+							distance = targetDistance(4);
+							_speakerTarget = 4;
+							Logger.recordOutput("AprilTagVision/Target", distance);
+							return distance;
+						}
 					}
-				} else if(target.getFiducialId() == 4) {
-					if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-						distance = targetDistance(4);
-						Logger.recordOutput("AprilTagVision/Target", distance);
-						return distance;
-					}
+				} else {
+					// we have already set the speaker target so just set the distance
+					distance = targetDistance(_speakerTarget);
+					Logger.recordOutput("AprilTagVision/Target", distance);
+					return distance;
 				}
 			}
 		}
@@ -549,5 +585,38 @@ public class PhotonVision {
 		
 		
 		setupAprilTagFieldLayoutSim();
+	}
+
+	public String targetsUsed() {
+
+		/*if(_targetsUsed.length == 0) {
+			return new double[]{0.0};
+		}
+
+		return _targetsUsed;*/
+
+		if(_targetsUsed.length == 0) {
+			return "";
+		}
+
+		String targets = "";
+
+		for(double target : _targetsUsed) {
+			targets += " " + target;
+		}
+
+		return targets;
+	}
+
+	public double getTargetUsed() {
+		if(this._targetsUsed.length > 0) {
+			return this._targetsUsed[0];
+		}
+
+		return 0;
+	}
+
+	public double getSpeakerTarget() {
+		return _speakerTarget;
 	}
 }

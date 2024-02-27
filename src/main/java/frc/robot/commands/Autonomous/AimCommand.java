@@ -86,11 +86,11 @@ public class AimCommand extends Command {
         if(Math.abs(targetYaw) > Constants.AutoConstants.kAimTargetTolerance) {
 
             if(targetYaw > 0) {
-                //_driveSubsystem.drive(0.0, 0.0, -.1);
-                _driveSubsystem.drive(0.0, 0.0, .5);
-            } else {
-                //_driveSubsystem.drive(0.0, 0.0, .5);
                 _driveSubsystem.drive(0.0, 0.0, -.1);
+                //_driveSubsystem.drive(0.0, 0.0, .5);
+            } else {
+                _driveSubsystem.drive(0.0, 0.0, .5);
+                //_driveSubsystem.drive(0.0, 0.0, -.1);
             }
             
             return false;

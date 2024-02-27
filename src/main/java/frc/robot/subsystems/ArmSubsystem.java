@@ -378,7 +378,7 @@ public class ArmSubsystem extends SubsystemBase {
 				} else {
 					// we have not reached the set point yet
 					rightMotor.setVoltage(pidOutput);
-					System.out.println("adjusting position: " + rightEncoder.getPosition());
+					//System.out.println("adjusting position: " + rightEncoder.getPosition());
 				}
 			}
 
