@@ -51,7 +51,7 @@ public class PhotonVision {
 	private PhotonPoseEstimator _photonPoseEstimator;
 	ShuffleboardTab photonVisionTab;
 	private EstimatedRobotPose _estimatedRobotPose;
-	private double[] _targetsUsed = new double[0];
+	private int[] _targetsUsed = new int[0];
 	private int _speakerTarget = 0;
 
 	Pose3d camPose = new Pose3d();
@@ -108,7 +108,7 @@ public class PhotonVision {
 		photonVisionTab.addBoolean("Connection", this::isConnected);
 		photonVisionTab.addBoolean("Has Target", this::hasTarget);
 		photonVisionTab.addString("Targets Used", this::targetsUsed);
-		photonVisionTab.addDouble("Target Used", this::getTargetUsed);
+		//photonVisionTab.addDouble("Target Used", this::getTargetUsed);
 		photonVisionTab.addDouble("Speaker ID", this::getSpeakerTarget);
 	}
 
@@ -148,6 +148,33 @@ public class PhotonVision {
 				System.out.println("PhonVision::getPose() - prevEstimatedRobotPose is null");
 			}
 
+			/////////
+
+			PhotonPipelineResult result = _camera.getLatestResult();
+			List<PhotonTrackedTarget> targets = result.getTargets();
+			_targetsUsed = new int[targets.size()];
+
+			//System.out.println("new hasTargets: " + result.hasTargets() + " length: " + targets.size());
+
+			List<Pose3d> allTagPoses = new ArrayList<>();
+
+			int i = 0;
+			for(PhotonTrackedTarget target : targets) {
+				allTagPoses.add(
+					_aprilTagFieldLayout.getTagPose(target.getFiducialId()).get()
+				);
+
+				_targetsUsed[i] = target.getFiducialId();
+				i++;
+			}
+
+			Logger.recordOutput(
+				"AprilTagVision/TargetsUsed",
+				allTagPoses.toArray(new Pose3d[allTagPoses.size()])
+			);
+
+			/////////
+
 			Optional<EstimatedRobotPose> o = getPhotonPose(prevEstimatedRobotPose);
 
 			if(o.isPresent()) {
@@ -157,19 +184,19 @@ public class PhotonVision {
 				EstimatedRobotPose estimatedRobotPose = o.get();
 				_estimatedRobotPose = estimatedRobotPose;
 
-				List<Pose3d> allTagPoses = new ArrayList<>();
+				//List<Pose3d> allTagPoses = new ArrayList<>();
 
-				_targetsUsed = new double[estimatedRobotPose.targetsUsed.size()];
+				//_targetsUsed = new double[estimatedRobotPose.targetsUsed.size()];
 
-				int i = 0;
+				//int i = 0;
 
 				for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
 					allTagPoses.add(
 						_aprilTagFieldLayout.getTagPose(target.getFiducialId()).get()
 					);
 
-					_targetsUsed[i] = target.getFiducialId();
-					i++;
+					//_targetsUsed[i] = target.getFiducialId();
+					//i++;
 
 					//System.out.println("Distance to " + target.getFiducialId() + " is: " + targetDistance(target.getFiducialId()));
 
@@ -198,13 +225,13 @@ public class PhotonVision {
 			} else {
 				//System.out.println("PhonVision::getPose() - I don't see any tags");
 				// Since we do not have any tags that we can see, blank out the list
-				List<Pose3d> allTagPoses = new ArrayList<>();
+				//List<Pose3d> allTagPoses = new ArrayList<>();
 				Logger.recordOutput(
 					"AprilTagVision/TagPoses",
 					allTagPoses.toArray(new Pose3d[allTagPoses.size()])
 				);
 
-				_targetsUsed = new double[0];
+				//_targetsUsed = new double[0];
 			}
 
 			// Return this if we do not have a value
@@ -422,9 +449,9 @@ public class PhotonVision {
 						}
 					}
 
-					Logger.recordOutput(
+					/*Logger.recordOutput(
 							"AprilTagVision/TargetsUsed",
-							allTagPoses.toArray(new Pose3d[allTagPoses.size()]));
+							allTagPoses.toArray(new Pose3d[allTagPoses.size()]));*/
 
 					Logger.recordOutput(
 							"PhotonVisionEstimator/Robot",
@@ -433,9 +460,9 @@ public class PhotonVision {
 					System.out.println(e.toString());
 				}
 			} else {
-				Logger.recordOutput(
+				/*Logger.recordOutput(
 							"AprilTagVision/TargetsUsed",
-							allTagPoses.toArray(new Pose3d[allTagPoses.size()]));
+							allTagPoses.toArray(new Pose3d[allTagPoses.size()]));*/
 
 				Logger.recordOutput(
 							"PhotonVisionEstimator/Robot",
@@ -601,7 +628,7 @@ public class PhotonVision {
 
 		String targets = "";
 
-		for(double target : _targetsUsed) {
+		for(int target : _targetsUsed) {
 			targets += " " + target;
 		}
 
