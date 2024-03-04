@@ -484,9 +484,9 @@ public class DriveSubsystem extends SubsystemBase {
 				if(Math.abs(targetYaw) > Constants.AutoConstants.kAimTargetTolerance) {
 					targetLocked = false;
 					if(targetYaw > 0) {
-						rot += Constants.DriveConstants.kChassisAutoAimRotation;
-					} else {
 						rot -= Constants.DriveConstants.kChassisAutoAimRotation;
+					} else {
+						rot += Constants.DriveConstants.kChassisAutoAimRotation;
 					}
 				} else {
 					targetLocked = true;

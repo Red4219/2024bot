@@ -248,7 +248,7 @@ public final class Constants {
 			{
 				//put(kArmPoses.GROUND_INTAKE, new double[] { .74 });
 				//put(kArmPoses.GROUND_INTAKE, new double[] { .84 });
-				put(kArmPoses.GROUND_INTAKE, new double[] { .96 });
+				put(kArmPoses.GROUND_INTAKE, new double[] { .551 });
 				put(kArmPoses.HUMAN_ELEMENT_INTAKE, new double[] { .94 });
 				put(kArmPoses.AMP_SCORE, new double[] { 20 });
 				put(kArmPoses.SPEAKER_SCORE, new double[] { 100 });

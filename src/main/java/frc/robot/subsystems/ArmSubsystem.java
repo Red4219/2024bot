@@ -220,12 +220,18 @@ public class ArmSubsystem extends SubsystemBase {
 		}
 
 
-		/*if(targetArmState == kArmPoses.AIM) {
-			position = _photonVision.targetDistance(speakerTarget);
+		if(targetArmState == kArmPoses.AIM) {
+			//position = _photonVision.targetDistance(speakerTarget);
+			targetPosition = calculatePosition(_photonVision.targetDistance(speakerTarget));
 			//System.out.println("ArmSubsystem::periodic() - distance: " + position);
-		}*/
+		}
 
-		position = this.rightBoreEncoder.getPosition();
+		if(Constants.getMode() == Mode.REAL) {
+			position = this.rightBoreEncoder.getPosition();
+		} else if(Constants.getMode() == Mode.SIM) {
+			position = this.rightMotor.getEncoder().getPosition();
+		}
+		
 
 		setReference();
 
@@ -302,6 +308,12 @@ public class ArmSubsystem extends SubsystemBase {
 	 * @param targetArmState the targetArmState to set
 	 */
 	public void setTargetArmState(kArmPoses state) {
+
+		if(this.targetArmState == state) {
+			// we are calling for the state we are already in
+			return;
+		}
+
 		targetArmState = state;
 		enableArm = true;
 
@@ -361,7 +373,7 @@ public class ArmSubsystem extends SubsystemBase {
 			} else if(Constants.getMode() == Mode.SIM) {
 				// We are not at the set point and are in SIM
 
-				pidOutput = pidController.calculate(rightEncoder.getPosition(), targetPosition);
+				/*pidOutput = pidController.calculate(rightEncoder.getPosition(), targetPosition);
 
 				if(pidOutput > 12) {
 					pidOutput = 12;
@@ -372,14 +384,18 @@ public class ArmSubsystem extends SubsystemBase {
 				if(pidController.atSetpoint()) {
 					System.out.println("we are at the setpoint, position: " + rightEncoder.getPosition());
 					atSetPoint = true;
-					if(Constants.getMode() == Mode.SIM) {
-						rightMotor.setVoltage(0.0);
-					} 
+					//if(Constants.getMode() == Mode.SIM) {
+					//	rightMotor.setVoltage(0.0);
+					//}
 				} else {
 					// we have not reached the set point yet
 					rightMotor.setVoltage(pidOutput);
 					//System.out.println("adjusting position: " + rightEncoder.getPosition());
-				}
+				}*/
+
+				// Commented out the above code because in the simulator, it never gets to the proper position
+				position = targetPosition;
+				this.atSetPoint = true;
 			}
 
 			
@@ -508,6 +524,10 @@ public class ArmSubsystem extends SubsystemBase {
 
 	double getVoltage() {
 		return this.pidOutput;
+	}
+
+	double calculatePosition(double distance) {
+		return distance;
 	}
 
 	/*public boolean getAtTarget(double deadBand) {

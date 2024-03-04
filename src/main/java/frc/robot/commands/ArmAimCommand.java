@@ -45,5 +45,13 @@ public class ArmAimCommand extends Command {
     @Override
 	public boolean isFinished() {
         return true;
+
+        /*if(_armSubsystem.atSetPoint()) {
+            return true;
+        }
+
+        System.out.println("not at setpoint yet");
+
+        return false;*/
 	}
 }

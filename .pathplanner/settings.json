@@ -4,7 +4,8 @@
   "holonomicMode": true,
   "pathFolders": [
     "5 Auto Amp 1 Paths",
-    "5 Auto Amp 2 Paths"
+    "5 Auto Amp 2 Paths",
+    "Auto 3 Paths"
   ],
   "autoFolders": [],
   "defaultMaxVel": 8.0,

@@ -32,6 +32,7 @@ import frc.robot.commands.ClimberPoseCommand;
 import frc.robot.commands.FloorIntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.Autonomous.AimCommand;
+import frc.robot.commands.Autonomous.AutoArmAimCommand;
 import frc.robot.commands.Autonomous.IntakeCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -101,6 +102,7 @@ public class RobotContainer {
 		NamedCommands.registerCommand("ClimberUp", new ClimberPoseCommand(kClimberPoses.HIGH));
 		NamedCommands.registerCommand("ClimberDown", new ClimberPoseCommand(kClimberPoses.TUCKED));
 		NamedCommands.registerCommand("Aim", new AimCommand(_photonVision));
+		NamedCommands.registerCommand("ArmAimCommand", new AutoArmAimCommand());
 		NamedCommands.registerCommand("TimedShootHalfSeconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.of(500)));
 		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(2000)));
 		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(1000)));
@@ -109,8 +111,11 @@ public class RobotContainer {
 		try {
 			autoChooser.addOption("5 Auto Amp 1", AutoBuilder.buildAuto("5 Auto Amp 1"));
 			autoChooser.addOption("5 Auto Amp 2", AutoBuilder.buildAuto("5 Auto Amp 2"));
+			autoChooser.addOption("Auto 3", AutoBuilder.buildAuto("Auto 3"));
 			autoChooser.addOption("auto-phil", AutoBuilder.buildAuto("auto-phil"));
 		} catch (Exception e) {
+			//System.out.println(e.getStackTrace());
+			String asdf = e.getStackTrace().toString();
 			System.out.println("RobotContainer()::RobotContainer() - error: " + e.getMessage());
 		}
 
@@ -186,6 +191,7 @@ public class RobotContainer {
 				//new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.of(500)));
 				new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.empty()));
 
+		// Always point the robot at the target
 		operatorController.button(2).onTrue(
 			Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())			
 		);

@@ -63,6 +63,7 @@ public class AimCommand extends Command {
     public boolean isFinished() {
 
         if(_photonVision.canSeeTarget(_targedNumber) == false) {
+            System.out.println("AimCommand::isFinished() - cannot see the target so returning true");
             // Stop because we cannot see the target
             return true;
         } 

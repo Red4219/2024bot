@@ -312,11 +312,11 @@ public class ClimberSubsystem extends SubsystemBase {
 					System.out.println("setting atSetPoint to true");
 				}
 
-				if(Math.abs(leftEncoder.getPosition() - targetPositionLeft) <= Constants.ClimberConstants.kTolerance) {
+				/*if(Math.abs(rightEncoder.getPosition() - targetPositionRight) <= Constants.ClimberConstants.kTolerance) {
 					// Yes we are
 					atSetPointRight = true;
 					System.out.println("setting atSetPint to true");
-				}
+				}*/
 				
 			} else if(Constants.getMode() == Mode.SIM) {
 
@@ -372,11 +372,6 @@ public class ClimberSubsystem extends SubsystemBase {
 					System.out.println("setting atSetPoint to true");
 				}
 
-				if(Math.abs(leftEncoder.getPosition() - targetPositionLeft) <= Constants.ClimberConstants.kTolerance) {
-					// Yes we are
-					atSetPointLeft = true;
-					System.out.println("setting atSetPint to true");
-				}
 				
 			} else if(Constants.getMode() == Mode.SIM) {
 
