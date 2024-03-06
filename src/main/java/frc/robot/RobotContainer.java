@@ -188,17 +188,19 @@ public class RobotContainer {
 			new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE)
 		);*/
 
-		operatorController.button(1).onTrue(
+		//operatorController.button(1).onTrue(
+		operatorController.rightTrigger().onTrue(
 				//new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.of(500)));
 				new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.empty()));
 
 		// Always point the robot at the target
-		operatorController.button(2).onTrue(
+		//operatorController.button(2).onTrue(
+		operatorController.leftTrigger().onTrue(
 			Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())			
 		);
 
-		operatorController.button(3).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.AMPLIFIER)));
-		operatorController.button(4).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.SOURCE)));
+		//operatorController.button(3).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.AMPLIFIER)));
+		//operatorController.button(4).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.SOURCE)));
 
 		operatorController.rightBumper().onTrue(new ArmMoveCommand(0.1));
 		operatorController.leftBumper().onTrue(new ArmMoveCommand(-0.1));
