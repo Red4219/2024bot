@@ -17,11 +17,13 @@ public class ShooterSubsystem extends SubsystemBase {
     private ShooterWheels shooter = new ShooterWheels(Constants.ShooterConstants.kPrimaryPort, Constants.ShooterConstants.kSecondaryPort);
     private kShooterStates currentShooterState = kShooterStates.DISABLED;
     private double speed = 0.0;
+    private String status = "STOPPED";
 
     public ShooterSubsystem() {
 
         ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
 		shooterTab.addDouble("Target Speed", this::getSpeed);
+        shooterTab.addString("Status", this::getStatus);
         
     }
 
@@ -35,29 +37,47 @@ public class ShooterSubsystem extends SubsystemBase {
         shooter.shoot(0.5);
 	}
 
+    public void stopShooter() {
+        shooter.stop();
+    }
+
 	public void disableShooter() {
         shooter.disable();
 	}
 
 	public void setShooterState(kShooterStates state) {
 
-		currentShooterState = state;
+        if(currentShooterState == state) {
+            stopShooter();
+            currentShooterState = kShooterStates.STOPPED;
+            this.status = "STOPPED";
+        } else {
 
-		switch (currentShooterState) {
+		    currentShooterState = state;
 
-			case IDLE:
-				disableShooter();
-				break;
+		    switch (currentShooterState) {
+			    case IDLE:
+				    disableShooter();
+                    this.status = "IDLE";
+				    break;
 
-			case SHOOT:
-				shootNote();
-				break;
+			    case SHOOT:
+				    shootNote();
+                    this.status = "SHOOT";
+				    break;
 
-			case DISABLED:
-				disableShooter();
-				break;
+                case STOPPED:
+                    stopShooter();
+                    this.status = "STOPPED";
+                    break;
 
-		}
+			    case DISABLED:
+				    disableShooter();
+                    this.status = "DISABLED";
+			    	break;
+
+		    }
+        }
 	}
 
     /*public void shootTime(long timeToShoot) {
@@ -94,11 +114,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setSpeed(double speed) {
         this.speed = speed;
-        System.out.println("ShooterSubSystem::setSpeed() - speed: " + speed);
+        //System.out.println("ShooterSubSystem::setSpeed() - speed: " + speed);
     }
 
     public double getSpeed() {
         return shooter.getSpeed();
+    }
+
+    public String getStatus() {
+        return this.status;
     }
 
     /*public InstantCommand timedShootCommand(long timeToShoot) {

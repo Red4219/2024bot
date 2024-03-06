@@ -63,6 +63,16 @@ public class ShooterWheels {
 		}
 	}
 
+    public void stop() {
+        if(Constants.getMode() == Mode.SIM) {
+			_shooterSparkMaxPrimary.setVoltage(0.0);
+            _shooterSparkMaxSecondary.setVoltage(0.0);
+		} else {
+			_shooterSparkMaxPrimary.stopMotor();
+            _shooterSparkMaxSecondary.stopMotor();
+		}
+    }
+
     public void shoot(double speed) {
         targetSpeed = speed;
         if(Constants.getMode() == Mode.SIM) {

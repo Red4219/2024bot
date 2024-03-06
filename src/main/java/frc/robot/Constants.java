@@ -448,6 +448,7 @@ public final class Constants {
 		public static enum kShooterStates {
 			IDLE,
 			SHOOT,
+			STOPPED,
 			DISABLED
 		}
 	}

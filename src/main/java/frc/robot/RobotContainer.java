@@ -26,6 +26,7 @@ import frc.robot.Tools.Parts.PathBuilder;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.commands.ArmAimCommand;
+import frc.robot.commands.ArmMoveCommand;
 import frc.robot.commands.ArmPoseCommand;
 import frc.robot.commands.ChassisAimCommand;
 import frc.robot.commands.ClimberPoseCommand;
@@ -176,11 +177,11 @@ public class RobotContainer {
 			new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty())
 		);
 
-		driverController.button(4).onTrue(
+		/*driverController.button(4).onTrue(
 			//new FloorIntakeCommand(true)
 			//Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE))
 			new ClimberPoseCommand(kClimberPoses.HIGH)
-		);
+		);*/
 
 		/*operatorController.button(1).onTrue(
 			//new ArmAimCommand()
@@ -198,6 +199,9 @@ public class RobotContainer {
 
 		operatorController.button(3).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.AMPLIFIER)));
 		operatorController.button(4).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.SOURCE)));
+
+		operatorController.rightBumper().onTrue(new ArmMoveCommand(0.1));
+		operatorController.leftBumper().onTrue(new ArmMoveCommand(-0.1));
 
 		//asdf
 		//JoystickUtils.processJoystickInput(operatorController.getLeftY());
