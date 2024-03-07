@@ -176,30 +176,36 @@ public class IntakeSubsystem extends SubsystemBase {
 
 	public void setIntakeState(kIntakeStates state) {
 
-		currentIntakeState = state;
+		if(state == currentIntakeState) {
+			disableIntake();
+			state = kIntakeStates.DISABLED;
+		} else {
 
-		switch (currentIntakeState) {
+			currentIntakeState = state;
 
-			case IDLE:
-				disableIntake();
-				break;
+			switch (currentIntakeState) {
 
-			case INTAKE:
-				intakeNote();
-				break;
+				case IDLE:
+					disableIntake();
+					break;
 
-			case OUTTAKE:
-				outtakeNote();
-				break;
+				case INTAKE:
+					intakeNote();
+					break;
 
-			case DISABLED:
-				disableIntake();
-				break;
+				case OUTTAKE:
+					outtakeNote();
+					break;
 
-			case BUMP:
-				intakeNote();
-				break;
+				case DISABLED:
+					disableIntake();
+					break;
 
+				case BUMP:
+					intakeNote();
+					break;
+
+			}
 		}
 	}	
 
