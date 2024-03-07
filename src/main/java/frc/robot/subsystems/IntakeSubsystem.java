@@ -178,7 +178,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
 		if(state == currentIntakeState) {
 			disableIntake();
-			state = kIntakeStates.DISABLED;
+			currentIntakeState = kIntakeStates.DISABLED;
 		} else {
 
 			currentIntakeState = state;
