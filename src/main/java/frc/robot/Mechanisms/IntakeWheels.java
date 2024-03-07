@@ -54,11 +54,11 @@ public class IntakeWheels {
 	public void disable() {
 		//System.out.println("IntakeWheels::disable() called");
 
-		/*if(Constants.getMode() == Mode.SIM) {
+		if(Constants.getMode() == Mode.SIM) {
 			_intakeSparkMax.setVoltage(0.0);
 		} else {
 			_intakeSparkMax.stopMotor();
-		}*/
+		}
 	}
 
 	public double getOutputCurrent() {
