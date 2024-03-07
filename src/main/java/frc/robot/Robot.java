@@ -13,6 +13,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 //import com.pathplanner.lib.server.PathPlannerServer;
 import com.revrobotics.REVPhysicsSim;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -61,6 +64,12 @@ public class Robot extends LoggedRobot {
 		/*for (int port = 5800; port <= 5805; port++) {
 			PortForwarder.add(port, "limelight.local", port);
 		}*/
+
+		// Get the UsbCamera from CameraServer
+        UsbCamera camera = CameraServer.startAutomaticCapture();
+
+		// Set the resolution
+		camera.setResolution(640, 480);
 
 		Pathfinding.setPathfinder(new LocalADStarAK());
 

@@ -112,6 +112,8 @@ public class RobotContainer {
 		try {
 			autoChooser.addOption("5 Auto Amp 1", AutoBuilder.buildAuto("5 Auto Amp 1"));
 			autoChooser.addOption("5 Auto Amp 2", AutoBuilder.buildAuto("5 Auto Amp 2"));
+			autoChooser.addOption("Auto 1", AutoBuilder.buildAuto("Auto 1"));
+			autoChooser.addOption("Auto 2", AutoBuilder.buildAuto("Auto 2"));
 			autoChooser.addOption("Auto 3", AutoBuilder.buildAuto("Auto 3"));
 			autoChooser.addOption("auto-phil", AutoBuilder.buildAuto("auto-phil"));
 		} catch (Exception e) {
@@ -166,16 +168,17 @@ public class RobotContainer {
 			new IntakeCommand(kIntakeStates.BUMP, OptionalLong.of(500))
 		);*/
 
-		driverController.button(2).onTrue(
+		//driverController.button(2).onTrue(
+		driverController.rightTrigger().onTrue(
 			//new FloorIntakeCommand(true)
 			Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.GROUND_INTAKE))
 		);
 
-		driverController.button(3).onTrue(
+		/*driverController.button(3).onTrue(
 			//new FloorIntakeCommand(true)
 			//Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE))
 			new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty())
-		);
+		);*/
 
 		/*driverController.button(4).onTrue(
 			//new FloorIntakeCommand(true)
