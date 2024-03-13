@@ -21,9 +21,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
 
-        ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
-		shooterTab.addDouble("Target Speed", this::getSpeed);
-        shooterTab.addString("Status", this::getStatus);
+        if(Constants.debugShooter == true) {
+            ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
+		    shooterTab.addDouble("Target Speed", this::getSpeed);
+            shooterTab.addString("Status", this::getStatus);
+        }
         
     }
 
@@ -32,9 +34,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     }
 
-    public void shootNote() {
-        //System.out.println("shootNote called");
+    public void shootSpeakerNote() {
         shooter.shoot(0.5);
+	}
+
+    public void shootAmpNote() {
+        shooter.shoot(0.1);
 	}
 
     public void stopShooter() {
@@ -61,9 +66,14 @@ public class ShooterSubsystem extends SubsystemBase {
                     this.status = "IDLE";
 				    break;
 
-			    case SHOOT:
-				    shootNote();
-                    this.status = "SHOOT";
+			    case SHOOT_SPEAKER:
+				    shootSpeakerNote();
+                    this.status = "SHOOT_SPEAKER";
+				    break;
+
+                case SHOOT_AMP:
+				    shootAmpNote();
+                    this.status = "SHOOT_AMP";
 				    break;
 
                 case STOPPED:
@@ -100,8 +110,8 @@ public class ShooterSubsystem extends SubsystemBase {
         
     }*/
 
-    public InstantCommand shootCommand() {
-		return new InstantCommand(() -> setShooterState(kShooterStates.SHOOT));
+    public InstantCommand shootSpearkerCommand() {
+		return new InstantCommand(() -> setShooterState(kShooterStates.SHOOT_SPEAKER));
 	}
 
     public InstantCommand idleCommand() {

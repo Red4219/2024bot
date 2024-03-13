@@ -60,7 +60,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
 	HashMap<kClimberPoses, double[]> climberStates = Constants.ClimberConstants.kClimberStatesMap;
 
-	private static ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber");
+	//private static ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber");
 	//private static GenericEntry ClimberPosition = ClimberTab.addPersistent("Climber Position", 0).getEntry();
 	//private static GenericEntry ClimberTarget = ClimberTab.addPersistent("Climber Target", 0).getEntry();
 
@@ -123,11 +123,15 @@ public class ClimberSubsystem extends SubsystemBase {
 			pidControllerRight = new PIDController(Constants.ClimberConstants.kClimberGains.kP,Constants.ClimberConstants.kClimberGains.kI,Constants.ClimberConstants.kClimberGains.kD);
 			pidControllerRight.setTolerance(Constants.ClimberConstants.kTolerance, 10);
 
-			ClimberTab.addDouble("Target Right", this::getTargetPositionRight);
-			ClimberTab.addDouble("Position Right", this::getPositionRight);
-			ClimberTab.addDouble("Current Right", this::getRightCurrent);
-			ClimberTab.addDouble("Temp Right", this::getRightTemp);
-			ClimberTab.addDouble("Output Right", this::getRightOutput);
+
+			if(Constants.debugClimber == true) {
+				ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber");
+				ClimberTab.addDouble("Target Right", this::getTargetPositionRight);
+				ClimberTab.addDouble("Position Right", this::getPositionRight);
+				ClimberTab.addDouble("Current Right", this::getRightCurrent);
+				ClimberTab.addDouble("Temp Right", this::getRightTemp);
+				ClimberTab.addDouble("Output Right", this::getRightOutput);
+			}
 		}
 
 		if(leftMotor != null) {
@@ -171,11 +175,14 @@ public class ClimberSubsystem extends SubsystemBase {
 			pidControllerLeft = new PIDController(Constants.ClimberConstants.kClimberGains.kP,Constants.ClimberConstants.kClimberGains.kI,Constants.ClimberConstants.kClimberGains.kD);
 			pidControllerLeft.setTolerance(Constants.ClimberConstants.kTolerance, 10);
 
-			ClimberTab.addDouble("Target Left", this::getTargetPositionLeft);
-			ClimberTab.addDouble("Position Left", this::getPositionLeft);
-			ClimberTab.addDouble("Current Left", this::getLeftCurrent);
-			ClimberTab.addDouble("Temp Left", this::getLeftTemp);
-			ClimberTab.addDouble("Output Left", this::getLeftOutput);
+			if(Constants.debugClimber == true) {
+				ShuffleboardTab ClimberTab = Shuffleboard.getTab("Climber");
+				ClimberTab.addDouble("Target Left", this::getTargetPositionLeft);
+				ClimberTab.addDouble("Position Left", this::getPositionLeft);
+				ClimberTab.addDouble("Current Left", this::getLeftCurrent);
+				ClimberTab.addDouble("Temp Left", this::getLeftTemp);
+				ClimberTab.addDouble("Output Left", this::getLeftOutput);
+			}
 		}
 
 		//resetZeros();
@@ -473,8 +480,10 @@ public class ClimberSubsystem extends SubsystemBase {
 			}
 		}
 
-		Logger.recordOutput("Climber/positionRight", rightEncoder.getPosition());
-		Logger.recordOutput("Climber/targetPositionRight", targetPositionRight);
+		if(Constants.enableLogger == true) {
+			Logger.recordOutput("Climber/positionRight", rightEncoder.getPosition());
+			Logger.recordOutput("Climber/targetPositionRight", targetPositionRight);
+		}
 
 		//entry = climberTable.getEntry("position");
 

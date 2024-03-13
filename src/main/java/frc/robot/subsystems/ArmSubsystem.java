@@ -137,19 +137,22 @@ public class ArmSubsystem extends SubsystemBase {
 		pidController = new PIDController(Constants.ArmConstants.kArmGains.kP, Constants.ArmConstants.kArmGains.kI, Constants.ArmConstants.kArmGains.kD);
 		pidController.setTolerance(Constants.ArmConstants.kTolerance, 10);
 
-		ShuffleboardTab armTab = Shuffleboard.getTab("Arm");
-		armTab.addDouble("Arm Position", this::getPosition);
-		armTab.addBoolean("Auto Aim", this::getAutoAim);
-		armTab.addBoolean("At Set Point", this::atSetPoint);
-		armTab.addDouble("Target Position", this::getTargetPosition);
-		armTab.addDouble("Right Applied Output", this::getRightAppliedOutput);
-		armTab.addDouble("Left Applied Output", this::getLeftAppliedOutput);
-		armTab.addDouble("Right Output Current", this::getRightOutputCurrent);
-		armTab.addDouble("Left Output Current", this::getLeftOutputCurrent);
-		armTab.addDouble("Right Temp", this::getRightTemp);
-		armTab.addDouble("Left Temp", this::getLeftTemp);
-		armTab.addString("State Name", this::getTargetStateName);
-		armTab.addDouble("Voltage", this::getVoltage);
+		if(Constants.debugArm == true) {
+
+			ShuffleboardTab armTab = Shuffleboard.getTab("Arm");
+			armTab.addDouble("Arm Position", this::getPosition);
+			armTab.addBoolean("Auto Aim", this::getAutoAim);
+			armTab.addBoolean("At Set Point", this::atSetPoint);
+			armTab.addDouble("Target Position", this::getTargetPosition);
+			armTab.addDouble("Right Applied Output", this::getRightAppliedOutput);
+			armTab.addDouble("Left Applied Output", this::getLeftAppliedOutput);
+			armTab.addDouble("Right Output Current", this::getRightOutputCurrent);
+			armTab.addDouble("Left Output Current", this::getLeftOutputCurrent);
+			armTab.addDouble("Right Temp", this::getRightTemp);
+			armTab.addDouble("Left Temp", this::getLeftTemp);
+			armTab.addString("State Name", this::getTargetStateName);
+			armTab.addDouble("Voltage", this::getVoltage);
+		}
 
 		_photonVision = photonVision;
 
@@ -199,15 +202,18 @@ public class ArmSubsystem extends SubsystemBase {
 
 		//position = rightEncoder.getPosition();
 
-		Logger.recordOutput("Arm/position", rightEncoder.getPosition());
-		Logger.recordOutput("Arm/target", targetPosition);
-		Logger.recordOutput("Arm/autoAim", autoAim);
-		Logger.recordOutput("Arm/rightAppliedOutput", rightMotor.getAppliedOutput());
-		Logger.recordOutput("Arm/leftAppliedOutput", leftMotor.getAppliedOutput());
-		Logger.recordOutput("Arm/rightOutputCurrent", rightMotor.getOutputCurrent());
-		Logger.recordOutput("Arm/leftOutputCurrent", leftMotor.getOutputCurrent());
-		Logger.recordOutput("Arm/rightMotorTemp", rightMotor.getMotorTemperature());
-		Logger.recordOutput("Arm/leftMotorTemp", leftMotor.getMotorTemperature());
+		if(Constants.enableLogger == true) {
+
+			Logger.recordOutput("Arm/position", rightEncoder.getPosition());
+			Logger.recordOutput("Arm/target", targetPosition);
+			Logger.recordOutput("Arm/autoAim", autoAim);
+			Logger.recordOutput("Arm/rightAppliedOutput", rightMotor.getAppliedOutput());
+			Logger.recordOutput("Arm/leftAppliedOutput", leftMotor.getAppliedOutput());
+			Logger.recordOutput("Arm/rightOutputCurrent", rightMotor.getOutputCurrent());
+			Logger.recordOutput("Arm/leftOutputCurrent", leftMotor.getOutputCurrent());
+			Logger.recordOutput("Arm/rightMotorTemp", rightMotor.getMotorTemperature());
+			Logger.recordOutput("Arm/leftMotorTemp", leftMotor.getMotorTemperature());
+		}
 
 		if(speakerTarget == 0) {
 			if(DriverStation.getAlliance().isPresent()) {

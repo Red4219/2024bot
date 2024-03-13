@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -104,7 +105,7 @@ public class RobotContainer {
 		NamedCommands.registerCommand("ClimberDown", new ClimberPoseCommand(kClimberPoses.TUCKED));
 		NamedCommands.registerCommand("Aim", new AimCommand(_photonVision));
 		NamedCommands.registerCommand("ArmAimCommand", new AutoArmAimCommand());
-		NamedCommands.registerCommand("TimedShootHalfSeconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.of(500)));
+		NamedCommands.registerCommand("TimedShootHalfSeconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(500)));
 		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(2000)));
 		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(1000)));
 		
@@ -155,12 +156,16 @@ public class RobotContainer {
 				shooterSubsystem.timedShootCommand(3000))
 				.onFalse(shooterSubsystem.idleCommand());*/
 
-		driverController.button(1).onTrue(
+		driverController.rightTrigger().whileTrue(
+				new RepeatCommand(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()))
+			);
+
+		/*driverController.rightTrigger().onFalse(
 				//shooterSubsystem.shootCommand()
 				//new AimCommand(_photonVision)
 				//intakeSubsystem.intakeCommand()
 				new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty())
-			);
+			);*/
 			//.onFalse(shooterSubsystem.idleCommand());
 			//.onFalse(new IntakeCommand(intakeSubsystem, kIntakeStates.IDLE, OptionalLong.empty()));
 
@@ -168,8 +173,8 @@ public class RobotContainer {
 			new IntakeCommand(kIntakeStates.BUMP, OptionalLong.of(500))
 		);*/
 
-		//driverController.button(2).onTrue(
-		driverController.rightTrigger().onTrue(
+		driverController.button(2).onTrue(
+		//driverController.rightTrigger().onTrue(
 			//new FloorIntakeCommand(true)
 			Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.GROUND_INTAKE))
 		);
@@ -191,22 +196,52 @@ public class RobotContainer {
 			new ArmPoseCommand(kArmPoses.HUMAN_ELEMENT_INTAKE)
 		);*/
 
+		operatorController.button(1).onTrue(
+			new ArmPoseCommand(kArmPoses.GROUND_INTAKE)
+		);
+
+		operatorController.button(2).onTrue(
+			new ArmPoseCommand(kArmPoses.AMP_SCORE)
+		);
+
+		operatorController.button(3).onTrue(
+			new ArmPoseCommand(kArmPoses.SPEAKER_SCORE)
+		);
+
 		//operatorController.button(1).onTrue(
 		operatorController.rightTrigger().onTrue(
 				//new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.of(500)));
-				new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.empty()));
+				new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.empty()));
+
+		
+		operatorController.leftTrigger().onTrue(
+				//shooterSubsystem.shootCommand()
+				//new AimCommand(_photonVision)
+				//intakeSubsystem.intakeCommand()
+				new IntakeCommand(kIntakeStates.OUTTAKE, OptionalLong.empty())
+			);
+
+		operatorController.leftTrigger().onFalse(
+				//shooterSubsystem.shootCommand()
+				//new AimCommand(_photonVision)
+				//intakeSubsystem.intakeCommand()
+				new IntakeCommand(kIntakeStates.IDLE, OptionalLong.empty())
+			);
 
 		// Always point the robot at the target
 		//operatorController.button(2).onTrue(
-		operatorController.leftTrigger().onTrue(
+		/*operatorController.leftTrigger().onTrue(
 			Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())			
-		);
+		);*/
 
 		//operatorController.button(3).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.AMPLIFIER)));
 		//operatorController.button(4).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.SOURCE)));
 
-		operatorController.rightBumper().onTrue(new ArmMoveCommand(0.1));
-		operatorController.leftBumper().onTrue(new ArmMoveCommand(-0.1));
+
+		//operatorController.rightBumper().onTrue(new ArmMoveCommand(0.05));
+		operatorController.rightBumper().whileTrue(new RepeatCommand(new ArmMoveCommand(0.05)));
+		//operatorController.leftBumper().onTrue(new ArmMoveCommand(-0.05));
+		operatorController.leftBumper().whileTrue(new RepeatCommand(new ArmMoveCommand(-0.05)));
 
 		//asdf
 		//JoystickUtils.processJoystickInput(operatorController.getLeftY());

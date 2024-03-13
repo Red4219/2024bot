@@ -34,7 +34,8 @@ public class IntakeSubsystem extends SubsystemBase {
 	//private Solenoid centerSealerSolenoid;
 
 	private IntakeWheels intakeWheels = new IntakeWheels(Constants.IntakeConstants.kIntakeWheelPort);
-	private ColorSensor colorSensor = new ColorSensor();
+	//private ColorSensor colorSensor = new ColorSensor();
+	private ColorSensor colorSensor;
 	private boolean hasNote = false;
 
 	private kIntakeStates currentIntakeState;
@@ -51,6 +52,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
 		//distanceSensor = new IRDistanceSensor(0);
 
+		if(Constants.IntakeConstants.kEnableColorSensor == true) {
+			colorSensor = new ColorSensor();
+		}
+
 		currentIntakeState = kIntakeStates.DISABLED;
 
 		/*centerSucker = new Vaccum(
@@ -63,11 +68,17 @@ public class IntakeSubsystem extends SubsystemBase {
 
 		//gripper = new IntakeWheels(IntakeConstants.kRightIntakeWheelPort, IntakeConstants.kLeftIntakeWheelPort);
 
-		ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
-		intakeTab.addDouble("Intake Current", intakeWheels::getOutputCurrent);
-		intakeTab.addDouble("Intake Temp", intakeWheels::getTemp);
-		intakeTab.addDouble("Intake Output", intakeWheels::getAppliedOutput);
-		intakeTab.addBoolean("Note Detected", colorSensor::noteDetected);
+		if(Constants.debugIntake == true) {
+
+			ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
+			intakeTab.addDouble("Intake Current", intakeWheels::getOutputCurrent);
+			intakeTab.addDouble("Intake Temp", intakeWheels::getTemp);
+			intakeTab.addDouble("Intake Output", intakeWheels::getAppliedOutput);
+
+			if(Constants.IntakeConstants.kEnableColorSensor == true) {
+				intakeTab.addBoolean("Note Detected", colorSensor::noteDetected);
+			}
+		}
 	}
 
 	@Override
@@ -82,7 +93,12 @@ public class IntakeSubsystem extends SubsystemBase {
 		//colorSensor.printColorValues();
 
 		//SmartDashboard.putBoolean("Has Note", colorSensor.noteDetected());
-		Logger.recordOutput("Intake/Note_Detected", colorSensor.noteDetected());
+
+		if(Constants.enableLogger == true) {
+			if(Constants.IntakeConstants.kEnableColorSensor == true) {
+				Logger.recordOutput("Intake/Note_Detected", colorSensor.noteDetected());
+			}
+		}
 
 		//intakeWheels.Intake();
 
@@ -159,7 +175,11 @@ public class IntakeSubsystem extends SubsystemBase {
 	}*/
 
 	public boolean noteDetected() {
-		return colorSensor.noteDetected();
+		if(Constants.IntakeConstants.kEnableColorSensor == true) {
+			return colorSensor.noteDetected();
+		}
+
+		return false;
 	}
 
 	public void intakeNote() {

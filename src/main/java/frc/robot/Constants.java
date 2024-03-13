@@ -35,6 +35,13 @@ import edu.wpi.first.math.geometry.Transform3d;
  */
 public final class Constants {
 
+	public static boolean debugArm = true;
+	public static boolean debugShooter = false;
+	public static boolean debugIntake = false;
+	public static boolean debugDriveTrain = false;
+	public static boolean debugClimber = false;
+	public static boolean enableLogger = false;
+
 	public static class ModuleConstants {
 
 		// Current limits for the wheels
@@ -79,10 +86,22 @@ public final class Constants {
 		public static final int kRearRightTurningEncoderPort = 11;
 
 		// Offset angle for absolute encoders (find this using CTRE client)
-		public static final double kFrontLeftAngleZero = 90;
-		public static final double kFrontRightAngleZero = 163.5;
-		public static final double kRearLeftAngleZero = -78.3;
-		public static final double kRearRightAngleZero = -165.05;
+		//public static final double kFrontLeftAngleZero = 90;
+		//public static final double kFrontLeftAngleZero = -13.88;
+		//public static final double kFrontLeftAngleZero = 164.88;
+		public static final double kFrontLeftAngleZero = -13.79;
+
+		//public static final double kFrontRightAngleZero = 163.5;
+		public static final double kFrontRightAngleZero = 90.5;
+		//public static final double kRearLeftAngleZero = -78.3;
+		//public static final double kRearLeftAngleZero = 89.3;
+		//public static final double kRearLeftAngleZero = -172.26;
+		//public static final double kRearLeftAngleZero = 8.87;
+		public static final double kRearLeftAngleZero = -171.12;
+
+		//public static final double kRearRightAngleZero = -165.05;
+		//public static final double kRearRightAngleZero = -57.2;
+		public static final double kRearRightAngleZero = 110.3;
 
 		public static final PIDGains kModuleDriveGains = new PIDGains(.1, 0, 0);
 
@@ -248,7 +267,7 @@ public final class Constants {
 			{
 				//put(kArmPoses.GROUND_INTAKE, new double[] { .74 });
 				//put(kArmPoses.GROUND_INTAKE, new double[] { .84 });
-				put(kArmPoses.GROUND_INTAKE, new double[] { .551 });
+				put(kArmPoses.GROUND_INTAKE, new double[] { .132 });
 				put(kArmPoses.HUMAN_ELEMENT_INTAKE, new double[] { .94 });
 				put(kArmPoses.AMP_SCORE, new double[] { 20 });
 				put(kArmPoses.SPEAKER_SCORE, new double[] { 100 });
@@ -294,10 +313,12 @@ public final class Constants {
 
 		//
 		public static final int kSmartCurrentLimit = 5;
-		public static final double kIntakeSpeed = .7;
-		public static final double kOuttakeSpeed = -1.0;
+		public static final double kIntakeSpeed = .3;
+		public static final double kOuttakeSpeed = -.1;
 		public static final double kIntakeOutputCurrentThreshold = 6.0;
 		public static final int kIntakeWheelPort = 17;
+
+		public static final boolean kEnableColorSensor = false;
 
 		public static enum kIntakeStates {
 			IDLE,
@@ -377,7 +398,7 @@ public final class Constants {
 	
 	public static final String kRioCANBusName = "rio";
 
-	//public static final String kCanivoreCANBusName = "canivore";
+	public static final String kCanivoreCANBusName = "canivore";
 
 	public static final String logFolders = "/media/sda2/";
 	private static final RobotType robot = RobotType.ROBOT_SIMBOT;
@@ -447,7 +468,8 @@ public final class Constants {
 
 		public static enum kShooterStates {
 			IDLE,
-			SHOOT,
+			SHOOT_SPEAKER,
+			SHOOT_AMP,
 			STOPPED,
 			DISABLED
 		}

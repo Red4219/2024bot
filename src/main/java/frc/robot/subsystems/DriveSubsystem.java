@@ -231,32 +231,35 @@ public class DriveSubsystem extends SubsystemBase {
 		
 		targetRotationDegrees = 0;
 
-		// auto tab stuff
-		ShuffleboardTab autoTab = Shuffleboard.getTab("Autonomous");
-		autoTab.addDouble("AutoX Position", this::getAutoX_Position);
-		autoTab.addDouble("AutoY Position", this::getAutoY_Position);
-		autoTab.addBoolean("AutoX Status", this::getAutoPositionStatusX);
-		autoTab.addBoolean("AutoY Status", this::getAutoPositionStatusY);
-		autoTab.addString("Alliance", this::getAlliance);
+		if(Constants.debugDriveTrain == true) {
 
-		// gyro tab stuff
-		ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyro");
-		gyroTab.addDouble("Yaw", gyro::getYaw);
-		gyroTab.addDouble("Pitch", gyro::getPitch);
-		gyroTab.addDouble("Roll", gyro::getRoll);
+			// auto tab stuff
+			ShuffleboardTab autoTab = Shuffleboard.getTab("Autonomous");
+			autoTab.addDouble("AutoX Position", this::getAutoX_Position);
+			autoTab.addDouble("AutoY Position", this::getAutoY_Position);
+			autoTab.addBoolean("AutoX Status", this::getAutoPositionStatusX);
+			autoTab.addBoolean("AutoY Status", this::getAutoPositionStatusY);
+			autoTab.addString("Alliance", this::getAlliance);
 
-		// Swerve tab stuff
-		ShuffleboardTab swerveTab = Shuffleboard.getTab("Swerve");
-		swerveTab.addDouble("FL Absolute", frontLeft::getAbsoluteHeading);
-		swerveTab.addDouble("FR Absolute", frontRight::getAbsoluteHeading);
-		swerveTab.addDouble("RL Absolute", rearLeft::getAbsoluteHeading);
-		swerveTab.addDouble("RR Absolute", rearRight::getAbsoluteHeading);
-		swerveTab.addDouble("FL Meters", frontLeft::getDistanceMeters);
-		swerveTab.addDouble("FR Meters", frontRight::getDistanceMeters);
-		swerveTab.addDouble("RL Meters", rearLeft::getDistanceMeters);
-		swerveTab.addDouble("RR Meters", rearRight::getDistanceMeters);
-		swerveTab.addBoolean("Auto Aim", this::autoAim);
-		swerveTab.addBoolean("Target Locked", this::getTargetLocked);
+			// gyro tab stuff
+			ShuffleboardTab gyroTab = Shuffleboard.getTab("Gyro");
+			gyroTab.addDouble("Yaw", gyro::getYaw);
+			gyroTab.addDouble("Pitch", gyro::getPitch);
+			gyroTab.addDouble("Roll", gyro::getRoll);
+
+			// Swerve tab stuff
+			ShuffleboardTab swerveTab = Shuffleboard.getTab("Swerve");
+			swerveTab.addDouble("FL Absolute", frontLeft::getAbsoluteHeading);
+			swerveTab.addDouble("FR Absolute", frontRight::getAbsoluteHeading);
+			swerveTab.addDouble("RL Absolute", rearLeft::getAbsoluteHeading);
+			swerveTab.addDouble("RR Absolute", rearRight::getAbsoluteHeading);
+			swerveTab.addDouble("FL Meters", frontLeft::getDistanceMeters);
+			swerveTab.addDouble("FR Meters", frontRight::getDistanceMeters);
+			swerveTab.addDouble("RL Meters", rearLeft::getDistanceMeters);
+			swerveTab.addDouble("RR Meters", rearRight::getDistanceMeters);
+			swerveTab.addBoolean("Auto Aim", this::autoAim);
+			swerveTab.addBoolean("Target Locked", this::getTargetLocked);
+		}
 	}
 
 	public PhotonVision getPhotonVision() {
@@ -294,10 +297,12 @@ public class DriveSubsystem extends SubsystemBase {
 		//System.out.println(rearLeft.getAbsoluteHeading());
 		//System.out.println(frontRight.getAbsoluteHeading());
 
-		SmartDashboard.putNumber("FL Offset Check", frontLeft.getAbsoluteHeading() + frontLeft.angleZero);
-		SmartDashboard.putNumber("FR Offset Check", frontRight.getAbsoluteHeading() + frontRight.angleZero);
-		SmartDashboard.putNumber("RL Offset Check", rearLeft.getAbsoluteHeading() + rearLeft.angleZero);
-		SmartDashboard.putNumber("RR Offset Check", rearRight.getAbsoluteHeading() + rearRight.angleZero);
+		if(Constants.debugDriveTrain == true) {
+			SmartDashboard.putNumber("FL Offset Check", frontLeft.getAbsoluteHeading() + frontLeft.angleZero);
+			SmartDashboard.putNumber("FR Offset Check", frontRight.getAbsoluteHeading() + frontRight.angleZero);
+			SmartDashboard.putNumber("RL Offset Check", rearLeft.getAbsoluteHeading() + rearLeft.angleZero);
+			SmartDashboard.putNumber("RR Offset Check", rearRight.getAbsoluteHeading() + rearRight.angleZero);
+		}
 
 		/*SmartDashboard.putNumber("FL Meters", frontLeft.getDistanceMeters());
 		SmartDashboard.putNumber("FR Meters", frontRight.getDistanceMeters());

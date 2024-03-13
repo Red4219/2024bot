@@ -66,16 +66,16 @@ public class Robot extends LoggedRobot {
 		}*/
 
 		// Get the UsbCamera from CameraServer
-        UsbCamera camera = CameraServer.startAutomaticCapture();
+        //UsbCamera camera = CameraServer.startAutomaticCapture();
 
 		// Set the resolution
-		camera.setResolution(640, 480);
+		//camera.setResolution(640, 480);
 
 		Pathfinding.setPathfinder(new LocalADStarAK());
 
 		switch (Constants.getMode()) {
 			case REAL:
-				Logger.addDataReceiver(new WPILOGWriter(Constants.logFolders));
+				//Logger.addDataReceiver(new WPILOGWriter(Constants.logFolders));
 				//logger.addDataReceiver(new WPILOGWriter(Constants.logFolders));
 				Logger.addDataReceiver(new NT4Publisher());
 				//logger.addDataReceiver(new NT4Publisher());

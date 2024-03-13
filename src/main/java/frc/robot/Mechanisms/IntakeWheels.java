@@ -4,6 +4,7 @@
 
 package frc.robot.Mechanisms;
 
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -15,18 +16,19 @@ import frc.robot.Constants.Mode;;
 /** Add your docs here. */
 public class IntakeWheels {
 
-	private CANSparkMax _intakeSparkMax;
+	private CANSparkFlex _intakeSparkFlex;
 
 	public IntakeWheels(int port) {
-		_intakeSparkMax = new CANSparkMax(port, MotorType.kBrushless);
+		_intakeSparkFlex = new CANSparkFlex(port, MotorType.kBrushless);
 
 		if(Constants.getMode() == Mode.SIM) {
-			REVPhysicsSim.getInstance().addSparkMax(_intakeSparkMax, 2.6f, 5676);
+			//REVPhysicsSim.getInstance().addSparkMax(_intakeSparkMax, 2.6f, 5676);
 		}
 
-		_intakeSparkMax.clearFaults();
-		_intakeSparkMax.restoreFactoryDefaults();
-		_intakeSparkMax.setIdleMode(IdleMode.kBrake);
+		_intakeSparkFlex.clearFaults();
+		_intakeSparkFlex.restoreFactoryDefaults();
+		_intakeSparkFlex.setIdleMode(IdleMode.kBrake);
+		_intakeSparkFlex.disableVoltageCompensation();
 		//_intakeSparkMax.setSmartCurrentLimit(Constants.IntakeConstants.kSmartCurrentLimit);
 	}
 
@@ -34,10 +36,13 @@ public class IntakeWheels {
 		//System.out.println("IntakeWheels::Intake() called");
 
 		if(Constants.getMode() == Mode.SIM) {
-			_intakeSparkMax.setVoltage(1.0);
+			_intakeSparkFlex.setVoltage(.1);
 		} else {
 			//System.out.println("Intake() being called");
-			_intakeSparkMax.set(Constants.IntakeConstants.kIntakeSpeed);
+			if(_intakeSparkFlex.get() == 0.0) {
+				//_intakeSparkFlex.set(Constants.IntakeConstants.kIntakeSpeed);
+				_intakeSparkFlex.setVoltage(3.0);
+			}
 		}
 	}
 
@@ -49,28 +54,31 @@ public class IntakeWheels {
 		} else {
 			_intakeSparkMax.set(Constants.IntakeConstants.kOuttakeSpeed);
 		}*/
+
+		_intakeSparkFlex.set(Constants.IntakeConstants.kOuttakeSpeed);
 	}
 
 	public void disable() {
 		//System.out.println("IntakeWheels::disable() called");
 
 		if(Constants.getMode() == Mode.SIM) {
-			_intakeSparkMax.setVoltage(0.0);
+			_intakeSparkFlex.setVoltage(0.0);
 		} else {
-			_intakeSparkMax.stopMotor();
+			_intakeSparkFlex.stopMotor();
+			//_intakeSparkMax.setVoltage(0.0);
 		}
 	}
 
 	public double getOutputCurrent() {
-		return _intakeSparkMax.getOutputCurrent();
+		return _intakeSparkFlex.getOutputCurrent();
 	}
 
 	public double getTemp() {
-		return (_intakeSparkMax.getMotorTemperature() * 9 / 5) + 32;
+		return (_intakeSparkFlex.getMotorTemperature() * 9 / 5) + 32;
 	}
 
 	public double getAppliedOutput() {
-		return _intakeSparkMax.getAppliedOutput();
+		return _intakeSparkFlex.getAppliedOutput();
 	}
 
 	public boolean hasNote() {
