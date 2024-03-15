@@ -30,14 +30,15 @@ public class ArmPoseCommand extends Command {
 	public void initialize() {
 		//armSubsystem.setSequencedArmState(armPose);
 		//intakeSubsystem.updateIntakeFromArmPose(armPose);
-		System.out.println("ArmPoseCommand::initialize() - called");
+		//System.out.println("ArmPoseCommand::initialize() - called");
 
-		armSubsystem.setSequencedArmState(armPose);
+		//armSubsystem.setSequencedArmState(armPose);
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
+		armSubsystem.setSequencedArmState(armPose);
 	}
 
 	// Called once the command ends or is interrupted.

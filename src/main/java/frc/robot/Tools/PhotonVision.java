@@ -75,7 +75,7 @@ public class PhotonVision {
 				_aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
 			}
 
-			photonVisionTab = Shuffleboard.getTab("PhotonVision");
+			//photonVisionTab = Shuffleboard.getTab("PhotonVision");
 		} catch (IOException e) {
 			System.out.println("PhotonVision::PhotonVision() - error:" + e.toString());
 			return;
@@ -104,12 +104,16 @@ public class PhotonVision {
 			}
 		}
 
-		photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
-		photonVisionTab.addBoolean("Connection", this::isConnected);
-		photonVisionTab.addBoolean("Has Target", this::hasTarget);
-		photonVisionTab.addString("Targets Used", this::targetsUsed);
-		//photonVisionTab.addDouble("Target Used", this::getTargetUsed);
-		photonVisionTab.addDouble("Speaker ID", this::getSpeakerTarget);
+		if(Constants.debugPhotonVision == true) {
+			photonVisionTab = Shuffleboard.getTab("PhotonVision");
+
+			photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
+			photonVisionTab.addBoolean("Connection", this::isConnected);
+			photonVisionTab.addBoolean("Has Target", this::hasTarget);
+			photonVisionTab.addString("Targets Used", this::targetsUsed);
+			//photonVisionTab.addDouble("Target Used", this::getTargetUsed);
+			photonVisionTab.addDouble("Speaker ID", this::getSpeakerTarget);
+		}
 	}
 
 	public boolean isConnected() {
@@ -146,6 +150,7 @@ public class PhotonVision {
 
 			if(prevEstimatedRobotPose == null) {
 				System.out.println("PhonVision::getPose() - prevEstimatedRobotPose is null");
+				prevEstimatedRobotPose = new Pose2d();
 			}
 
 			/////////
@@ -369,6 +374,8 @@ public class PhotonVision {
 					return distance;
 				}
 			}
+		} else {
+			//System.out.println("getTargetDistance() - estimatedRobotPose is null");
 		}
 		
 		return distance;
@@ -432,6 +439,7 @@ public class PhotonVision {
 				//System.out.println("PhotonVision::getPhotonPose() - x: " + prevEstimatedRobotPose.getX() + " y: " + prevEstimatedRobotPose.getY() + " rotation: " + prevEstimatedRobotPose.getRotation().getDegrees());
 			} else {
 				System.out.println("PhotonVision::getPhotonPose() - prevEstimatedRobotPose is null");
+				prevEstimatedRobotPose = new Pose2d();
 			}
 
 			Optional<EstimatedRobotPose> estimatedRobotPose = _photonPoseEstimator.update();
@@ -471,6 +479,21 @@ public class PhotonVision {
 			}
 
 			return estimatedRobotPose;			
+		} else {
+			System.out.println("getPhotonPose() - _photonPoseEstimator is null");
+
+			if(_camera != null) {
+				if(_camera.isConnected()) {
+					_photonPoseEstimator = new PhotonPoseEstimator(
+						_aprilTagFieldLayout, 
+						Constants.PhotonVisionConstants.poseStrategy,
+						_camera, 
+						Constants.PhotonVisionConstants.cameraToRobot
+						);
+				} else {
+					System.out.println("-------> the camera is not connected");
+				}
+			}
 		}
 
 		return Optional.empty();

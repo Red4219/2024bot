@@ -510,6 +510,10 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 
 	public void setChassisSpeedsRobotRelative(ChassisSpeeds chassisSpeeds ){
+
+		// Not sure about this
+		chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond * -1;
+
 		SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 		//setModuleStates(swerveModuleStates);
 

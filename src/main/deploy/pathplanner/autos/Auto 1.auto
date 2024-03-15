@@ -26,7 +26,13 @@
         {
           "type": "named",
           "data": {
-            "name": "TimedShootHalfSeconds"
+            "name": "TimedShoot3Seconds"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TimedIntake1Seconds"
           }
         }
       ]

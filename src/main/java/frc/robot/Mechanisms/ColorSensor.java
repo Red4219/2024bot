@@ -6,6 +6,7 @@ import com.revrobotics.ColorSensorV3.GainFactor;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.Constants;
 
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
@@ -34,16 +35,32 @@ public class ColorSensor {
         return m_colorSensor.getColor();
     }
 
-    public void printColorValues() {
+    /*public void printColorValues() {
         System.out.println("Blue: " + m_colorSensor.getBlue() + " Red: " + m_colorSensor.getRed() + " Green: " + m_colorSensor.getGreen());
-    }
+    }*/
 
     public boolean noteDetected() {
-        if(m_colorSensor.getRed() >= 30.0) {
+        if(
+            m_colorSensor.getRed() >= Constants.IntakeConstants.kColorSensorGreaterThanRed
+            && m_colorSensor.getBlue() <= Constants.IntakeConstants.kColorSensorLessThanBlue
+            && m_colorSensor.getGreen() <= Constants.IntakeConstants.kColorSensorLessThanGreen
+        ) {
             //System.out.println("note detected");
             return true;
         }
 
         return false;
+    }
+
+    public int getBlue() {
+        return m_colorSensor.getBlue();
+    }
+
+    public int getRed() {
+        return m_colorSensor.getRed();
+    }
+
+    public int getGreen() {
+        return m_colorSensor.getGreen();
     }
 }

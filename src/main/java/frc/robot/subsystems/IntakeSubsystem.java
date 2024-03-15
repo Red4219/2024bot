@@ -37,6 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	//private ColorSensor colorSensor = new ColorSensor();
 	private ColorSensor colorSensor;
 	private boolean hasNote = false;
+	private String stateName = "DISABLED";
 
 	private kIntakeStates currentIntakeState;
 
@@ -70,14 +71,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
 		if(Constants.debugIntake == true) {
 
-			ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
-			intakeTab.addDouble("Intake Current", intakeWheels::getOutputCurrent);
-			intakeTab.addDouble("Intake Temp", intakeWheels::getTemp);
-			intakeTab.addDouble("Intake Output", intakeWheels::getAppliedOutput);
+			if(Constants.debugIntake == true) {
+				ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
+				intakeTab.addDouble("Intake Current", intakeWheels::getOutputCurrent);
+				intakeTab.addDouble("Intake Temp", intakeWheels::getTemp);
+				intakeTab.addDouble("Intake Output", intakeWheels::getAppliedOutput);
+				intakeTab.addInteger("Blue", colorSensor::getBlue);
+				intakeTab.addInteger("Red", colorSensor::getRed);
+				intakeTab.addInteger("Green", colorSensor::getGreen);
+				intakeTab.addString("State Name", this::getStateName);
 
-			if(Constants.IntakeConstants.kEnableColorSensor == true) {
-				intakeTab.addBoolean("Note Detected", colorSensor::noteDetected);
-			}
+				if(Constants.IntakeConstants.kEnableColorSensor == true) {
+					intakeTab.addBoolean("Note Detected", colorSensor::noteDetected);
+				}
+			}	
 		}
 	}
 
@@ -99,6 +106,48 @@ public class IntakeSubsystem extends SubsystemBase {
 				Logger.recordOutput("Intake/Note_Detected", colorSensor.noteDetected());
 			}
 		}
+
+		/*if(Constants.IntakeConstants.kEnableColorSensor == true) {
+
+			if(this.currentIntakeState == Constants.IntakeConstants.kIntakeStates.INTAKE) {
+				if(colorSensor.noteDetected()) {
+					this.hasNote = true;
+					intakeWheels.disable();
+				}
+			}
+		}*/
+
+		switch(this.currentIntakeState) {
+			case BUMP:
+				this.stateName = "BUMP";
+				break;
+			case DISABLED:
+				this.stateName = "DISABLED";
+				break;
+			case IDLE:
+				this.stateName = "IDLE";
+				break;
+			case INTAKE:
+				this.stateName = "INTAKE";
+				if(Constants.IntakeConstants.kEnableColorSensor == true) {
+					if(colorSensor.noteDetected()) {
+						this.hasNote = true;
+						intakeWheels.disable();
+					}
+				}
+				break;
+			case INTAKE_IGNORE_NOTE:
+				this.stateName = "INTAKE_IGNORE_NOTE";
+				break;
+			case OUTTAKE:
+				this.stateName = "OUTTAKE";
+				break;
+			default:
+				break;
+			
+		}
+
+		
 
 		//intakeWheels.Intake();
 
@@ -186,6 +235,10 @@ public class IntakeSubsystem extends SubsystemBase {
 		intakeWheels.Intake();
 	}
 
+	public void intakeNoteIgnoreNote() {
+		intakeWheels.Intake();
+	}
+
 	public void outtakeNote() {
 		intakeWheels.OutTake();
 	}
@@ -225,6 +278,10 @@ public class IntakeSubsystem extends SubsystemBase {
 					intakeNote();
 					break;
 
+				case INTAKE_IGNORE_NOTE:
+					intakeNoteIgnoreNote();
+					break;
+
 			}
 		}
 	}	
@@ -247,4 +304,8 @@ public class IntakeSubsystem extends SubsystemBase {
 	/*public double getDistanceAsVolts() {
 		return distanceSensor.getDistanceAsVolts();
 	}*/
+
+	public String getStateName() {
+		return this.stateName;
+	}
 }

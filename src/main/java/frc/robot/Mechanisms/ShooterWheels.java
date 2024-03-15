@@ -11,7 +11,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 
 public class ShooterWheels {
-    private CANSparkFlex _shooterSparkMaxPrimary;
+    private CANSparkMax _shooterSparkMaxPrimary;
     private CANSparkMax _shooterSparkMaxSecondary;
     private RelativeEncoder rightEncoder, leftEncoder;
     private double targetSpeed = 0.0;
@@ -20,7 +20,7 @@ public class ShooterWheels {
 
         // Primary Motor
 
-        _shooterSparkMaxPrimary = new CANSparkFlex(primaryPort, MotorType.kBrushless);
+        _shooterSparkMaxPrimary = new CANSparkMax(primaryPort, MotorType.kBrushless);
 
         // Setup simulation
         if(Constants.getMode() == Mode.SIM) {
@@ -63,6 +63,7 @@ public class ShooterWheels {
             _shooterSparkMaxSecondary.setVoltage(0.0);
 		} else {
 			_shooterSparkMaxPrimary.stopMotor();
+            _shooterSparkMaxSecondary.stopMotor();
 		}
 	}
 
@@ -84,10 +85,15 @@ public class ShooterWheels {
 		} else {
 			//_shooterSparkMaxPrimary.set(speed);
 
-            if(_shooterSparkMaxPrimary.get() == 0.0) {
-                _shooterSparkMaxPrimary.setVoltage(-9.0);
-                _shooterSparkMaxSecondary.setVoltage(9.0);
-            }
+            /*if(_shooterSparkMaxPrimary.get() == 0.0) {
+                _shooterSparkMaxPrimary.setVoltage(-speed);
+                _shooterSparkMaxSecondary.setVoltage(speed);
+            }*/
+
+            _shooterSparkMaxPrimary.setVoltage(-speed);
+            _shooterSparkMaxSecondary.setVoltage(speed);
+
+
 		}
     }
 

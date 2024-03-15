@@ -22,6 +22,7 @@ public class IntakeCommand extends Command {
 	private OptionalLong intakeTime = OptionalLong.empty();
 	private boolean finished = false;
 	private kIntakeStates intakeState;
+	private boolean ignoreNote = false;
 
 	//private Timer timer;
 	//private double timeMilis;
@@ -33,6 +34,7 @@ public class IntakeCommand extends Command {
 		intakeSubsystem = RobotContainer.intakeSubsystem;
 		this.intakeTime = intakeTime;
 		this.intakeState = state;
+		this.ignoreNote = ignoreNote;
 
 		// Use addRequirements() here to declare subsystem dependencies.
 		addRequirements(intakeSubsystem);

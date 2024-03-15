@@ -61,7 +61,7 @@ public class RobotContainer {
 	public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorController);
 	public static final ArmSubsystem armSubsystem = new ArmSubsystem(driveSubsystem.getPhotonVision());
 	public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-	public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+	public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(armSubsystem);
 	
 
 	public final static PathBuilder autoBuilder = new PathBuilder();
@@ -106,6 +106,7 @@ public class RobotContainer {
 		NamedCommands.registerCommand("Aim", new AimCommand(_photonVision));
 		NamedCommands.registerCommand("ArmAimCommand", new AutoArmAimCommand());
 		NamedCommands.registerCommand("TimedShootHalfSeconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(500)));
+		NamedCommands.registerCommand("TimedShoot3Seconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(3000)));
 		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(2000)));
 		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(1000)));
 		
@@ -156,9 +157,19 @@ public class RobotContainer {
 				shooterSubsystem.timedShootCommand(3000))
 				.onFalse(shooterSubsystem.idleCommand());*/
 
+		// This was working
+		/*
 		driverController.rightTrigger().whileTrue(
-				new RepeatCommand(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()))
-			);
+				new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty())
+			);*/
+
+		driverController.rightTrigger().onTrue(
+			new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty())
+		);
+
+		driverController.rightTrigger().onFalse(
+			new IntakeCommand(kIntakeStates.IDLE, OptionalLong.empty())
+		);
 
 		/*driverController.rightTrigger().onFalse(
 				//shooterSubsystem.shootCommand()
@@ -173,11 +184,11 @@ public class RobotContainer {
 			new IntakeCommand(kIntakeStates.BUMP, OptionalLong.of(500))
 		);*/
 
-		driverController.button(2).onTrue(
+		/*driverController.button(2).onTrue(
 		//driverController.rightTrigger().onTrue(
 			//new FloorIntakeCommand(true)
 			Commands.parallel(new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.empty()), new ArmPoseCommand(kArmPoses.GROUND_INTAKE))
-		);
+		);*/
 
 		/*driverController.button(3).onTrue(
 			//new FloorIntakeCommand(true)
@@ -201,18 +212,25 @@ public class RobotContainer {
 		);
 
 		operatorController.button(2).onTrue(
-			new ArmPoseCommand(kArmPoses.AMP_SCORE)
+			new ArmPoseCommand(kArmPoses.SPEAKER_SCORE_POST)
 		);
 
 		operatorController.button(3).onTrue(
+			new ArmPoseCommand(kArmPoses.AMP_SCORE)
+		);
+
+		operatorController.button(4).onTrue(
 			new ArmPoseCommand(kArmPoses.SPEAKER_SCORE)
 		);
 
 		//operatorController.button(1).onTrue(
 		operatorController.rightTrigger().onTrue(
-				//new ShootCommand(shooterSubsystem, kShooterStates.SHOOT, OptionalLong.of(500)));
-				new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.empty()));
+			//new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.empty())
 
+			// This will check if the arm is in position to shoot at the amp, then set the shooter accordingly, else shoot speaker
+			//new ShootCommand(shooterSubsystem, (armSubsystem.getArmState() == kArmPoses.AMP_SCORE) ? kShooterStates.SHOOT_AMP : kShooterStates.SHOOT_SPEAKER, OptionalLong.empty())
+			new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.empty())
+		);
 		
 		operatorController.leftTrigger().onTrue(
 				//shooterSubsystem.shootCommand()
@@ -228,6 +246,10 @@ public class RobotContainer {
 				new IntakeCommand(kIntakeStates.IDLE, OptionalLong.empty())
 			);
 
+		operatorController.button(7).onTrue(
+				new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.empty())
+			);
+
 		// Always point the robot at the target
 		//operatorController.button(2).onTrue(
 		/*operatorController.leftTrigger().onTrue(
@@ -238,10 +260,8 @@ public class RobotContainer {
 		//operatorController.button(4).whileTrue(new RunCommand(() -> driveSubsystem.goToPose(Constants.PoseDefinitions.kFieldPoses.SOURCE)));
 
 
-		//operatorController.rightBumper().onTrue(new ArmMoveCommand(0.05));
-		operatorController.rightBumper().whileTrue(new RepeatCommand(new ArmMoveCommand(0.05)));
-		//operatorController.leftBumper().onTrue(new ArmMoveCommand(-0.05));
-		operatorController.leftBumper().whileTrue(new RepeatCommand(new ArmMoveCommand(-0.05)));
+		operatorController.rightBumper().whileTrue(new RepeatCommand(new ArmMoveCommand(0.03)));
+		operatorController.leftBumper().whileTrue(new RepeatCommand(new ArmMoveCommand(-0.03)));
 
 		//asdf
 		//JoystickUtils.processJoystickInput(operatorController.getLeftY());

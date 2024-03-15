@@ -15,11 +15,14 @@ import frc.robot.Mechanisms.ShooterWheels;
 public class ShooterSubsystem extends SubsystemBase {
     
     private ShooterWheels shooter = new ShooterWheels(Constants.ShooterConstants.kPrimaryPort, Constants.ShooterConstants.kSecondaryPort);
-    private kShooterStates currentShooterState = kShooterStates.DISABLED;
+    private kShooterStates currentShooterState = kShooterStates.STOPPED;
     private double speed = 0.0;
     private String status = "STOPPED";
+    ArmSubsystem armSubsystem;
 
-    public ShooterSubsystem() {
+    public ShooterSubsystem(ArmSubsystem armSubsystem) {
+
+        this.armSubsystem = armSubsystem;
 
         if(Constants.debugShooter == true) {
             ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
@@ -35,11 +38,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void shootSpeakerNote() {
-        shooter.shoot(0.5);
+        shooter.shoot(Constants.ShooterConstants.kSpeakerShootSpeed);
 	}
 
     public void shootAmpNote() {
-        shooter.shoot(0.1);
+        shooter.shoot(Constants.ShooterConstants.kAmpShootSpeed);
 	}
 
     public void stopShooter() {
@@ -67,12 +70,18 @@ public class ShooterSubsystem extends SubsystemBase {
 				    break;
 
 			    case SHOOT_SPEAKER:
-				    shootSpeakerNote();
+                    if(armSubsystem.getArmState() == Constants.ArmConstants.kArmPoses.AMP_SCORE) {
+				        shootAmpNote();
+                    } else {
+                        shootSpeakerNote();
+                    }
+                    //shootSpeakerNote();
                     this.status = "SHOOT_SPEAKER";
 				    break;
 
                 case SHOOT_AMP:
 				    shootAmpNote();
+                    //shootSpeakerNote();
                     this.status = "SHOOT_AMP";
 				    break;
 

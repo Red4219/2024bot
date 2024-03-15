@@ -38,7 +38,7 @@ public class ArmSubsystem extends SubsystemBase {
 	private kArmPoses targetArmState;
 
 	/** controls the side of the robot the arm is on */
-	private boolean isFront;
+	//private boolean isFront;
 	private boolean enableArm;
 	private boolean autoAim = false;
 
@@ -61,41 +61,7 @@ public class ArmSubsystem extends SubsystemBase {
 	//
 
 	public ArmSubsystem(PhotonVision photonVision) {
-		/* 
-		// this will cause the code to fail to run if the hashmap is not full
-		for (kArmPoses pose : kArmPoses.values()) {
-			try {
-				double x = 0;
-				x = x + armStates.get(pose)[0];
-				x = x + armStates.get(pose)[1];
-			} catch (Exception exception) {
-				throw new IndexOutOfBoundsException(
-						"NOT ALL ARM POSES HAVE A VALUE IN THE HASHMAP! THIS WILL RESLUT IN CRASHING IF NOT RESOLVED!");
-			}
-		}
-
-		// region: def arms
-
-		// major arm defs
-		majorArm = new ArmSegment(
-				ArmConstants.kRightMajorArmPort,
-				ArmConstants.kLeftMajorArmPort,
-				ArmConstants.kMajorArmTicks,
-				false);
-
-		majorArm.setPID(ArmConstants.kMajorArmGains);
-
-		majorArm.setConstraints(ArmConstants.kMajorArmConstraints);
-		majorArm.setMaxOutput(ArmConstants.kMajorPIDOutputLimit);
-		majorArm.setTrapazoidalConstraints(ArmConstants.kMaxMajorVelRadiansPerSec, ArmConstants.kMaxMajorAccelRadiansPerSec);
-
-		// endregion
-
-		// the default state of the arms
-		isFront = true;
-		enableArms = true;*/
-
-		// new
+		
 		rightMotor = new CANSparkMax(frc.robot.Constants.ArmConstants.kRightArmPort, MotorType.kBrushless);
 		leftMotor = new CANSparkMax(frc.robot.Constants.ArmConstants.kLeftArmPort, MotorType.kBrushless);
 
@@ -166,42 +132,11 @@ public class ArmSubsystem extends SubsystemBase {
 
 		this.targetArmState = kArmPoses.GROUND_INTAKE;
 		this.targetPosition = armStates.get(targetArmState)[0];
-
-		// end new
-
-		//setSequencedArmState(kArmPoses.TUCKED);
 	}
 
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-
-		//SmartDashboard.putString("ArmState", targetArmState.toString());
-
-		//SmartDashboard.putNumber("major target", majorArm.getTargetTheta());
-		//SmartDashboard.putNumber("minor target", minorArm.getTargetTheta());
-
-		//SmartDashboard.putNumber("major real theta: ", majorArm.getRealTheta());
-		//SmartDashboard.putNumber("minor real theta: ", minorArm.getRealTheta());
-
-		//SmartDashboard.putNumber("major left real theta", majorArm.getLeftRealTheta());
-		//SmartDashboard.putNumber("major right real theta", majorArm.getRightRealTheta());
-
-		//SmartDashboard.putNumber("major left real theta", majorArm.getLeftRealTheta());
-		//SmartDashboard.putNumber("major right real theta", majorArm.getRightRealTheta());
-
-		//SmartDashboard.putNumber("major power draw: ", majorArm.getPowerDraw());
-		//SmartDashboard.putNumber("minor power draw: ", minorArm.getPowerDraw());
-
-		//SmartDashboard.putBoolean("At target: ", getAtTarget(8));
-		//SmartDashboard.putBoolean("At target major", majorArm.getAtTarget(5));
-		//SmartDashboard.putBoolean("At target minor", minorArm.getAtTarget(5));
-
-		//SmartDashboard.putNumber("LeftMajorOutput", majorArm.getLeftMotorOutput());
-		//SmartDashboard.putNumber("RightMajorOutput", majorArm.getRightMotorOutput());
-
-		//position = rightEncoder.getPosition();
-
 		if(Constants.enableLogger == true) {
 
 			Logger.recordOutput("Arm/position", rightEncoder.getPosition());
@@ -283,31 +218,10 @@ public class ArmSubsystem extends SubsystemBase {
 		});
 	}
 
-	// endregion
 
-	// region Setters
-
-	/**
-	 * Sets the height of the arm
-	 * 
-	 * @param state can be (LOW_SCORE, MID_SCORE, HIGH_SCORE,
-	 *              LOW_INTAKE, MID_INTAKE, HIGH_INTAKE)
-	 */
-	/*public void setUnsequencedArmState(kArmPoses state) {
-		setTargetArmState(state);
-		majorArm.setReference();
-		minorArm.setReference();
-	}*/
 
 	public void setSequencedArmState(kArmPoses state) {
-
 		setTargetArmState(state);
-
-		/*if (state == kArmPoses.TUCKED) {
-			minorArm.setReference();
-		} else {
-			majorArm.setReference();
-		}*/
 	}
 
 	/**
@@ -315,10 +229,10 @@ public class ArmSubsystem extends SubsystemBase {
 	 */
 	public void setTargetArmState(kArmPoses state) {
 
-		if(this.targetArmState == state) {
+		/*if(this.targetArmState == state) {
 			// we are calling for the state we are already in
 			return;
-		}
+		}*/
 
 		targetArmState = state;
 		enableArm = true;
@@ -342,7 +256,14 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public void moveToPosition(double position) {
-		System.out.println("ArmSubSystem::moveToPosition() - position: " + position);
+		//System.out.println("ArmSubSystem::moveToPosition() - position: " + position);
+
+		if(position < Constants.ArmConstants.kMinHeight) {
+			position = Constants.ArmConstants.kMinHeight;
+		} else if(position > Constants.ArmConstants.kMaxHeight) {
+			position = Constants.ArmConstants.kMaxHeight;
+		}
+
 		targetPosition = position;
 	}
 
@@ -357,6 +278,13 @@ public class ArmSubsystem extends SubsystemBase {
 				/*if(error != REVLibError.kOk) {
 					System.out.println("ClimberSubsystem::setReference() - Error - could not set the PID controller");
 				}*/
+
+				// Set the min/max values for the height of the arm
+				if(targetPosition < Constants.ArmConstants.kMinHeight) {
+					targetPosition = Constants.ArmConstants.kMinHeight;
+				} else if(targetPosition > Constants.ArmConstants.kMaxHeight) {
+					targetPosition = Constants.ArmConstants.kMaxHeight;
+				}
 
 				pidOutput = pidController.calculate(rightBoreEncoder.getPosition(), targetPosition);
 
@@ -415,13 +343,13 @@ public class ArmSubsystem extends SubsystemBase {
 			}
 		}*/
 
-		if(Math.abs(rightBoreEncoder.getPosition() - targetPosition) <= Constants.ArmConstants.kTolerance) {
+		/*if(Math.abs(rightBoreEncoder.getPosition() - targetPosition) <= Constants.ArmConstants.kTolerance) {
 			// Yes we are
 			//atSetPoint = true;
 			//rightMotor.setVoltage(0.0);
 		} else {
 			//atSetPoint = false;
-		}
+		}*/
 	}
 
 	public double getPosition() {
@@ -456,9 +384,9 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	/** ruturns true if the target dominant side of the robot is front */
-	public boolean getIsFront() {
+	/*public boolean getIsFront() {
 		return isFront;
-	}
+	}*/
 
 	public boolean isAtSetPoint() {
 		return atSetPoint;

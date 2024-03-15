@@ -41,6 +41,7 @@ public class IntakeWheels {
 			//System.out.println("Intake() being called");
 			if(_intakeSparkFlex.get() == 0.0) {
 				//_intakeSparkFlex.set(Constants.IntakeConstants.kIntakeSpeed);
+
 				_intakeSparkFlex.setVoltage(3.0);
 			}
 		}
@@ -81,11 +82,11 @@ public class IntakeWheels {
 		return _intakeSparkFlex.getAppliedOutput();
 	}
 
-	public boolean hasNote() {
+	/*public boolean hasNote() {
 		if(getOutputCurrent() > Constants.IntakeConstants.kIntakeOutputCurrentThreshold) {
 			return true;
 		}
 
 		return false;
-	}
+	}*/
 }

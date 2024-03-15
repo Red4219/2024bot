@@ -41,6 +41,7 @@ public final class Constants {
 	public static boolean debugDriveTrain = false;
 	public static boolean debugClimber = false;
 	public static boolean enableLogger = false;
+	public static boolean debugPhotonVision = false;
 
 	public static class ModuleConstants {
 
@@ -196,7 +197,7 @@ public final class Constants {
 		public static final double kMaxBalancingVelocity = 1000;
 		public static final double kMaxBalancingAcceleration = 5000;
 
-		public static final double kAimTargetTolerance = 0.5;
+		public static final double kAimTargetTolerance = 2.0;
 
 	}
 
@@ -223,6 +224,10 @@ public final class Constants {
 		public static final int kLeftArmPort = 14;
 		public static final int kArmGearBoxRatio = 100;
 		public static final int kArmBeltRatio = 2 / 1;
+
+		// Maximum targets
+		public static final double kMinHeight = 0.12;
+		public static final double kMaxHeight = 0.4;
 
 		/**
 		 * the total number of motor rotations for one 360 degree rotation of the arm
@@ -258,6 +263,7 @@ public final class Constants {
 			HUMAN_ELEMENT_INTAKE,
 			AMP_SCORE,
 			SPEAKER_SCORE,
+			SPEAKER_SCORE_POST,
 			TRAP_DOOR_SCORE,
 			AIM,
 			IDLE
@@ -267,10 +273,11 @@ public final class Constants {
 			{
 				//put(kArmPoses.GROUND_INTAKE, new double[] { .74 });
 				//put(kArmPoses.GROUND_INTAKE, new double[] { .84 });
-				put(kArmPoses.GROUND_INTAKE, new double[] { .132 });
+				put(kArmPoses.GROUND_INTAKE, new double[] { .13 });
 				put(kArmPoses.HUMAN_ELEMENT_INTAKE, new double[] { .94 });
-				put(kArmPoses.AMP_SCORE, new double[] { 20 });
-				put(kArmPoses.SPEAKER_SCORE, new double[] { 100 });
+				put(kArmPoses.AMP_SCORE, new double[] { .38 });
+				put(kArmPoses.SPEAKER_SCORE, new double[] { .16 });
+				put(kArmPoses.SPEAKER_SCORE_POST, new double[] { .19 });
 				put(kArmPoses.TRAP_DOOR_SCORE, new double[] { -10 });
 			}
 		};
@@ -311,6 +318,11 @@ public final class Constants {
 
 	public static class IntakeConstants {
 
+		public static int kColorSensorGreaterThanRed = 200;
+		public static int kColorSensorLessThanGreen = 700;
+		public static int kColorSensorLessThanBlue = 250;
+
+
 		//
 		public static final int kSmartCurrentLimit = 5;
 		public static final double kIntakeSpeed = .3;
@@ -318,14 +330,15 @@ public final class Constants {
 		public static final double kIntakeOutputCurrentThreshold = 6.0;
 		public static final int kIntakeWheelPort = 17;
 
-		public static final boolean kEnableColorSensor = false;
+		public static final boolean kEnableColorSensor = true;
 
 		public static enum kIntakeStates {
 			IDLE,
 			INTAKE,
 			OUTTAKE,
 			DISABLED,
-			BUMP
+			BUMP,
+			INTAKE_IGNORE_NOTE
 		}
 
 		public static final HashMap<kArmPoses, kIntakeStates> kArmStateToIntakeStateMap = new HashMap<kArmPoses, kIntakeStates>() {
@@ -465,6 +478,10 @@ public final class Constants {
 
 		public static final int kPrimaryPort = 18;
 		public static final int kSecondaryPort = 19;
+
+		// As of right now, these are in voltage
+		public static final double kAmpShootSpeed = 2.0;
+		public static final double kSpeakerShootSpeed = 9.0;
 
 		public static enum kShooterStates {
 			IDLE,

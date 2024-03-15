@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants.kShooterStates;
 import frc.robot.subsystems.ShooterSubsystem;
 import java.util.OptionalLong;
@@ -30,7 +31,8 @@ public class ShootCommand extends Command {
             TimerTask task = new TimerTask() {
                 public void run() {
                     System.out.println("stopping the shooter");
-                     finished = true;
+                    shooterSubsystem.setShooterState(Constants.ShooterConstants.kShooterStates.STOPPED);
+                    finished = true;
                 }
             };
             Timer timer = new Timer("Timer");

@@ -44,6 +44,8 @@ public class AimCommand extends Command {
         /*if(_photonVision.hasTarget()) {
             _isTargeted = _photonVision.aimAtTarget(7); // look at the blue target
         }*/
+
+        System.out.println("calling aim command");
     }
 
     @Override
@@ -69,16 +71,17 @@ public class AimCommand extends Command {
         } 
 
         double targetYaw = _photonVision.aimAtTarget(_targedNumber);
-        double shooterHeight = calculateShooterHeight(_photonVision.targetDistance(_targedNumber));
-        double shooterSpeed = calculateShooterSpeed(_photonVision.targetDistance(_targedNumber));
+        //double shooterHeight = calculateShooterHeight(_photonVision.targetDistance(_targedNumber));
+        //double shooterSpeed = calculateShooterSpeed(_photonVision.targetDistance(_targedNumber));
 
         //System.out.println("isFinished() - targetYaw: " + targetYaw + " targetDistance: " + targetDistance);
 
-        _armSubsystem.moveToPosition(shooterHeight);
-        _shooterSubsystem.setSpeed(shooterSpeed);
+        // need to fix this
+        //_armSubsystem.moveToPosition(shooterHeight);
+        //_shooterSubsystem.setSpeed(shooterSpeed);
 
-        double position = _armSubsystem.getPosition();
-        double speed = _shooterSubsystem.getSpeed();
+        //double position = _armSubsystem.getPosition();
+        //double speed = _shooterSubsystem.getSpeed();
 
         if(targetYaw == 0.0) {
             return true;
@@ -87,10 +90,12 @@ public class AimCommand extends Command {
         if(Math.abs(targetYaw) > Constants.AutoConstants.kAimTargetTolerance) {
 
             if(targetYaw > 0) {
-                _driveSubsystem.drive(0.0, 0.0, -.1);
+                _driveSubsystem.drive(0.0, 0.0, -.05);
+                //_driveSubsystem.drive(0.0, 0.0, -.05);
                 //_driveSubsystem.drive(0.0, 0.0, .5);
             } else {
-                _driveSubsystem.drive(0.0, 0.0, .5);
+                _driveSubsystem.drive(0.0, 0.0, .05);
+                //_driveSubsystem.drive(0.0, 0.0, .05);
                 //_driveSubsystem.drive(0.0, 0.0, -.1);
             }
             
