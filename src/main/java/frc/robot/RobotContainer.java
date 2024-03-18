@@ -107,6 +107,7 @@ public class RobotContainer {
 		NamedCommands.registerCommand("ArmAimCommand", new AutoArmAimCommand());
 		NamedCommands.registerCommand("TimedShootHalfSeconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(500)));
 		NamedCommands.registerCommand("TimedShoot3Seconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(3000)));
+		NamedCommands.registerCommand("TimedIntake5Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(5000)));
 		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(2000)));
 		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(1000)));
 		
@@ -342,8 +343,8 @@ public class RobotContainer {
 								driveJoystick.getHID().getRawButton(2)), // sneak boolean
 						driveSubsystem)*/
 				new RunCommand(() -> driveSubsystem.drive(
-					//JoystickUtils.processJoystickInput(-driverController.getLeftY()),
-					(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? JoystickUtils.processJoystickInput(-driverController.getLeftY()) : JoystickUtils.processJoystickInput(driverController.getLeftY()),
+					JoystickUtils.processJoystickInput(driverController.getLeftY()),
+					//(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? JoystickUtils.processJoystickInput(-driverController.getLeftY()) : JoystickUtils.processJoystickInput(driverController.getLeftY()),
 					JoystickUtils.processJoystickInput(driverController.getLeftX()),
 					//-JoystickUtils.processJoystickInput((driverController.getHID().isConnected()) ? driverController.getRawAxis(2) : driverController.getRightX()),
 					-JoystickUtils.processJoystickInput(driverController.getRightX()),
