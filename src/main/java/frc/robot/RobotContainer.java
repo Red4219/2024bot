@@ -107,9 +107,9 @@ public class RobotContainer {
 		NamedCommands.registerCommand("ArmAimCommand", new AutoArmAimCommand());
 		NamedCommands.registerCommand("TimedShootHalfSeconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(500)));
 		NamedCommands.registerCommand("TimedShoot3Seconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(3000)));
-		NamedCommands.registerCommand("TimedIntake5Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(5000)));
-		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(2000)));
-		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(1000)));
+		NamedCommands.registerCommand("TimedIntake5Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(5000)));
+		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(2000)));
+		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(1000)));
 		
 		
 		try {
