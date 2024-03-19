@@ -26,7 +26,13 @@
         {
           "type": "named",
           "data": {
-            "name": "TimedIntake5Seconds"
+            "name": "TimedIntakeIgnore5Seconds"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TimedDelay2Seconds"
           }
         }
       ]

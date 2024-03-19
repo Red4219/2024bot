@@ -35,6 +35,7 @@ import frc.robot.commands.FloorIntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.Autonomous.AimCommand;
 import frc.robot.commands.Autonomous.AutoArmAimCommand;
+import frc.robot.commands.Autonomous.DelayCommand;
 import frc.robot.commands.Autonomous.IntakeCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -103,13 +104,29 @@ public class RobotContainer {
 
 		NamedCommands.registerCommand("ClimberUp", new ClimberPoseCommand(kClimberPoses.HIGH));
 		NamedCommands.registerCommand("ClimberDown", new ClimberPoseCommand(kClimberPoses.TUCKED));
+
 		NamedCommands.registerCommand("Aim", new AimCommand(_photonVision));
+
 		NamedCommands.registerCommand("ArmAimCommand", new AutoArmAimCommand());
+
+		// Shoot Commands
 		NamedCommands.registerCommand("TimedShootHalfSeconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(500)));
 		NamedCommands.registerCommand("TimedShoot3Seconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(3000)));
-		NamedCommands.registerCommand("TimedIntake5Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(5000)));
-		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(2000)));
-		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(1000)));
+
+		// Intake Ignore commands
+		NamedCommands.registerCommand("TimedIntakeIgnore5Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(5000)));
+		NamedCommands.registerCommand("TimedIntakeIgnore2Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(2000)));
+		NamedCommands.registerCommand("TimedIntakeIgnore1Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(1000)));
+
+		// Intake Commands
+		NamedCommands.registerCommand("TimedIntake5Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(5000)));
+		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(2000)));
+		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(1000)));
+
+		// Define Delay commands
+		NamedCommands.registerCommand("TimedDelay5Seconds", new DelayCommand(OptionalLong.of(5000)));
+		NamedCommands.registerCommand("TimedDelay2Seconds", new DelayCommand(OptionalLong.of(2000)));
+		NamedCommands.registerCommand("TimedDelay1Seconds", new DelayCommand(OptionalLong.of(1000)));
 		
 		
 		try {
