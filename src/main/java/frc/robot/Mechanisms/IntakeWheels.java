@@ -35,27 +35,23 @@ public class IntakeWheels {
 	public void Intake() {
 		//System.out.println("IntakeWheels::Intake() called");
 
-		if(Constants.getMode() == Mode.SIM) {
-			_intakeSparkFlex.setVoltage(.1);
-		} else {
-			//System.out.println("Intake() being called");
-			if(_intakeSparkFlex.get() == 0.0) {
-				//_intakeSparkFlex.set(Constants.IntakeConstants.kIntakeSpeed);
-
-				_intakeSparkFlex.setVoltage(3.0);
-			}
+		if(_intakeSparkFlex.get() == 0.0) {
+			_intakeSparkFlex.setVoltage(Constants.IntakeConstants.kIntakeSpeed);
 		}
+		
+	}
+
+	public void IntakeSlowly() {
+		//System.out.println("IntakeWheels::IntakeSlowly() called");
+
+		if(_intakeSparkFlex.get() == 0.0) {
+			_intakeSparkFlex.setVoltage(Constants.IntakeConstants.kIntakeSlowSpeed);
+		}
+		
 	}
 
 	public void OutTake() {
 		//System.out.println("IntakeWheels::OutTake() called");
-		
-		/*if(Constants.getMode() == Mode.SIM) {
-			_intakeSparkMax.setVoltage(1.0);
-		} else {
-			_intakeSparkMax.set(Constants.IntakeConstants.kOuttakeSpeed);
-		}*/
-
 		_intakeSparkFlex.set(Constants.IntakeConstants.kOuttakeSpeed);
 	}
 

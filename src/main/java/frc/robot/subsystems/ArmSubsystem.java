@@ -130,7 +130,7 @@ public class ArmSubsystem extends SubsystemBase {
             }
         }
 
-		this.targetArmState = kArmPoses.GROUND_INTAKE;
+		this.targetArmState = kArmPoses.SPEAKER_SCORE_POST;
 		this.targetPosition = armStates.get(targetArmState)[0];
 	}
 
@@ -169,6 +169,14 @@ public class ArmSubsystem extends SubsystemBase {
 
 		if(Constants.getMode() == Mode.REAL) {
 			position = this.rightBoreEncoder.getPosition();
+
+			if(Math.abs(rightBoreEncoder.getPosition() - targetPosition) <= Constants.ArmConstants.kTolerance) {
+				atSetPoint = true;
+				//System.out.println("setting atSetPoint to true");
+			} else {
+				atSetPoint = false;
+				//System.out.println("setting atSetPoint to false");
+			}
 		} else if(Constants.getMode() == Mode.SIM) {
 			position = this.rightMotor.getEncoder().getPosition();
 		}

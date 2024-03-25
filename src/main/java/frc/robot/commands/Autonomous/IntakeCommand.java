@@ -8,9 +8,11 @@ import java.util.OptionalLong;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import edu.wpi.first.math.util.Units;
-//import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+
+//import edu.wpi.first.math.util.Units;
+//import edu.wpi.first.wpilibj.Timer;
+//import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.RobotContainer;
 import frc.robot.Constants.IntakeConstants.kIntakeStates;
@@ -46,7 +48,7 @@ public class IntakeCommand extends Command {
 
             TimerTask task = new TimerTask() {
                 public void run() {
-                    System.out.println("stopping the intake");
+                    //System.out.println("stopping the intake");
 					intakeSubsystem.setIntakeState(kIntakeStates.IDLE);
                     finished = true;
                 }
@@ -54,7 +56,7 @@ public class IntakeCommand extends Command {
             Timer timer = new Timer("Timer");
     
             timer.schedule(task, intakeTime.getAsLong());
-            System.out.println("starting the intake");
+            //System.out.println("starting the intake");
             finished = false;
         } else {
             finished = true;

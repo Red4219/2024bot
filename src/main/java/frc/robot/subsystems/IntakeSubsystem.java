@@ -12,11 +12,13 @@ import org.littletonrobotics.junction.Logger;
 import com.revrobotics.REVPhysicsSim;
 
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
@@ -40,6 +42,8 @@ public class IntakeSubsystem extends SubsystemBase {
 	private String stateName = "DISABLED";
 
 	private kIntakeStates currentIntakeState;
+
+	private CommandXboxController driverController;
 
 	//private IRDistanceSensor distanceSensor;
 
@@ -69,7 +73,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
 		//gripper = new IntakeWheels(IntakeConstants.kRightIntakeWheelPort, IntakeConstants.kLeftIntakeWheelPort);
 
-		if(Constants.debugIntake == true) {
+		//if(Constants.debugIntake == true) {
 
 			if(Constants.debugIntake == true) {
 				ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
@@ -85,7 +89,11 @@ public class IntakeSubsystem extends SubsystemBase {
 					intakeTab.addBoolean("Note Detected", colorSensor::noteDetected);
 				}
 			}	
-		}
+		//}
+	}
+
+	public void setDriverController(CommandXboxController driverController) {
+		this.driverController = driverController;
 	}
 
 	@Override
@@ -100,6 +108,14 @@ public class IntakeSubsystem extends SubsystemBase {
 		//colorSensor.printColorValues();
 
 		//SmartDashboard.putBoolean("Has Note", colorSensor.noteDetected());
+
+		if(Constants.IntakeConstants.kEnableNoteDetectedRumble == true) {
+			if(colorSensor.noteDetected() == true) {
+				this.driverController.getHID().setRumble(RumbleType.kLeftRumble, 1.0);
+			} else {
+				this.driverController.getHID().setRumble(RumbleType.kLeftRumble, 0.0);
+			}
+		}
 
 		if(Constants.enableLogger == true) {
 			if(Constants.IntakeConstants.kEnableColorSensor == true) {
@@ -129,6 +145,15 @@ public class IntakeSubsystem extends SubsystemBase {
 				break;
 			case INTAKE:
 				this.stateName = "INTAKE";
+				if(Constants.IntakeConstants.kEnableColorSensor == true) {
+					if(colorSensor.noteDetected()) {
+						this.hasNote = true;
+						intakeWheels.disable();
+					}
+				}
+				break;
+			case INTAKE_SLOW:
+				this.stateName = "INTAKE_SLOW";
 				if(Constants.IntakeConstants.kEnableColorSensor == true) {
 					if(colorSensor.noteDetected()) {
 						this.hasNote = true;
@@ -235,6 +260,10 @@ public class IntakeSubsystem extends SubsystemBase {
 		intakeWheels.Intake();
 	}
 
+	public void intakeNoteSlowly() {
+		intakeWheels.IntakeSlowly();
+	}
+
 	public void intakeNoteIgnoreNote() {
 		intakeWheels.Intake();
 	}
@@ -264,6 +293,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
 				case INTAKE:
 					intakeNote();
+					break;
+				
+				case INTAKE_SLOW:
+					intakeNoteSlowly();
 					break;
 
 				case OUTTAKE:

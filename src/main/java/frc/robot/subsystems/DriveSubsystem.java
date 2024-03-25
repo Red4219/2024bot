@@ -497,6 +497,9 @@ public class DriveSubsystem extends SubsystemBase {
 					targetLocked = true;
 				}
 			} 
+		} else if(mode == kDriveModes.LOCK_WHEELS) {
+			this.lockWheels();
+			return;
 		}
 
 		SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
@@ -513,6 +516,8 @@ public class DriveSubsystem extends SubsystemBase {
 
 		// Not sure about this
 		//chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond * -1;
+
+		chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
 
 		SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 		//setModuleStates(swerveModuleStates);

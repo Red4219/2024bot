@@ -35,8 +35,10 @@ import frc.robot.commands.FloorIntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.Autonomous.AimCommand;
 import frc.robot.commands.Autonomous.AutoArmAimCommand;
+import frc.robot.commands.Autonomous.AutoArmPoseCommand;
 import frc.robot.commands.Autonomous.DelayCommand;
 import frc.robot.commands.Autonomous.IntakeCommand;
+import frc.robot.commands.Autonomous.LockWheelsCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -99,6 +101,8 @@ public class RobotContainer {
 		// Configure the trigger bindings
 		configureBindings();
 
+		intakeSubsystem.setDriverController(driverController);
+
 		//return AutoBuilder.followPathWithEvents(path);
 		//
 
@@ -109,9 +113,19 @@ public class RobotContainer {
 
 		NamedCommands.registerCommand("ArmAimCommand", new AutoArmAimCommand());
 
+		// Arm Pose Command
+		NamedCommands.registerCommand("ArmSpeakerScoreCommand", new AutoArmPoseCommand(kArmPoses.SPEAKER_SCORE));
+		NamedCommands.registerCommand("ArmFloorIntakeCommand", new AutoArmPoseCommand(kArmPoses.GROUND_INTAKE));
+
+		// lock wheels command
+		NamedCommands.registerCommand("LockWheels", new LockWheelsCommand(true));
+		NamedCommands.registerCommand("DisableLockWheels", new LockWheelsCommand(false));
+
 		// Shoot Commands
 		NamedCommands.registerCommand("TimedShootHalfSeconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(500)));
 		NamedCommands.registerCommand("TimedShoot3Seconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(3000)));
+		NamedCommands.registerCommand("TimedShoot2Seconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(2000)));
+		NamedCommands.registerCommand("TimedShoot1Seconds", new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(1000)));
 
 		// Intake Ignore commands
 		NamedCommands.registerCommand("TimedIntakeIgnore5Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(5000)));
@@ -119,14 +133,14 @@ public class RobotContainer {
 		NamedCommands.registerCommand("TimedIntakeIgnore1Seconds", new IntakeCommand(kIntakeStates.INTAKE_IGNORE_NOTE, OptionalLong.of(1000)));
 
 		// Intake Commands
-		NamedCommands.registerCommand("TimedIntake5Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(5000)));
-		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(2000)));
-		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE, OptionalLong.of(1000)));
+		NamedCommands.registerCommand("TimedIntake5Seconds", new IntakeCommand(kIntakeStates.INTAKE_SLOW, OptionalLong.of(5000)));
+		NamedCommands.registerCommand("TimedIntake2Seconds", new IntakeCommand(kIntakeStates.INTAKE_SLOW, OptionalLong.of(2000)));
+		NamedCommands.registerCommand("TimedIntake1Seconds", new IntakeCommand(kIntakeStates.INTAKE_SLOW, OptionalLong.of(1000)));
 
 		// Define Delay commands
-		NamedCommands.registerCommand("TimedDelay5Seconds", new DelayCommand(OptionalLong.of(5000)));
+		/*NamedCommands.registerCommand("TimedDelay5Seconds", new DelayCommand(OptionalLong.of(5000)));
 		NamedCommands.registerCommand("TimedDelay2Seconds", new DelayCommand(OptionalLong.of(2000)));
-		NamedCommands.registerCommand("TimedDelay1Seconds", new DelayCommand(OptionalLong.of(1000)));
+		NamedCommands.registerCommand("TimedDelay1Seconds", new DelayCommand(OptionalLong.of(1000)));*/
 		
 		
 		try {
@@ -188,6 +202,17 @@ public class RobotContainer {
 		driverController.rightTrigger().onFalse(
 			new IntakeCommand(kIntakeStates.IDLE, OptionalLong.empty())
 		);
+
+		/*driverController.leftTrigger().onTrue(
+			//Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())			
+			//new ChassisAimCommand()
+			new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(3000))
+		);
+
+		driverController.leftTrigger().onFalse(
+			//Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())			
+			new ChassisAimCommand()
+		);*/
 
 		/*driverController.rightTrigger().onFalse(
 				//shooterSubsystem.shootCommand()

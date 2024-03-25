@@ -310,7 +310,7 @@ public class ClimberSubsystem extends SubsystemBase {
 					System.out.println("ClimberSubsystem::setReference() - Error - could not set the PID controller");
 				}
 
-				error = rightPIDController.setReference(targetPositionRight, CANSparkMax.ControlType.kPosition);
+				//error = rightPIDController.setReference(targetPositionRight, CANSparkMax.ControlType.kPosition);
 
 				// Are we close to the target position?
 				if(Math.abs(rightEncoder.getPosition() - targetPositionRight) <= Constants.ClimberConstants.kTolerance) {
@@ -370,7 +370,7 @@ public class ClimberSubsystem extends SubsystemBase {
 					System.out.println("ClimberSubsystem::setReference() - Error - could not set the PID controller");
 				}
 
-				error = leftPIDController.setReference(targetPositionLeft, CANSparkMax.ControlType.kPosition);
+				//error = leftPIDController.setReference(targetPositionLeft, CANSparkMax.ControlType.kPosition);
 
 				// Are we close to the target position?
 				if(Math.abs(leftEncoder.getPosition() - targetPositionLeft) <= Constants.ClimberConstants.kTolerance) {

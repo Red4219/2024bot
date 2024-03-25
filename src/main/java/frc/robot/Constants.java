@@ -35,9 +35,9 @@ import edu.wpi.first.math.geometry.Transform3d;
  */
 public final class Constants {
 
-	public static boolean debugArm = false;
+	public static boolean debugArm = true;
 	public static boolean debugShooter = false;
-	public static boolean debugIntake = false;
+	public static boolean debugIntake = true;
 	public static boolean debugDriveTrain = false;
 	public static boolean debugClimber = false;
 	public static boolean enableLogger = false;
@@ -144,7 +144,8 @@ public final class Constants {
 
 		public static enum kDriveModes {
 			NORMAL,
-			AIM
+			AIM,
+			LOCK_WHEELS
 		}
 
 		public static final double kChassisAutoAimRotation = 1.9;
@@ -256,7 +257,9 @@ public final class Constants {
 		//public static final PIDGains kArmGains = new PIDGains(1.0, 1.0, 0.2);
 		public static final PIDGains kArmGains = new PIDGains(25.0, 8.0, 0.2);
 
-		public static final double kTolerance = 0.01;
+		//public static final double kTolerance = 0.01;
+		public static final double kTolerance = 0.005;
+		//public static final double kTolerance = 0.008;
 
 		public static enum kArmPoses {
 			GROUND_INTAKE,
@@ -273,11 +276,11 @@ public final class Constants {
 			{
 				//put(kArmPoses.GROUND_INTAKE, new double[] { .74 });
 				//put(kArmPoses.GROUND_INTAKE, new double[] { .84 });
-				put(kArmPoses.GROUND_INTAKE, new double[] { .2 });
+				put(kArmPoses.GROUND_INTAKE, new double[] { .125 });
 				put(kArmPoses.HUMAN_ELEMENT_INTAKE, new double[] { .94 });
 				put(kArmPoses.AMP_SCORE, new double[] { .38 });
-				put(kArmPoses.SPEAKER_SCORE, new double[] { .14 });
-				put(kArmPoses.SPEAKER_SCORE_POST, new double[] { .19 });
+				put(kArmPoses.SPEAKER_SCORE, new double[] { .15 });
+				put(kArmPoses.SPEAKER_SCORE_POST, new double[] { .185 });
 				put(kArmPoses.TRAP_DOOR_SCORE, new double[] { -10 });
 			}
 		};
@@ -318,14 +321,17 @@ public final class Constants {
 
 	public static class IntakeConstants {
 
-		public static int kColorSensorGreaterThanRed = 200;
-		public static int kColorSensorLessThanGreen = 700;
-		public static int kColorSensorLessThanBlue = 250;
+		public static boolean kEnableNoteDetectedRumble = false;
+
+		public static int kColorSensorGreaterThanRed = 250;
+		public static int kColorSensorLessThanGreen = 900;
+		public static int kColorSensorLessThanBlue = 260;
 
 
 		//
 		public static final int kSmartCurrentLimit = 10;
-		public static final double kIntakeSpeed = .9;
+		public static final double kIntakeSpeed = 3; // this is in volts
+		public static final double kIntakeSlowSpeed = 1; // this is in volts
 		public static final double kOuttakeSpeed = -.2;
 		public static final double kIntakeOutputCurrentThreshold = 8.0;
 		public static final int kIntakeWheelPort = 17;
@@ -338,7 +344,8 @@ public final class Constants {
 			OUTTAKE,
 			DISABLED,
 			BUMP,
-			INTAKE_IGNORE_NOTE
+			INTAKE_IGNORE_NOTE,
+			INTAKE_SLOW
 		}
 
 		public static final HashMap<kArmPoses, kIntakeStates> kArmStateToIntakeStateMap = new HashMap<kArmPoses, kIntakeStates>() {
@@ -481,7 +488,7 @@ public final class Constants {
 
 		// As of right now, these are in voltage
 		public static final double kAmpShootSpeed = 4.0;
-		public static final double kSpeakerShootSpeed = 9.0;
+		public static final double kSpeakerShootSpeed = 7.0;
 
 		public static enum kShooterStates {
 			IDLE,
