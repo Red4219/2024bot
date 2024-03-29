@@ -68,9 +68,6 @@ public class Robot extends LoggedRobot {
 		if(Constants.useNoteCamera == true) {
 			// Get the UsbCamera from CameraServer
         	UsbCamera camera = CameraServer.startAutomaticCapture();
-
-			// Set the resolution
-			camera.setResolution(640, 480);
 		}
 
 		Pathfinding.setPathfinder(new LocalADStarAK());
