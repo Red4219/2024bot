@@ -65,11 +65,13 @@ public class Robot extends LoggedRobot {
 			PortForwarder.add(port, "limelight.local", port);
 		}*/
 
-		// Get the UsbCamera from CameraServer
-        //UsbCamera camera = CameraServer.startAutomaticCapture();
+		if(Constants.useNoteCamera == true) {
+			// Get the UsbCamera from CameraServer
+        	UsbCamera camera = CameraServer.startAutomaticCapture();
 
-		// Set the resolution
-		//camera.setResolution(640, 480);
+			// Set the resolution
+			camera.setResolution(640, 480);
+		}
 
 		Pathfinding.setPathfinder(new LocalADStarAK());
 

@@ -203,13 +203,14 @@ public class RobotContainer {
 			new IntakeCommand(kIntakeStates.IDLE, OptionalLong.empty())
 		);
 
-		/*driverController.leftTrigger().onTrue(
+		driverController.leftTrigger().onTrue(
 			//Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())			
 			//new ChassisAimCommand()
-			new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(3000))
+			//new ShootCommand(shooterSubsystem, kShooterStates.SHOOT_SPEAKER, OptionalLong.of(3000))
+			new IntakeCommand(kIntakeStates.INTAKE_SLOW, OptionalLong.of(5000))
 		);
 
-		driverController.leftTrigger().onFalse(
+		/*driverController.leftTrigger().onFalse(
 			//Commands.parallel(new ChassisAimCommand(), new ArmAimCommand())			
 			new ChassisAimCommand()
 		);*/

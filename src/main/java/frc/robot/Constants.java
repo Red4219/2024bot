@@ -43,6 +43,8 @@ public final class Constants {
 	public static boolean enableLogger = false;
 	public static boolean debugPhotonVision = false;
 
+	public static boolean useNoteCamera = true;
+
 	public static class ModuleConstants {
 
 		// Current limits for the wheels
@@ -323,8 +325,8 @@ public final class Constants {
 
 		public static boolean kEnableNoteDetectedRumble = false;
 
-		public static int kColorSensorGreaterThanRed = 250;
-		public static int kColorSensorLessThanGreen = 900;
+		public static int kColorSensorGreaterThanRed = 285;
+		public static int kColorSensorLessThanGreen = 1300;
 		public static int kColorSensorLessThanBlue = 260;
 
 
