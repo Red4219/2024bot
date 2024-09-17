@@ -93,8 +93,8 @@ public class SwerveModule {
 		driveMotor.restoreFactoryDefaults();
 
 		// Initalize CANcoder
-		//absoluteEncoder = new CANCoder(absoluteEncoderPort);
-		absoluteEncoder = new CANcoder(absoluteEncoderPort, Constants.kCanivoreCANBusName);
+		absoluteEncoder = new CANcoder(absoluteEncoderPort);
+		//absoluteEncoder = new CANcoder(absoluteEncoderPort, Constants.kCanivoreCANBusName);
 		if(Constants.getMode() == Mode.SIM) {
 			//simCollection = absoluteEncoder.getSimCollection();
 			simCollection = absoluteEncoder.getSimState();
