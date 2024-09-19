@@ -101,7 +101,9 @@ public class SwerveModule {
 		}
 		Timer.delay(1);
 		
-		MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs().withMagnetOffset(-1 * angleZero).withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf);
+		MagnetSensorConfigs magnetSensorConfigs = 
+		new MagnetSensorConfigs().withMagnetOffset(-1 * angleZero).withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf);
+
 		absoluteEncoder.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(magnetSensorConfigs));
 		/*absoluteEncoder.configFactoryDefault();
 		absoluteEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
@@ -156,7 +158,7 @@ public class SwerveModule {
 	// Returns headings of the module
 	public double getAbsoluteHeading() {
 		//return absoluteEncoder.getAbsolutePosition();
-		return absoluteEncoder.getAbsolutePosition().getValue();
+		return absoluteEncoder.getAbsolutePosition().refresh().getValue();
 	}
 
 	public double getDistanceMeters() {
@@ -173,7 +175,7 @@ public class SwerveModule {
 		}
 
 		//double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
-		double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().getValue());
+		double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
 		double m_distanceMeters = driveEncoder.getPosition();
 
 		return new SwerveModulePosition(m_distanceMeters, new Rotation2d(m_moduleAngleRadians));
@@ -182,7 +184,7 @@ public class SwerveModule {
 	public void setDesiredState(SwerveModuleState desiredState) {
 
 		//double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
-		double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().getValue());
+		double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
 
 		if(Constants.getMode() == Mode.SIM) {
 			m_moduleAngleRadians = Math.toRadians(desiredState.angle.getDegrees());
