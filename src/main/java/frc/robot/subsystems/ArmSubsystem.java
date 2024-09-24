@@ -162,9 +162,9 @@ public class ArmSubsystem extends SubsystemBase {
 
 
 		if(targetArmState == kArmPoses.AIM) {
-			//position = _photonVision.targetDistance(speakerTarget);
-			targetPosition = calculatePosition(_photonVision.targetDistance(speakerTarget));
-			//System.out.println("ArmSubsystem::periodic() - distance: " + position);
+			if(Constants.kEnablePhotonVision) {
+				targetPosition = calculatePosition(_photonVision.targetDistance(speakerTarget));
+			}
 		}
 
 		if(Constants.getMode() == Mode.REAL) {

@@ -59,66 +59,73 @@ public class PhotonVision {
 	
 	public PhotonVision() {
 
-		try {
-			_aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+		if (Constants.kEnablePhotonVision) {
 
-			// Set if we are blue or red
+			try {
+				_aprilTagFieldLayout = AprilTagFieldLayout
+						.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
 
-			if(DriverStation.getAlliance().isPresent()) {
-			
-				if(DriverStation.getAlliance().get() == Alliance.Blue) {
+				// Set if we are blue or red
+
+				if (DriverStation.getAlliance().isPresent()) {
+
+					if (DriverStation.getAlliance().get() == Alliance.Blue) {
+						_aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
+					} else {
+						_aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
+					}
+				} else {
 					_aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
-				} else {
-					_aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide);
 				}
-			} else {
-				_aprilTagFieldLayout.setOrigin(AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide);
+
+				// photonVisionTab = Shuffleboard.getTab("PhotonVision");
+			} catch (IOException e) {
+				System.out.println("PhotonVision::PhotonVision() - error:" + e.toString());
+				return;
 			}
 
-			//photonVisionTab = Shuffleboard.getTab("PhotonVision");
-		} catch (IOException e) {
-			System.out.println("PhotonVision::PhotonVision() - error:" + e.toString());
-			return;
-		}
-
-		// Change this for testing
-		if(Constants.getMode() == Mode.SIM && !PhotonVisionConstants.PhysicalCamera) {
-			System.out.println("running setupSimulation()");
-			setupSimulation(new Pose3d());
-		} 
-
-		if(_aprilTagFieldLayout != null) {
-			if(_camera != null) {
-				if(_camera.isConnected()) {
-					_photonPoseEstimator = new PhotonPoseEstimator(
-						_aprilTagFieldLayout, 
-						Constants.PhotonVisionConstants.poseStrategy,
-						_camera, 
-						Constants.PhotonVisionConstants.cameraToRobot
-						);
-				} else {
-					System.out.println("-------> the camera is not connected");
-				}
-			} else {
-				System.out.println("PhotonVision::PhotonVision() - _camera is null");
+			// Change this for testing
+			if (Constants.getMode() == Mode.SIM && !PhotonVisionConstants.PhysicalCamera) {
+				System.out.println("running setupSimulation()");
+				setupSimulation(new Pose3d());
 			}
-		}
 
-		if(Constants.debugPhotonVision == true) {
-			photonVisionTab = Shuffleboard.getTab("PhotonVision");
+			if (_aprilTagFieldLayout != null) {
+				if (_camera != null) {
+					if (_camera.isConnected()) {
+						_photonPoseEstimator = new PhotonPoseEstimator(
+								_aprilTagFieldLayout,
+								Constants.PhotonVisionConstants.poseStrategy,
+								_camera,
+								Constants.PhotonVisionConstants.cameraToRobot);
+					} else {
+						System.out.println("-------> the camera is not connected");
+					}
+				} else {
+					System.out.println("PhotonVision::PhotonVision() - _camera is null");
+				}
+			}
 
-			photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
-			photonVisionTab.addBoolean("Connection", this::isConnected);
-			photonVisionTab.addBoolean("Has Target", this::hasTarget);
-			photonVisionTab.addString("Targets Used", this::targetsUsed);
-			//photonVisionTab.addDouble("Target Used", this::getTargetUsed);
-			photonVisionTab.addDouble("Speaker ID", this::getSpeakerTarget);
+			if (Constants.debugPhotonVision == true) {
+				photonVisionTab = Shuffleboard.getTab("PhotonVision");
+
+				photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
+				photonVisionTab.addBoolean("Connection", this::isConnected);
+				photonVisionTab.addBoolean("Has Target", this::hasTarget);
+				photonVisionTab.addString("Targets Used", this::targetsUsed);
+				// photonVisionTab.addDouble("Target Used", this::getTargetUsed);
+				photonVisionTab.addDouble("Speaker ID", this::getSpeakerTarget);
+			}
 		}
 	}
 
 	public boolean isConnected() {
-		if(_camera != null) {
-			return _camera.isConnected();
+		if(Constants.kEnablePhotonVision) {
+			if(_camera != null) {
+				return _camera.isConnected();
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -200,25 +207,8 @@ public class PhotonVision {
 						_aprilTagFieldLayout.getTagPose(target.getFiducialId()).get()
 					);
 
-					//_targetsUsed[i] = target.getFiducialId();
-					//i++;
-
-					//System.out.println("Distance to " + target.getFiducialId() + " is: " + targetDistance(target.getFiducialId()));
-
-					/*if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-						if(target.getFiducialId() == 7) {
-							photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
-						}
-						//7
-					} else {
-						//4
-						if(target.getFiducialId() == 4) {
-							photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
-						}
-					}*/
+					
 				}
-
-				//photonVisionTab.addDouble("Target Distance", this::getTargetDistance);
 
 				Logger.recordOutput(
 					"AprilTagVision/TagPoses",
@@ -235,65 +225,12 @@ public class PhotonVision {
 					"AprilTagVision/TagPoses",
 					allTagPoses.toArray(new Pose3d[allTagPoses.size()])
 				);
-
-				//_targetsUsed = new double[0];
 			}
 
 			// Return this if we do not have a value
 			return new PhotonVisionResult(false, camPose, 0);
 		
-			/*PhotonPipelineResult result = _camera.getLatestResult();
-			if (result.hasTargets()) {
-
-				List<Pose3d> allTagPoses = new ArrayList<>();
-
-				double imageCaptureTime = result.getTimestampSeconds();
-				Transform3d camToTargetTrans = result.getBestTarget().getBestCameraToTarget();
-				// Pose3d pose = _sim_farTargetPose.transformBy(camToTargetTrans.inverse());
-
-				// result.getBestTarget().getFiducialId()
-				PhotonTrackedTarget t = result.getBestTarget();
-				// Pose3d farTargetPose =
-				// allTagPoses.get(result.getBestTarget().getFiducialId());
-
-				for (PhotonTrackedTarget target : result.targets) {
-					if (target.getFiducialId() != -1) {
-						allTagPoses.add(
-							_aprilTagFieldLayout.getTagPose(target.getFiducialId()).get()
-						);
-					}
-				}
-
-				Logger.getInstance().recordOutput(
-					"AprilTagVision/TagPoses",
-					allTagPoses.toArray(new Pose3d[allTagPoses.size()])
-				);
-
-				Pose3d farTargetPose = _aprilTagFieldLayout.getTagPose(t.getFiducialId()).get();
-
-				//camPose = farTargetPose.transformBy(camToTargetTrans.inverse()).transformBy(Constants.PhotonVisionConstants.cameraToRobot);
-				camPose = farTargetPose.transformBy(camToTargetTrans.inverse());
-
-				
-
-				//Transform3d CAMERA_TO_ROBOT = new Transform3d();
-				//var visionMeasurement = camPose.transformBy(CAMERA_TO_ROBOT);
-
-				//return new PhotonVisionResult(true, camPose, imageCaptureTime);
-
-				EstimatedRobotPose estimateRobotPose = getPhotonPose(prevEstimatedRobotPose).get();
-
-				return new PhotonVisionResult(true, estimateRobotPose.estimatedPose, estimateRobotPose.timestampSeconds);
-			} else {
-				// Since we do not have any tags that we can see, blank out the list
-				List<Pose3d> allTagPoses = new ArrayList<>();
-				Logger.getInstance().recordOutput(
-					"AprilTagVision/TagPoses",
-					allTagPoses.toArray(new Pose3d[allTagPoses.size()])
-				);
-			}
-
-			return new PhotonVisionResult(false, camPose, 0);*/
+			
 		} catch (Exception e) {
 			System.out.println("PhotonVision::getPose() - " + e.toString());
 			e.printStackTrace();

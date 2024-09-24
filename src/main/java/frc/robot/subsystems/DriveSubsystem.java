@@ -98,9 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
 			0,
 			0,
 			new TrapezoidProfile.Constraints(
-			//6.28, 
 			12.0,
-			//3.14
 			6.0
 			)
 		)
@@ -120,9 +118,6 @@ public class DriveSubsystem extends SubsystemBase {
 	Pose2d photonPose2d;
 	boolean _inMotion = false;
 	Constants.RobotStatus _robotStatus = Constants.RobotStatus.RobotInit;
-
-	//GenericEntry autoX_Position;
-	//GenericEntry autoY_Position;
 
 	double autoX_Position = 0.0;
 	double autoY_Position = 0.0;
@@ -150,8 +145,11 @@ public class DriveSubsystem extends SubsystemBase {
 
 	/** Creates a new DriveSubsystem. */
 	public DriveSubsystem() {
-		_photonVision = new PhotonVision();
-		//gyro.calibrate();
+
+		if(Constants.kEnablePhotonVision) {
+			_photonVision = new PhotonVision();
+		}
+		
 		gyro.reset();
 		_gyroIONavX = new GyroIONavX(gyro);
 
@@ -282,21 +280,6 @@ public class DriveSubsystem extends SubsystemBase {
 		
 		updateOdometry();
 
-		/*if (DriverStation.isDisabled()) {
-			// frontLeft.resetEncoders();
-			// frontRight.resetEncoders();
-			// rearLeft.resetEncoders();
-			// rearRight.resetEncoders();
-		}*/
-
-		/*SmartDashboard.putNumber("FL Absolute", frontLeft.getAbsoluteHeading());
-		SmartDashboard.putNumber("FR Absolute", frontRight.getAbsoluteHeading());
-		SmartDashboard.putNumber("RL Absolute", rearLeft.getAbsoluteHeading());
-		SmartDashboard.putNumber("RR Absolute", rearRight.getAbsoluteHeading());*/
-
-		//System.out.println(rearLeft.getAbsoluteHeading());
-		//System.out.println(frontRight.getAbsoluteHeading());
-
 		if(Constants.debugDriveTrain == true) {
 			SmartDashboard.putNumber("FL Offset Check", frontLeft.getAbsoluteHeading() + frontLeft.angleZero);
 			SmartDashboard.putNumber("FR Offset Check", frontRight.getAbsoluteHeading() + frontRight.angleZero);
@@ -304,59 +287,11 @@ public class DriveSubsystem extends SubsystemBase {
 			SmartDashboard.putNumber("RR Offset Check", rearRight.getAbsoluteHeading() + rearRight.angleZero);
 		}
 
-		/*SmartDashboard.putNumber("FL Meters", frontLeft.getDistanceMeters());
-		SmartDashboard.putNumber("FR Meters", frontRight.getDistanceMeters());
-		SmartDashboard.putNumber("RL Meters", rearLeft.getDistanceMeters());
-		SmartDashboard.putNumber("RR Meters", rearRight.getDistanceMeters());*/
-
 		SmartDashboard.putData("field", field);
 		//SmartDashboard.putNumber("2D Gyro", odometry.getPoseMeters().getRotation().getDegrees());
 		SmartDashboard.putNumber("2D X", getPose().getX());
 		SmartDashboard.putNumber("2D Y", getPose().getY());
-		//SmartDashboard.putBoolean("PV Status", _photonVision.isConnected());
-
-		/*if (_robotStatus == Constants.RobotStatus.DisabledPeriodic && _autoDetailSelected != null) {
-			if (DriverStation.getAlliance().get() == Alliance.Blue) {
-				// if(poseEstimator.getEstimatedPosition().getX() < )
-				alliance = "Blue";
-				if (photonVisionResult != null) {
-					Pose2d pose = photonVisionResult.pose3d().toPose2d();
-
-					if (pose.getX() >= _autoDetailSelected.startXblue + _autoDetailSelected.startXTolerance || pose.getX() <= _autoDetailSelected.startXblue - _autoDetailSelected.startXTolerance) {
-						autoX_Position = pose.getX() - _autoDetailSelected.startXblue;
-						autoPositionStatusX = false;
-					} else {
-						autoPositionStatusX = true;
-					}
-
-					if (pose.getY() >= _autoDetailSelected.startYblue + _autoDetailSelected.startYTolerance || pose.getY() <= _autoDetailSelected.startYblue - _autoDetailSelected.startYTolerance) {
-						autoY_Position = pose.getY() - _autoDetailSelected.startYblue;
-						autoPositionStatusY = false;
-					} else {
-						autoPositionStatusY = true;
-					}
-				}
-			} else {
-				alliance = "Red";
-				if (photonVisionResult != null) {
-					Pose2d pose = photonVisionResult.pose3d().toPose2d();
-
-					if (pose.getX() >= _autoDetailSelected.startXred + _autoDetailSelected.startXTolerance || pose.getX() <= _autoDetailSelected.startXred - _autoDetailSelected.startXTolerance) {
-						autoX_Position = pose.getX() - _autoDetailSelected.startXred;
-						autoPositionStatusX = false;
-					} else {
-						autoPositionStatusX = true;
-					}
-
-					if (pose.getY() >= _autoDetailSelected.startYred + _autoDetailSelected.startYTolerance || pose.getY() <= _autoDetailSelected.startYred - _autoDetailSelected.startYTolerance) {
-						autoY_Position = pose.getY() - _autoDetailSelected.startYred;
-						autoPositionStatusY = false;
-					} else {
-						autoPositionStatusY = true;
-					}
-				}
-			}
-		}*/
+		//SmartDashboard.putBoolean("PV Status", _photonVision.isConnected());		
 	}
 
 	public void setAutoCommandSelected(Command autoCommand) {
@@ -418,19 +353,14 @@ public class DriveSubsystem extends SubsystemBase {
 			pose
 		);
 
-		_photonVision.setReferencePose(pose);
+		if(Constants.kEnablePhotonVision) {
+			_photonVision.setReferencePose(pose);
+		}
 
 		Logger.recordOutput("Odometry/Robot", odometry.getPoseMeters());
 		Logger.recordOutput("Estimator/Robot", poseEstimator.getEstimatedPosition());
 	}
-	// endregion
-
-	/*public void resetVisionOdometry(Pose2d pose) {
-		_photonVision.setReferencePose(pose);
-	}*/
-
-	// region setter
-
+	
 	public void lockWheels() {
 		double rot = DriveConstants.kMaxRPM;
 
@@ -481,23 +411,25 @@ public class DriveSubsystem extends SubsystemBase {
 		this.rot = rot;
 
 		// If we are set to auto aim
-		if(mode == kDriveModes.AIM) {
-			if(_photonVision.canSeeTarget(speakerTarget) == true) {
+		if (mode == kDriveModes.AIM) {
+			if (Constants.kEnablePhotonVision) {
+				if (_photonVision.canSeeTarget(speakerTarget) == true) {
 
-				double targetYaw = _photonVision.aimAtTarget(speakerTarget);
+					double targetYaw = _photonVision.aimAtTarget(speakerTarget);
 
-				if(Math.abs(targetYaw) > Constants.AutoConstants.kAimTargetTolerance) {
-					targetLocked = false;
-					if(targetYaw > 0) {
-						rot -= Constants.DriveConstants.kChassisAutoAimRotation;
+					if (Math.abs(targetYaw) > Constants.AutoConstants.kAimTargetTolerance) {
+						targetLocked = false;
+						if (targetYaw > 0) {
+							rot -= Constants.DriveConstants.kChassisAutoAimRotation;
+						} else {
+							rot += Constants.DriveConstants.kChassisAutoAimRotation;
+						}
 					} else {
-						rot += Constants.DriveConstants.kChassisAutoAimRotation;
+						targetLocked = true;
 					}
-				} else {
-					targetLocked = true;
 				}
-			} 
-		} else if(mode == kDriveModes.LOCK_WHEELS) {
+			}
+		} else if (mode == kDriveModes.LOCK_WHEELS) {
 			this.lockWheels();
 			return;
 		}
@@ -600,38 +532,20 @@ public class DriveSubsystem extends SubsystemBase {
 			);
 		}
 
-		//_photonVision.setReferencePose(poseEstimator.getEstimatedPosition());
+		if (Constants.kEnablePhotonVision) {
+			photonVisionResult = _photonVision.getPose(poseEstimator.getEstimatedPosition());
 
-		photonVisionResult = _photonVision.getPose(poseEstimator.getEstimatedPosition());
-		
-		if(photonVisionResult.targetFound()) {
-			photonPose2d = photonVisionResult.pose3d().toPose2d();
+			if (photonVisionResult.targetFound()) {
+				photonPose2d = photonVisionResult.pose3d().toPose2d();
 
-			poseEstimator.addVisionMeasurement(
-				photonPose2d,
-				Timer.getFPGATimestamp() - photonVisionResult.imageCaptureTime(),
-				visionMeasurementStdDevs
-			);
-			//System.out.println("adding Vision Measurement");
-			Logger.recordOutput("PhotonVisionEstimator/Robot", photonPose2d);
+				poseEstimator.addVisionMeasurement(
+						photonPose2d,
+						Timer.getFPGATimestamp() - photonVisionResult.imageCaptureTime(),
+						visionMeasurementStdDevs);
+				// System.out.println("adding Vision Measurement");
+				Logger.recordOutput("PhotonVisionEstimator/Robot", photonPose2d);
+			}
 		}
-
-		/*if(_photonVision != null) {
-
-			// Check if we are not moving, update the odometry with the estimated field position
-			if(_inMotion == false) {
-				//System.out.println("we are not in motion");
-
-				if(photonVisionResult.targetFound()) {
-					//System.out.println("updating the pose from photonvision");
-					poseEstimator.resetPosition(
-						(Constants.getMode() == Mode.SIM) ? photonPose2d.getRotation() : gyro.getRotation2d(),
-						swervePosition,
-						photonPose2d
-					);
-				}
-			} 
-		}*/
 
 		field.setRobotPose(odometry.getPoseMeters());
 

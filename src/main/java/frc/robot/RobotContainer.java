@@ -57,7 +57,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class RobotContainer {
 
 	// The robot's subsystems and commands are defined here...
-	//public static final DriveSubsystem driveSubsystem = new DriveSubsystem(true);
 	public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
 	public PhotonVision _photonVision = driveSubsystem.getPhotonVision();
 	private static final CommandXboxController operatorController = new CommandXboxController(1);
@@ -87,7 +86,6 @@ public class RobotContainer {
 
 	public SendableChooser<Command> getAutoChooser() {
 		return autoChooser;
-		//return AutoBuilder.buildAutoChooser();
 	}
 
 	Command _autoCommand = null;
@@ -95,16 +93,12 @@ public class RobotContainer {
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
-	//public RobotContainer(boolean simulation) {
 	public RobotContainer() {
 
 		// Configure the trigger bindings
 		configureBindings();
 
 		intakeSubsystem.setDriverController(driverController);
-
-		//return AutoBuilder.followPathWithEvents(path);
-		//
 
 		NamedCommands.registerCommand("ClimberUp", new ClimberPoseCommand(kClimberPoses.HIGH));
 		NamedCommands.registerCommand("ClimberDown", new ClimberPoseCommand(kClimberPoses.TUCKED));

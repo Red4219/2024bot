@@ -6,17 +6,20 @@ package frc.robot.Mechanisms;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-/*import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+/*import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;*/
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderSimCollection;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;*/
-import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+/*import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.core.CoreCANcoder;
 import com.ctre.phoenix6.sim.CANcoderSimState;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;*/
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
@@ -46,8 +49,10 @@ public class SwerveModule {
 	private final CANSparkMax driveMotor;
 	private final CANSparkMax turningMotor;
 
-	private final CANcoder absoluteEncoder;
-	CANcoderSimState simCollection;
+	//private final CANcoder absoluteEncoder;
+	private final CANCoder absoluteEncoder;
+	//CANcoderSimState simCollection;
+	CANCoderSimCollection simCollection;
 	private final RelativeEncoder driveEncoder;
 
 	private final SparkPIDController drivePID;
@@ -93,23 +98,27 @@ public class SwerveModule {
 		driveMotor.restoreFactoryDefaults();
 
 		// Initalize CANcoder
-		absoluteEncoder = new CANcoder(absoluteEncoderPort);
+		//absoluteEncoder = new CANcoder(absoluteEncoderPort);
+		absoluteEncoder = new CANCoder(absoluteEncoderPort);
 		//absoluteEncoder = new CANcoder(absoluteEncoderPort, Constants.kCanivoreCANBusName);
 		if(Constants.getMode() == Mode.SIM) {
-			//simCollection = absoluteEncoder.getSimCollection();
-			simCollection = absoluteEncoder.getSimState();
+			simCollection = absoluteEncoder.getSimCollection();
+			//simCollection = absoluteEncoder.getSimState();
 		}
 		Timer.delay(1);
 		
 		MagnetSensorConfigs magnetSensorConfigs = 
 		new MagnetSensorConfigs().withMagnetOffset(-1 * angleZero).withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf);
 
-		absoluteEncoder.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(magnetSensorConfigs));
-		/*absoluteEncoder.configFactoryDefault();
+		//absoluteEncoder.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(magnetSensorConfigs));
+
+		
+
+		absoluteEncoder.configFactoryDefault();
 		absoluteEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
 		absoluteEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 		absoluteEncoder.configMagnetOffset(-1 * angleZero);
-		absoluteEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 10, 100);*/
+		absoluteEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 10, 100);
 		absoluteEncoder.clearStickyFaults();
 
 		driveEncoder = driveMotor.getEncoder();
@@ -157,8 +166,8 @@ public class SwerveModule {
 
 	// Returns headings of the module
 	public double getAbsoluteHeading() {
-		//return absoluteEncoder.getAbsolutePosition();
-		return absoluteEncoder.getAbsolutePosition().refresh().getValue();
+		return absoluteEncoder.getAbsolutePosition();
+		//return absoluteEncoder.getAbsolutePosition().refresh().getValue();
 	}
 
 	public double getDistanceMeters() {
@@ -174,8 +183,8 @@ public class SwerveModule {
 			return new SwerveModulePosition(m_distanceMeters, _simulatedAbsoluteEncoderRotation2d);
 		}
 
-		//double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
-		double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
+		double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
+		//double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
 		double m_distanceMeters = driveEncoder.getPosition();
 
 		return new SwerveModulePosition(m_distanceMeters, new Rotation2d(m_moduleAngleRadians));
@@ -183,8 +192,8 @@ public class SwerveModule {
 
 	public void setDesiredState(SwerveModuleState desiredState) {
 
-		//double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
-		double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
+		double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
+		//double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
 
 		if(Constants.getMode() == Mode.SIM) {
 			m_moduleAngleRadians = Math.toRadians(desiredState.angle.getDegrees());
@@ -235,7 +244,7 @@ public class SwerveModule {
 	}
 
 	public void resetEncoders() {
-		/*Timer.delay(.1);
+		Timer.delay(.1);
 		absoluteEncoder.configFactoryDefault();
 		Timer.delay(.1);
 		absoluteEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
@@ -244,10 +253,10 @@ public class SwerveModule {
 		Timer.delay(.1);
 		absoluteEncoder.configMagnetOffset(-1 * angleZero);
 		Timer.delay(.1);
-		absoluteEncoder.clearStickyFaults();*/
+		absoluteEncoder.clearStickyFaults();
 
-		MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs().withMagnetOffset(-1 * angleZero).withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf);
-		absoluteEncoder.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(magnetSensorConfigs));
+		/*MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs().withMagnetOffset(-1 * angleZero).withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf);
+		absoluteEncoder.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(magnetSensorConfigs));*/
 		absoluteEncoder.clearStickyFaults();
 	}
 
@@ -261,7 +270,7 @@ public class SwerveModule {
 	}
 
 	String getStatus() {
-		//return absoluteEncoder.getLastError().toString();
-		return absoluteEncoder.getMagnetHealth().getValue().name();
+		return absoluteEncoder.getLastError().toString();
+		//return absoluteEncoder.getMagnetHealth().getValue().name();
 	}
 }

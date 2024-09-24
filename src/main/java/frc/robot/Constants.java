@@ -43,6 +43,9 @@ public final class Constants {
 	public static boolean enableLogger = false;
 	public static boolean debugPhotonVision = false;
 
+	public static boolean kEnablePhotonVision = false;
+	public static boolean kEnableArm = false;
+
 	public static class ModuleConstants {
 
 		// Current limits for the wheels

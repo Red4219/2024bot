@@ -64,6 +64,10 @@ public class AimCommand extends Command {
     @Override
     public boolean isFinished() {
 
+        if(!Constants.kEnablePhotonVision) {
+            return true;
+        }
+
         if(_photonVision.canSeeTarget(_targedNumber) == false) {
             System.out.println("AimCommand::isFinished() - cannot see the target so returning true");
             // Stop because we cannot see the target
