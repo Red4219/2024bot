@@ -63,6 +63,10 @@ public class SwerveModule {
 	private final String moduleName;
 	private Rotation2d _simulatedAbsoluteEncoderRotation2d = new Rotation2d();
 
+	double m_moduleAngleRadians;
+	double m_distanceMeters;
+	SwerveModuleState optimizedState;
+
 	SimpleMotorFeedforward turnFeedForward = new SimpleMotorFeedforward(
 			ModuleConstants.ksTurning, ModuleConstants.kvTurning);
 
@@ -111,8 +115,6 @@ public class SwerveModule {
 		new MagnetSensorConfigs().withMagnetOffset(-1 * angleZero).withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf);
 
 		//absoluteEncoder.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(magnetSensorConfigs));
-
-		
 
 		absoluteEncoder.configFactoryDefault();
 		absoluteEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
@@ -178,22 +180,22 @@ public class SwerveModule {
 	public SwerveModulePosition getPosition() {
 
 		if(Constants.getMode() == Mode.SIM){
-			double m_distanceMeters = driveEncoder.getPosition();
+			m_distanceMeters = driveEncoder.getPosition();
 	
 			return new SwerveModulePosition(m_distanceMeters, _simulatedAbsoluteEncoderRotation2d);
 		}
 
-		double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
-		//double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
-		double m_distanceMeters = driveEncoder.getPosition();
+		m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
+		//m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
+		m_distanceMeters = driveEncoder.getPosition();
 
 		return new SwerveModulePosition(m_distanceMeters, new Rotation2d(m_moduleAngleRadians));
 	}
 
 	public void setDesiredState(SwerveModuleState desiredState) {
 
-		double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
-		//double m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
+		m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
+		//m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
 
 		if(Constants.getMode() == Mode.SIM) {
 			m_moduleAngleRadians = Math.toRadians(desiredState.angle.getDegrees());
@@ -202,7 +204,7 @@ public class SwerveModule {
 
 		// Optimize the reference state to avoid spinning further than 90 degrees to
 		// desired state
-		SwerveModuleState optimizedState = SwerveModuleState.optimize(
+		optimizedState = SwerveModuleState.optimize(
 				desiredState,
 				new Rotation2d(m_moduleAngleRadians));
 

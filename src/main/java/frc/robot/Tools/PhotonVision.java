@@ -53,6 +53,8 @@ public class PhotonVision {
 	private EstimatedRobotPose _estimatedRobotPose;
 	private int[] _targetsUsed = new int[0];
 	private int _speakerTarget = 0;
+	PhotonPipelineResult result;
+	List<PhotonTrackedTarget> targets;
 
 	Pose3d camPose = new Pose3d();
 	private Pose2d _lastPhotonPoseEstimatorPose = new Pose2d();
@@ -164,8 +166,8 @@ public class PhotonVision {
 
 			/////////
 
-			PhotonPipelineResult result = _camera.getLatestResult();
-			List<PhotonTrackedTarget> targets = result.getTargets();
+			result = _camera.getLatestResult();
+			targets = result.getTargets();
 			_targetsUsed = new int[targets.size()];
 
 			//System.out.println("new hasTargets: " + result.hasTargets() + " length: " + targets.size());
