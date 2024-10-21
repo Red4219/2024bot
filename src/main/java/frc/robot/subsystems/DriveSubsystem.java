@@ -67,6 +67,7 @@ public class DriveSubsystem extends SubsystemBase {
 	private final SwerveModule rearRight;
 
 	private SwerveModulePosition[] swervePosition;
+	SwerveModuleState[] swerveModuleStates;
 
 	// Initalizing the gyro sensor
 	private final AHRS gyro = new AHRS(SPI.Port.kMXP); 
@@ -116,7 +117,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 	private PhotonVision _photonVision;
 	Pose2d photonPose2d;
-	boolean _inMotion = false;
+	//boolean _inMotion = false;
 	Constants.RobotStatus _robotStatus = Constants.RobotStatus.RobotInit;
 
 	double autoX_Position = 0.0;
@@ -365,7 +366,7 @@ public class DriveSubsystem extends SubsystemBase {
 		//double rot = DriveConstants.kMaxRPM;
 		double rot = 0;
 
-		SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
+		swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
 				new ChassisSpeeds(0, 0, rot));
 
 		SwerveDriveKinematics.desaturateWheelSpeeds(
@@ -425,7 +426,7 @@ public class DriveSubsystem extends SubsystemBase {
 			return;
 		}
 
-		SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
+		swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
 				ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d()));
 		
 		setModuleStates(swerveModuleStates);
@@ -437,13 +438,9 @@ public class DriveSubsystem extends SubsystemBase {
 
 	public void setChassisSpeedsRobotRelative(ChassisSpeeds chassisSpeeds ){
 
-		// Not sure about this
-		//chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond * -1;
-
 		chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
 
 		SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-		//setModuleStates(swerveModuleStates);
 
 		if(Constants.getMode() == Mode.SIM) {
 			int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
@@ -462,7 +459,7 @@ public class DriveSubsystem extends SubsystemBase {
 	public void setModuleStates(SwerveModuleState[] desiredStates) {
 		SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, ModuleConstants.kMaxModuleSpeedMetersPerSecond);
 
-		if(desiredStates[0].speedMetersPerSecond == 0.0
+		/*if(desiredStates[0].speedMetersPerSecond == 0.0
 			&& desiredStates[1].speedMetersPerSecond == 0.0
 			&& desiredStates[2].speedMetersPerSecond == 0.0
 			&& desiredStates[3].speedMetersPerSecond == 0.0
@@ -470,7 +467,7 @@ public class DriveSubsystem extends SubsystemBase {
 			_inMotion = false;
 		} else {
 			_inMotion = true;
-		}		
+		}*/	
 		
 		if(Constants.getMode() == Mode.SIM) {
 
