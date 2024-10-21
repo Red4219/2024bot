@@ -63,9 +63,12 @@ public class SwerveModule {
 	private final String moduleName;
 	private Rotation2d _simulatedAbsoluteEncoderRotation2d = new Rotation2d();
 
-	double m_moduleAngleRadians;
-	double m_distanceMeters;
-	SwerveModuleState optimizedState;
+	private double m_moduleAngleRadians;
+	private double m_distanceMeters;
+	private SwerveModuleState optimizedState;
+	private double angularPIDOutput;
+	private double angularFFOutput;
+	private double turnOutput;
 
 	SimpleMotorFeedforward turnFeedForward = new SimpleMotorFeedforward(
 			ModuleConstants.ksTurning, ModuleConstants.kvTurning);
@@ -208,26 +211,25 @@ public class SwerveModule {
 				desiredState,
 				new Rotation2d(m_moduleAngleRadians));
 
-		final var angularPIDOutput = m_turningPIDController.calculate(m_moduleAngleRadians,
+		angularPIDOutput = m_turningPIDController.calculate(m_moduleAngleRadians,
 				optimizedState.angle.getRadians());
 
-		final var angularFFOutput = turnFeedForward.calculate(m_turningPIDController.getSetpoint().velocity);
+		angularFFOutput = turnFeedForward.calculate(m_turningPIDController.getSetpoint().velocity);
 
-		final var turnOutput = angularPIDOutput + angularFFOutput;
+		turnOutput = angularPIDOutput + angularFFOutput;
 
-		//if(this.moduleName.equals("RR")) {
-			//turningMotor.setVoltage(angularPIDOutput);
-			turningMotor.setVoltage(turnOutput);
-		//}
+		turningMotor.setVoltage(turnOutput);		
 
 		if(Constants.getMode() == Mode.SIM) {
-		drivePID.setReference(
-			optimizedState.speedMetersPerSecond,
-			CANSparkMax.ControlType.kVoltage);
+			drivePID.setReference(
+				optimizedState.speedMetersPerSecond,
+				CANSparkMax.ControlType.kVoltage
+			);
 		} else {
 			drivePID.setReference(
 				optimizedState.speedMetersPerSecond,
-				ControlType.kVelocity);
+				ControlType.kVelocity
+			);
 		}
 
 		//SmartDashboard.putNumber(this.moduleName + " Optimized Angle", optimizedState.angle.getDegrees());
