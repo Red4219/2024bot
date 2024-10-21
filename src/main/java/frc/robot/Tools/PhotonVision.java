@@ -38,7 +38,7 @@ import edu.wpi.first.cscore.VideoMode;
 //import edu.wpi.first.cscore.VideoMode.PixelFormat;
 
 public class PhotonVision {
-	private PhotonCamera _camera = new PhotonCamera(PhotonVisionConstants.CameraName);
+	private PhotonCamera _camera;
 	//private PhotonCamera _camera = null;
 	
 	// simulation variables
@@ -60,6 +60,8 @@ public class PhotonVision {
 	public PhotonVision() {
 
 		if (Constants.kEnablePhotonVision) {
+
+			_camera = new PhotonCamera(PhotonVisionConstants.CameraName);
 
 			try {
 				_aprilTagFieldLayout = AprilTagFieldLayout

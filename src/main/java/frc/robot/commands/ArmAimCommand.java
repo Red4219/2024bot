@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.subsystems.ArmSubsystem;
@@ -14,22 +15,26 @@ public class ArmAimCommand extends Command {
     private static ShooterSubsystem _shooterSubsystem;
 
     public ArmAimCommand() {
-        _armSubsystem = RobotContainer.armSubsystem;
-        _shooterSubsystem = RobotContainer.shooterSubsystem;
-        addRequirements(_armSubsystem, _shooterSubsystem);
+        if(Constants.kEnableArm) {
+            _armSubsystem = RobotContainer.armSubsystem;
+            _shooterSubsystem = RobotContainer.shooterSubsystem;
+            addRequirements(_armSubsystem, _shooterSubsystem);
+        }
     }
 
     @Override
 	public void initialize() {
 
-        // If we are already aiming, set the arm to idle to stop
-        if(_armSubsystem.getArmState() == kArmPoses.AIM) {
-            _armSubsystem.setTargetArmState(kArmPoses.IDLE);
+        if(Constants.kEnableArm) {
+            // If we are already aiming, set the arm to idle to stop
+            if(_armSubsystem.getArmState() == kArmPoses.AIM) {
+                _armSubsystem.setTargetArmState(kArmPoses.IDLE);
 
-            //System.out.println("ArmAimCommand::initialize() - turning off auto aim");
-        } else {
-            _armSubsystem.setTargetArmState(kArmPoses.AIM);
+                //System.out.println("ArmAimCommand::initialize() - turning off auto aim");
+            } else {
+                _armSubsystem.setTargetArmState(kArmPoses.AIM);
 
+            }
         }
     }
 
@@ -45,13 +50,5 @@ public class ArmAimCommand extends Command {
     @Override
 	public boolean isFinished() {
         return true;
-
-        /*if(_armSubsystem.atSetPoint()) {
-            return true;
-        }
-
-        System.out.println("not at setpoint yet");
-
-        return false;*/
 	}
 }

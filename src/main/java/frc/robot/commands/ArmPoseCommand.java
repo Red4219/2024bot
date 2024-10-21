@@ -5,40 +5,38 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public class ArmPoseCommand extends Command {
 
 	private static ArmSubsystem armSubsystem;
-	private static IntakeSubsystem intakeSubsystem;
 	private kArmPoses armPose;
 
 	/** Creates a new ArmPoseCommand. */
 	public ArmPoseCommand(kArmPoses armPose) {
-		armSubsystem = RobotContainer.armSubsystem;
-		//intakeSubsystem = RobotContainer.intakeSubsystem;
-		this.armPose = armPose;
-		// Use addRequirements() here to declare subsystem dependencies.
-		addRequirements(armSubsystem);
+
+		if(Constants.kEnableArm) {
+			armSubsystem = RobotContainer.armSubsystem;
+			this.armPose = armPose;
+			addRequirements(armSubsystem);
+		}
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		//armSubsystem.setSequencedArmState(armPose);
-		//intakeSubsystem.updateIntakeFromArmPose(armPose);
-		//System.out.println("ArmPoseCommand::initialize() - called");
-
-		//armSubsystem.setSequencedArmState(armPose);
+		
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		armSubsystem.setSequencedArmState(armPose);
+		if(Constants.kEnableArm) {
+			armSubsystem.setSequencedArmState(armPose);
+		}
 	}
 
 	// Called once the command ends or is interrupted.
@@ -49,8 +47,11 @@ public class ArmPoseCommand extends Command {
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		//return armSubsystem.getAtTarget(8);
-		return armSubsystem.isAtSetPoint();
+		if(Constants.kEnableArm) {
+			return armSubsystem.isAtSetPoint();
+		} else {
+			return true;
+		}
 	}
 
 }

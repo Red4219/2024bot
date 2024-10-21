@@ -279,13 +279,7 @@ public class ArmSubsystem extends SubsystemBase {
 		//if(atSetPoint == false) {
 			//System.out.println("atSetPoint is false");
 			if(Constants.getMode() == Mode.REAL) {
-				//System.out.println("it is being called, targetPosition: " + targetPosition);
-				//REVLibError error = rightPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
-				//REVLibError error = rightPIDController.setReference(targetPosition, CANSparkMax.ControlType.kSmartMotion);
-
-				/*if(error != REVLibError.kOk) {
-					System.out.println("ClimberSubsystem::setReference() - Error - could not set the PID controller");
-				}*/
+				
 
 				// Set the min/max values for the height of the arm
 				if(targetPosition < Constants.ArmConstants.kMinHeight) {

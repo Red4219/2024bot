@@ -14,7 +14,7 @@ import frc.robot.Mechanisms.ShooterWheels;
 
 public class ShooterSubsystem extends SubsystemBase {
     
-    private ShooterWheels shooter = new ShooterWheels(Constants.ShooterConstants.kPrimaryPort, Constants.ShooterConstants.kSecondaryPort);
+    private ShooterWheels shooter;
     private kShooterStates currentShooterState = kShooterStates.STOPPED;
     private double speed = 0.0;
     private String status = "STOPPED";
@@ -22,14 +22,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem(ArmSubsystem armSubsystem) {
 
-        this.armSubsystem = armSubsystem;
+        if (Constants.kEnableArm) {
+            this.armSubsystem = armSubsystem;
+            shooter = new ShooterWheels(Constants.ShooterConstants.kPrimaryPort, Constants.ShooterConstants.kSecondaryPort);
 
-        if(Constants.debugShooter == true) {
-            ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
-		    shooterTab.addDouble("Target Speed", this::getSpeed);
-            shooterTab.addString("Status", this::getStatus);
+            if (Constants.debugShooter == true) {
+                ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
+                shooterTab.addDouble("Target Speed", this::getSpeed);
+                shooterTab.addString("Status", this::getStatus);
+            }
         }
-        
     }
 
     @Override
@@ -38,86 +40,70 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void shootSpeakerNote() {
-        shooter.shoot(Constants.ShooterConstants.kSpeakerShootSpeed);
+        if (Constants.kEnableArm) {
+            shooter.shoot(Constants.ShooterConstants.kSpeakerShootSpeed);
+        }
 	}
 
     public void shootAmpNote() {
-        shooter.shoot(Constants.ShooterConstants.kAmpShootSpeed);
+        if (Constants.kEnableArm) {
+            shooter.shoot(Constants.ShooterConstants.kAmpShootSpeed);
+        }
 	}
 
     public void stopShooter() {
-        shooter.stop();
+        if (Constants.kEnableArm) {
+            shooter.stop();
+        }
     }
 
 	public void disableShooter() {
-        shooter.disable();
+        if (Constants.kEnableArm) {
+            shooter.disable();
+        }
 	}
 
 	public void setShooterState(kShooterStates state) {
 
-        if(currentShooterState == state) {
-            stopShooter();
-            currentShooterState = kShooterStates.STOPPED;
-            this.status = "STOPPED";
-        } else {
+        if (Constants.kEnableArm) {
 
-		    currentShooterState = state;
+            if (currentShooterState == state) {
+                stopShooter();
+                currentShooterState = kShooterStates.STOPPED;
+                this.status = "STOPPED";
+            } else {
 
-		    switch (currentShooterState) {
-			    case IDLE:
-				    disableShooter();
-                    this.status = "IDLE";
-				    break;
+                currentShooterState = state;
 
-			    case SHOOT_SPEAKER:
-                    if(armSubsystem.getArmState() == Constants.ArmConstants.kArmPoses.AMP_SCORE) {
-				        shootAmpNote();
-                    } else {
+                switch (currentShooterState) {
+                    case IDLE:
+                        disableShooter();
+                        this.status = "IDLE";
+                        break;
+
+                    case SHOOT_SPEAKER:
                         shootSpeakerNote();
-                    }
-                    //shootSpeakerNote();
-                    this.status = "SHOOT_SPEAKER";
-				    break;
+                        this.status = "SHOOT_SPEAKER";
+                        break;
 
-                case SHOOT_AMP:
-				    shootAmpNote();
-                    //shootSpeakerNote();
-                    this.status = "SHOOT_AMP";
-				    break;
+                    case SHOOT_AMP:
+                        shootAmpNote();
+                        this.status = "SHOOT_AMP";
+                        break;
 
-                case STOPPED:
-                    stopShooter();
-                    this.status = "STOPPED";
-                    break;
+                    case STOPPED:
+                        stopShooter();
+                        this.status = "STOPPED";
+                        break;
 
-			    case DISABLED:
-				    disableShooter();
-                    this.status = "DISABLED";
-			    	break;
-
-		    }
-        }
-	}
-
-    /*public void shootTime(long timeToShoot) {
-        System.out.println("called");
-
-
-        TimerTask task = new TimerTask() {
-            public void run() {
-
-                setShooterState(kShooterStates.IDLE);
-                System.out.println("stopping the shooter");
+                    case DISABLED:
+                        disableShooter();
+                        this.status = "DISABLED";
+                        break;
+                }
             }
-        };
-        Timer timer = new Timer("Timer");
-    
-        timer.schedule(task, timeToShoot);
-
-        setShooterState(kShooterStates.SHOOT);
-        System.out.println("starting the shooter");
-        
-    }*/
+        }
+    }
 
     public InstantCommand shootSpearkerCommand() {
 		return new InstantCommand(() -> setShooterState(kShooterStates.SHOOT_SPEAKER));
@@ -133,7 +119,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setSpeed(double speed) {
         this.speed = speed;
-        //System.out.println("ShooterSubSystem::setSpeed() - speed: " + speed);
     }
 
     public double getSpeed() {
@@ -143,8 +128,4 @@ public class ShooterSubsystem extends SubsystemBase {
     public String getStatus() {
         return this.status;
     }
-
-    /*public InstantCommand timedShootCommand(long timeToShoot) {
-        return new InstantCommand(() -> shootTime(timeToShoot));
-    }*/
 }

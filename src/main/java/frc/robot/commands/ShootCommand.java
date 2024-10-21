@@ -19,29 +19,33 @@ public class ShootCommand extends Command {
         this.shootTime = shootTime;
         this.shooterState = state;
 
-        addRequirements(shooterSubsystem);
+        if(Constants.kEnableShooter) {
+            addRequirements(shooterSubsystem);
+        }
     }
 
     @Override
     public void initialize() {
-        shooterSubsystem.setShooterState(shooterState);
+        if (Constants.kEnableShooter) {
+            shooterSubsystem.setShooterState(shooterState);
 
-        if(shootTime.isPresent()) {
+            if (shootTime.isPresent()) {
 
-            TimerTask task = new TimerTask() {
-                public void run() {
-                    System.out.println("stopping the shooter");
-                    shooterSubsystem.setShooterState(Constants.ShooterConstants.kShooterStates.STOPPED);
-                    finished = true;
-                }
-            };
-            Timer timer = new Timer("Timer");
-    
-            timer.schedule(task, shootTime.getAsLong());
-            System.out.println("starting the shooter");
-            finished = false;
-        } else {
-            finished = true;
+                TimerTask task = new TimerTask() {
+                    public void run() {
+                        System.out.println("stopping the shooter");
+                        shooterSubsystem.setShooterState(Constants.ShooterConstants.kShooterStates.STOPPED);
+                        finished = true;
+                    }
+                };
+                Timer timer = new Timer("Timer");
+
+                timer.schedule(task, shootTime.getAsLong());
+                System.out.println("starting the shooter with initialize");
+                finished = false;
+            } else {
+                finished = true;
+            }
         }
     }
 
@@ -57,6 +61,9 @@ public class ShootCommand extends Command {
 
     @Override
     public boolean isFinished() {
+        if (!Constants.kEnableShooter) {
+            return true;
+        }
         return finished;
     }
 }

@@ -4,16 +4,14 @@
 
 package frc.robot;
 
-import java.util.Optional;
 import java.util.OptionalLong;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -26,17 +24,13 @@ import frc.robot.Tools.PhotonVision;
 import frc.robot.Tools.Parts.PathBuilder;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ArmConstants.kArmPoses;
-import frc.robot.commands.ArmAimCommand;
 import frc.robot.commands.ArmMoveCommand;
 import frc.robot.commands.ArmPoseCommand;
-import frc.robot.commands.ChassisAimCommand;
 import frc.robot.commands.ClimberPoseCommand;
-import frc.robot.commands.FloorIntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.Autonomous.AimCommand;
 import frc.robot.commands.Autonomous.AutoArmAimCommand;
 import frc.robot.commands.Autonomous.AutoArmPoseCommand;
-import frc.robot.commands.Autonomous.DelayCommand;
 import frc.robot.commands.Autonomous.IntakeCommand;
 import frc.robot.commands.Autonomous.LockWheelsCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -60,10 +54,10 @@ public class RobotContainer {
 	public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
 	public PhotonVision _photonVision = driveSubsystem.getPhotonVision();
 	private static final CommandXboxController operatorController = new CommandXboxController(1);
-	public static final ClimberSubsystem climberSubsystem = new ClimberSubsystem(operatorController);
-	public static final ArmSubsystem armSubsystem = new ArmSubsystem(driveSubsystem.getPhotonVision());
-	public static final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-	public static final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(armSubsystem);
+	public static final ClimberSubsystem climberSubsystem = (Constants.kEnableClimber) ? new ClimberSubsystem(operatorController) : null;
+	public static final ArmSubsystem armSubsystem = (Constants.kEnableArm) ? new ArmSubsystem(driveSubsystem.getPhotonVision()) : null;
+	public static final IntakeSubsystem intakeSubsystem = (Constants.kEnableIntake) ?  new IntakeSubsystem() : null;
+	public static final ShooterSubsystem shooterSubsystem = (Constants.kEnableShooter) ? new ShooterSubsystem(armSubsystem) : null;
 	
 
 	public final static PathBuilder autoBuilder = new PathBuilder();
@@ -98,7 +92,9 @@ public class RobotContainer {
 		// Configure the trigger bindings
 		configureBindings();
 
-		intakeSubsystem.setDriverController(driverController);
+		if(Constants.kEnableIntake) {
+			intakeSubsystem.setDriverController(driverController);
+		}
 
 		NamedCommands.registerCommand("ClimberUp", new ClimberPoseCommand(kClimberPoses.HIGH));
 		NamedCommands.registerCommand("ClimberDown", new ClimberPoseCommand(kClimberPoses.TUCKED));
@@ -136,21 +132,7 @@ public class RobotContainer {
 		NamedCommands.registerCommand("TimedDelay2Seconds", new DelayCommand(OptionalLong.of(2000)));
 		NamedCommands.registerCommand("TimedDelay1Seconds", new DelayCommand(OptionalLong.of(1000)));*/
 		
-		
-		try {
-			autoChooser.addOption("5 Auto Amp 1", AutoBuilder.buildAuto("5 Auto Amp 1"));
-			autoChooser.addOption("5 Auto Amp 2", AutoBuilder.buildAuto("5 Auto Amp 2"));
-			autoChooser.addOption("Auto 1", AutoBuilder.buildAuto("Auto 1"));
-			autoChooser.addOption("Auto 2", AutoBuilder.buildAuto("Auto 2"));
-			autoChooser.addOption("Auto 3", AutoBuilder.buildAuto("Auto 3"));
-			autoChooser.addOption("auto-phil", AutoBuilder.buildAuto("auto-phil"));
-		} catch (Exception e) {
-			//System.out.println(e.getStackTrace());
-			String asdf = e.getStackTrace().toString();
-			System.out.println("RobotContainer()::RobotContainer() - error: " + e.getMessage());
-		}
-
-		//autoChooser = AutoBuilder.buildAutoChooser();
+		autoChooser = AutoBuilder.buildAutoChooser();
 
 		// region Def Auto
 		Shuffleboard.getTab("Autonomous").add("Auto", autoChooser);
@@ -419,7 +401,7 @@ public class RobotContainer {
 		_autoCommand = autoChooser.getSelected();
 
 		if(status == Constants.RobotStatus.DisabledPeriodic) {
-			driveSubsystem.setAutoCommandSelected(autoChooser.getSelected());
+			driveSubsystem.setAutoCommandSelected(_autoCommand);
 		}
 
 		driveSubsystem.setRobotStatus(status);

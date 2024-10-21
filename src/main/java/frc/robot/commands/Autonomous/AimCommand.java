@@ -18,13 +18,16 @@ public class AimCommand extends Command {
     private int _targedNumber = 7;
 
     public AimCommand(PhotonVision photonVision) {
-        _driveSubsystem = RobotContainer.driveSubsystem;
-        _armSubsystem = RobotContainer.armSubsystem;
-        _shooterSubsystem = RobotContainer.shooterSubsystem;
-        // Use addRequirements() here to declare subsystem dependencies.
-		addRequirements(_driveSubsystem, _armSubsystem, _shooterSubsystem);
 
-        _photonVision = photonVision;
+        if(Constants.kEnableArm) {
+            _driveSubsystem = RobotContainer.driveSubsystem;
+            _armSubsystem = RobotContainer.armSubsystem;
+            _shooterSubsystem = RobotContainer.shooterSubsystem;
+
+		    addRequirements(_driveSubsystem, _armSubsystem, _shooterSubsystem);
+
+            _photonVision = photonVision;
+        }
     }
 
     @Override
@@ -40,11 +43,6 @@ public class AimCommand extends Command {
 
     @Override
     public void execute() {
-        
-        /*if(_photonVision.hasTarget()) {
-            _isTargeted = _photonVision.aimAtTarget(7); // look at the blue target
-        }*/
-
         System.out.println("calling aim command");
     }
 
@@ -64,7 +62,13 @@ public class AimCommand extends Command {
     @Override
     public boolean isFinished() {
 
+        if(!Constants.kEnableArm) {
+            //System.out.println("AimCommand::isFinished() - Constants.kEnableArm is false so returning true");
+            return true;
+        }
+
         if(!Constants.kEnablePhotonVision) {
+            //System.out.println("AimCommand::isFinished() - Constants.kEnablePhotonVision is false so returning true");
             return true;
         }
 
@@ -75,17 +79,6 @@ public class AimCommand extends Command {
         } 
 
         double targetYaw = _photonVision.aimAtTarget(_targedNumber);
-        //double shooterHeight = calculateShooterHeight(_photonVision.targetDistance(_targedNumber));
-        //double shooterSpeed = calculateShooterSpeed(_photonVision.targetDistance(_targedNumber));
-
-        //System.out.println("isFinished() - targetYaw: " + targetYaw + " targetDistance: " + targetDistance);
-
-        // need to fix this
-        //_armSubsystem.moveToPosition(shooterHeight);
-        //_shooterSubsystem.setSpeed(shooterSpeed);
-
-        //double position = _armSubsystem.getPosition();
-        //double speed = _shooterSubsystem.getSpeed();
 
         if(targetYaw == 0.0) {
             return true;
@@ -95,12 +88,8 @@ public class AimCommand extends Command {
 
             if(targetYaw > 0) {
                 _driveSubsystem.drive(0.0, 0.0, -.05);
-                //_driveSubsystem.drive(0.0, 0.0, -.05);
-                //_driveSubsystem.drive(0.0, 0.0, .5);
             } else {
                 _driveSubsystem.drive(0.0, 0.0, .05);
-                //_driveSubsystem.drive(0.0, 0.0, .05);
-                //_driveSubsystem.drive(0.0, 0.0, -.1);
             }
             
             return false;

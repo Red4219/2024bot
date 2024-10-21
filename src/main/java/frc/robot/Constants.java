@@ -37,14 +37,17 @@ public final class Constants {
 
 	public static boolean debugArm = true;
 	public static boolean debugShooter = false;
-	public static boolean debugIntake = true;
+	public static boolean debugIntake = false;
 	public static boolean debugDriveTrain = false;
 	public static boolean debugClimber = false;
 	public static boolean enableLogger = false;
 	public static boolean debugPhotonVision = false;
 
-	public static boolean kEnablePhotonVision = false;
+	public static boolean kEnablePhotonVision = true;
 	public static boolean kEnableArm = false;
+	public static boolean kEnableClimber = false;
+	public static boolean kEnableIntake = false;
+	public static boolean kEnableShooter = false;
 
 	public static class ModuleConstants {
 
@@ -90,41 +93,20 @@ public final class Constants {
 		public static final int kRearRightTurningEncoderPort = 11;
 
 		// Offset angle for absolute encoders (find this using CTRE client)
-		//public static final double kFrontLeftAngleZero = 90;
-		//public static final double kFrontLeftAngleZero = -13.88;
-		//public static final double kFrontLeftAngleZero = 164.88;
 		public static final double kFrontLeftAngleZero = -13.79;
-
-		//public static final double kFrontRightAngleZero = 163.5;
 		public static final double kFrontRightAngleZero = 90.5;
-		//public static final double kRearLeftAngleZero = -78.3;
-		//public static final double kRearLeftAngleZero = 89.3;
-		//public static final double kRearLeftAngleZero = -172.26;
-		//public static final double kRearLeftAngleZero = 8.87;
 		public static final double kRearLeftAngleZero = -171.12;
-
-		//public static final double kRearRightAngleZero = -165.05;
-		//public static final double kRearRightAngleZero = -57.2;
 		public static final double kRearRightAngleZero = 110.3;
 
 		public static final PIDGains kModuleDriveGains = new PIDGains(.1, 0, 0);
-
-		//public static final PIDGains kModuleTurningGains = new PIDGains(6.5, .25, .15);
-		//public static final PIDGains kModuleTurningGains = new PIDGains(1.0, 0.0, 0.1);
 		public static final PIDGains kModuleTurningGains = new PIDGains(6.5, 0.25, 0.15);
 	}
 
 	public static class DriveConstants {
-
-		public static final double kMaxSneakMetersPerSecond = 1.0;
 		public static final double kMaxSpeedMetersPerSecond = 4.5;
-		public static final double kMaxTurboMetersPerSecond = 8.0;
 
 		// this sets turning speed (keep this low)
 		public static final double kMaxRPM = 10;
-
-		//public static final int kPigeonPort = 20;
-
 		public static final double kBumperToBumperWidth = Units.inchesToMeters(31);
 
 		public static final double kTrackWidth = Units.inchesToMeters(32); // in meters!
@@ -135,10 +117,6 @@ public final class Constants {
 				new Translation2d(kWheelBase / 2, -kTrackWidth / 2), // FR
 				new Translation2d(-kWheelBase / 2, kTrackWidth / 2), // RL
 				new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)); // RR
-
-		//public static final boolean kGyroReversed = false;
-		//public static final boolean kFieldCentric = true;
-		//public static final boolean kGyroTuring = false;
 
 		public static final PIDGains kGyroTurningGains = new PIDGains(.025, 0, 0);
 		public static final double kMaxTurningVelocityDegrees = 20;
@@ -175,9 +153,6 @@ public final class Constants {
 
 			// PID constants for path planner (these control drive direction not reaching
 			// target wheel speeds)
-			//public static final PIDGains kPPDriveGains = new PIDGains(8.5, 0, 0);
-			//public static final PIDGains kPPTurnGains = new PIDGains(3.5, 0, 0);
-
 			public static final PIDConstants kPPDriveConstants = new PIDConstants(8.5, 0, 0);
 			public static final PIDConstants kPPTurnConstants = new PIDConstants(3.5, 0, 0);
 
@@ -188,11 +163,7 @@ public final class Constants {
 			public static final double kDriveBaseRadius = 0.4; // Drive base radius in meters. Distance from robot center to furthest module.
 		}
 
-		//public static final double kScoreSequenceDropTime = 3; // in seconds
-
 		public static final PIDGains kTurnCommandGains = new PIDGains(.004, 0.0003, 0);
-		//public static final double kTurnCommandMaxVelocity = 1;
-		//public static final double kTurnCommandMaxAcceleration = 1;
 		public static final double kTurnCommandToleranceDeg = 0.5;
 		public static final double kTurnCommandRateToleranceDegPerS = 0;
 
@@ -329,7 +300,6 @@ public final class Constants {
 		public static int kColorSensorGreaterThanRed = 250;
 		public static int kColorSensorLessThanGreen = 900;
 		public static int kColorSensorLessThanBlue = 260;
-
 
 		//
 		public static final int kSmartCurrentLimit = 10;

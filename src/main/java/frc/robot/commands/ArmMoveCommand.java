@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ArmSubsystem;
 
@@ -9,10 +10,12 @@ public class ArmMoveCommand extends InstantCommand {
     private double moveAmount = 0.0;
 
     public ArmMoveCommand(double moveAmount) {
-        armSubsystem = RobotContainer.armSubsystem;
-        this.moveAmount = moveAmount;
+        if(Constants.kEnableArm) {
+            armSubsystem = RobotContainer.armSubsystem;
+            this.moveAmount = moveAmount;
 
-        addRequirements(armSubsystem);
+            addRequirements(armSubsystem);
+        }
     }
 
     @Override
@@ -22,7 +25,9 @@ public class ArmMoveCommand extends InstantCommand {
 
     @Override
     public void execute() {
-        armSubsystem.moveToPosition(armSubsystem.getPosition() + this.moveAmount);
+        if(Constants.kEnableArm) {
+            armSubsystem.moveToPosition(armSubsystem.getPosition() + this.moveAmount);
+        }
     }
 
     @Override

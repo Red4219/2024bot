@@ -50,32 +50,15 @@ public class IntakeSubsystem extends SubsystemBase {
 	/** Creates a new IntakeSubsystem. */
 	public IntakeSubsystem() {
 
-		//pneumaticHub = new PneumaticHub(IntakeConstants.kPnemnaticHubPort);
+		if (Constants.kEnableIntake) {
 
-		//centerDumpSolenoid = pneumaticHub.makeSolenoid(IntakeConstants.kCenterDumpSolenoidPort);
-		//centerSealerSolenoid = pneumaticHub.makeSolenoid(IntakeConstants.kCenterSealerSolenoidPort);
+			if (Constants.IntakeConstants.kEnableColorSensor) {
+				colorSensor = new ColorSensor();
+			}
 
-		//distanceSensor = new IRDistanceSensor(0);
+			currentIntakeState = kIntakeStates.DISABLED;
 
-		if(Constants.IntakeConstants.kEnableColorSensor == true) {
-			colorSensor = new ColorSensor();
-		}
-
-		currentIntakeState = kIntakeStates.DISABLED;
-
-		/*centerSucker = new Vaccum(
-				IntakeConstants.kCenterSuckerPort,
-				IntakeConstants.kCenterSuckerCurrentLimit,
-				true,
-				centerDumpSolenoid,
-				centerSealerSolenoid);*/
-
-
-		//gripper = new IntakeWheels(IntakeConstants.kRightIntakeWheelPort, IntakeConstants.kLeftIntakeWheelPort);
-
-		//if(Constants.debugIntake == true) {
-
-			if(Constants.debugIntake == true) {
+			if (Constants.debugIntake == true) {
 				ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
 				intakeTab.addDouble("Intake Current", intakeWheels::getOutputCurrent);
 				intakeTab.addDouble("Intake Temp", intakeWheels::getTemp);
@@ -85,11 +68,11 @@ public class IntakeSubsystem extends SubsystemBase {
 				intakeTab.addInteger("Green", colorSensor::getGreen);
 				intakeTab.addString("State Name", this::getStateName);
 
-				if(Constants.IntakeConstants.kEnableColorSensor == true) {
+				if (Constants.IntakeConstants.kEnableColorSensor) {
 					intakeTab.addBoolean("Note Detected", colorSensor::noteDetected);
 				}
-			}	
-		//}
+			}
+		}
 	}
 
 	public void setDriverController(CommandXboxController driverController) {

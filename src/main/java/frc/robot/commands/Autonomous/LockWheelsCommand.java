@@ -1,12 +1,9 @@
 package frc.robot.commands.Autonomous;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.ArmConstants.kArmPoses;
 import frc.robot.Constants.DriveConstants.kDriveModes;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public class LockWheelsCommand extends Command {
 

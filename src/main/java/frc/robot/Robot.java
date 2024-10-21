@@ -137,11 +137,11 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void autonomousInit() {
 
-		if(DriverStation.getAlliance().isPresent()) {
+		/*if(DriverStation.getAlliance().isPresent()) {
 			System.out.println("it is present");
 		} else {
 			System.out.println("it is not present");
-		}
+		}*/
 
 		autonomousCommand = robotContainer.getAutonomousCommand();
 

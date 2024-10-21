@@ -4,9 +4,8 @@
 
 package frc.robot.commands.Autonomous;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.RobotContainer;
+import frc.robot.Constants;
 import frc.robot.commands.FloorIntakeCommand;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -20,13 +19,14 @@ public class IntakeDownSequence extends SequentialCommandGroup {
 	/** Creates a new ScoreCommand. */
 	public IntakeDownSequence() {
 
-		//intakeSubsystem = RobotContainer.intakeSubsystem;
+		if(Constants.kEnableIntake) {
 
-		// Add your commands in the addCommands() call, e.g.
-		// addCommands(new FooCommand(), new BarCommand());
-		addCommands(
-				//new InstantCommand(() -> intakeSubsystem.startSucking()),
-				new FloorIntakeCommand(true));
-				intakeSubsystem.intakeCommand();
+			// Add your commands in the addCommands() call, e.g.
+			// addCommands(new FooCommand(), new BarCommand());
+			addCommands(
+					//new InstantCommand(() -> intakeSubsystem.startSucking()),
+					new FloorIntakeCommand(true));
+					intakeSubsystem.intakeCommand();
+		}
 	}
 }

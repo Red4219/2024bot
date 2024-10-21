@@ -83,17 +83,8 @@ public class ShooterWheels {
 			_shooterSparkMaxPrimary.setVoltage(speed);
             _shooterSparkMaxSecondary.setVoltage(speed);
 		} else {
-			//_shooterSparkMaxPrimary.set(speed);
-
-            /*if(_shooterSparkMaxPrimary.get() == 0.0) {
-                _shooterSparkMaxPrimary.setVoltage(-speed);
-                _shooterSparkMaxSecondary.setVoltage(speed);
-            }*/
-
             _shooterSparkMaxPrimary.setVoltage(-speed);
             _shooterSparkMaxSecondary.setVoltage(speed);
-
-
 		}
     }
 

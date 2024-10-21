@@ -268,7 +268,7 @@ public class DriveSubsystem extends SubsystemBase {
 	public void periodic() {
 		// This method will be called once per scheduler run
 
-		if(speakerTarget == 0) {
+		/*if(speakerTarget == 0) {
 			if(DriverStation.getAlliance().isPresent()) {
             	if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
                 	speakerTarget = 7;
@@ -276,7 +276,7 @@ public class DriveSubsystem extends SubsystemBase {
                 	speakerTarget = 4;
             	}
         	}
-		}
+		}*/
 		
 		updateOdometry();
 
@@ -285,12 +285,12 @@ public class DriveSubsystem extends SubsystemBase {
 			SmartDashboard.putNumber("FR Offset Check", frontRight.getAbsoluteHeading() + frontRight.angleZero);
 			SmartDashboard.putNumber("RL Offset Check", rearLeft.getAbsoluteHeading() + rearLeft.angleZero);
 			SmartDashboard.putNumber("RR Offset Check", rearRight.getAbsoluteHeading() + rearRight.angleZero);
+			SmartDashboard.putNumber("2D X", getPose().getX());
+			SmartDashboard.putNumber("2D Y", getPose().getY());
+			SmartDashboard.putNumber("2D Gyro", odometry.getPoseMeters().getRotation().getDegrees());
 		}
 
 		SmartDashboard.putData("field", field);
-		//SmartDashboard.putNumber("2D Gyro", odometry.getPoseMeters().getRotation().getDegrees());
-		SmartDashboard.putNumber("2D X", getPose().getX());
-		SmartDashboard.putNumber("2D Y", getPose().getY());
 		//SmartDashboard.putBoolean("PV Status", _photonVision.isConnected());		
 	}
 
@@ -362,7 +362,8 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 	
 	public void lockWheels() {
-		double rot = DriveConstants.kMaxRPM;
+		//double rot = DriveConstants.kMaxRPM;
+		double rot = 0;
 
 		SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
 				new ChassisSpeeds(0, 0, rot));
@@ -385,19 +386,9 @@ public class DriveSubsystem extends SubsystemBase {
 
 	public void drive(double xSpeed, double ySpeed, double rot, boolean isTurbo, boolean isSneak) {
 
-		double maxSpeed;
-
-		if (isSneak) {
-			maxSpeed = DriveConstants.kMaxSneakMetersPerSecond;
-		} else if (isTurbo) {
-			maxSpeed = DriveConstants.kMaxTurboMetersPerSecond;
-		} else {
-			maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
-		}
-
 		// Apply deadbands to inputs
-		xSpeed *= maxSpeed;
-		ySpeed *= maxSpeed;
+		xSpeed *= DriveConstants.kMaxSpeedMetersPerSecond;
+		ySpeed *= DriveConstants.kMaxSpeedMetersPerSecond;
 
 		if (gyroTurning) {
 			targetRotationDegrees += rot;
@@ -430,7 +421,7 @@ public class DriveSubsystem extends SubsystemBase {
 				}
 			}
 		} else if (mode == kDriveModes.LOCK_WHEELS) {
-			this.lockWheels();
+			//this.lockWheels();
 			return;
 		}
 
@@ -501,12 +492,16 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 
 	public void updateOdometry() {
-		swervePosition = new SwerveModulePosition[] {
+		/*swervePosition = new SwerveModulePosition[] {
 				frontLeft.getPosition(),
 				frontRight.getPosition(),
 				rearLeft.getPosition(),
 				rearRight.getPosition()
-		};
+		};*/
+		swervePosition[0] = frontLeft.getPosition();
+		swervePosition[1] = frontRight.getPosition();
+		swervePosition[2] = rearLeft.getPosition();
+		swervePosition[3] = rearRight.getPosition();
 
 		// For some reason, the code below is preventing rotation in SIM
 		if(Constants.getMode() == Mode.SIM) {
@@ -551,10 +546,6 @@ public class DriveSubsystem extends SubsystemBase {
 
 		Logger.recordOutput("Odometry/Robot", odometry.getPoseMeters());
 		Logger.recordOutput("Estimator/Robot", poseEstimator.getEstimatedPosition());
-		
-		//_gyroIONavX.updateInputs(_gyroInputs);
-        //Logger.getInstance().processInputs("Drive/Gyro", _gyroInputs);
-		//Logger.processInputs("Drive/Gyro", _gyroInputs);
 	}
 
 	public void resetEncoders() {
