@@ -64,7 +64,7 @@ public class SwerveModule {
 	private Rotation2d _simulatedAbsoluteEncoderRotation2d = new Rotation2d();
 
 	private double m_moduleAngleRadians;
-	private double m_distanceMeters;
+	//private double m_distanceMeters;
 	private SwerveModuleState optimizedState;
 	private double angularPIDOutput;
 	private double angularFFOutput;
@@ -183,16 +183,19 @@ public class SwerveModule {
 	public SwerveModulePosition getPosition() {
 
 		if(Constants.getMode() == Mode.SIM){
-			m_distanceMeters = driveEncoder.getPosition();
+			//m_distanceMeters = driveEncoder.getPosition();
 	
-			return new SwerveModulePosition(m_distanceMeters, _simulatedAbsoluteEncoderRotation2d);
+			//return new SwerveModulePosition(m_distanceMeters, _simulatedAbsoluteEncoderRotation2d);
+
+			return new SwerveModulePosition(driveEncoder.getPosition(), _simulatedAbsoluteEncoderRotation2d);
 		}
 
-		m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
+		//m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition());
 		//m_moduleAngleRadians = Math.toRadians(absoluteEncoder.getAbsolutePosition().refresh().getValue());
-		m_distanceMeters = driveEncoder.getPosition();
+		//m_distanceMeters = driveEncoder.getPosition();
 
-		return new SwerveModulePosition(m_distanceMeters, new Rotation2d(m_moduleAngleRadians));
+		//return new SwerveModulePosition(m_distanceMeters, new Rotation2d(m_moduleAngleRadians));
+		return new SwerveModulePosition(driveEncoder.getPosition(), new Rotation2d(Math.toRadians(absoluteEncoder.getAbsolutePosition())));
 	}
 
 	public void setDesiredState(SwerveModuleState desiredState) {
